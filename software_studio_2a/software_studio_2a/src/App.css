@@ -1,3 +1,7 @@
+* {
+  font-family: sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -40,4 +44,84 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Styling for the Login and Regsiter Page */
+
+.App-login {
+  background-color: black;
+  background-blend-mode: multiply;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-register {
+  background-color: black;
+  background-blend-mode: multiply;
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+@media screen and (min-width: 1250px) {
+  .form-background {
+    background-color: black;
+    padding: 5%;
+    width: 30%;
+    box-shadow: 5px 5px rgba(0,0,0,0.5);
+  }
+}
+
+@media screen and (max-width: 1250px) {
+  .form-background {
+    background-color: black;
+
+    padding: 5%;
+    border-radius: 20px;
+    box-shadow: 10px 10px rgba(0,0,0,0.5);
+  }
+}
+
+
+.form-label {
+  color: white;
+}
+
+.button {
+  width: 100%;
+}
+
+.h1 {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 10%;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+  background-color: rgba(0,0,0,0);
+  border-color: rgba(0,0,0,0);
+  border-radius: 0px;
+  border-bottom-color: rgba(255,255,255,0.3);
+}
+
+.register-text {
+  color: white;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.btn {
+  width: 100%;
 }
