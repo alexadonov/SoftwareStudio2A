@@ -4,7 +4,7 @@ import Home from "./home.js";
 import Login from "./users/login.js";
 import Register from "./users/register.js";
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import Main from "./circuit/main.js";
 /**
 * This file initialises all pages so they are able to appea
 * To make a new page, you need to add the following in this file
@@ -61,6 +61,12 @@ class App extends Component {
             <Route exact={true} path='/register' render={() => (
               <div className="App">
                 <Register />
+              </div>
+            )}/>
+
+            <Route exact={true} path='/dnd' render={() => (
+              <div className="App">
+                <Main />
               </div>
             )}/>
 
