@@ -8,7 +8,7 @@ import NavBar from "../components/navBar.js";
 // All CSS for this file
 // Each div as been created with a name (see below)
 // You can then use that in the HTML instead of the word div
-// Tis just makes the code nicer and easier to read
+// This just makes the code nicer and easier to read
 const Content = styled.div``;
 
 const Item = styled.div`
@@ -50,29 +50,29 @@ const Kiosk = styled(List)`
 
 const Container = styled(List)`
     min-height: 10vh;
-    background-color: white;
-    border: 2px solid grey;
+    background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'white')};
+    border: 2px solid ${props => (props.isDraggingOver ? 'lightblue' : 'grey')};
     margin: 8px;
     padding: 1%;
     display: flex;
 `;
 
-const Notice = styled.div`
-    display: flex;
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    padding: 0.5rem;
-    margin: 0 0.5rem 0.5rem;
-    border: 1px solid transparent;
-    line-height: 1.5;
-    color: black;
+const Notice = styled.h5`
+width: auto; /*can be in percentage also.*/
+  height: auto;
+  margin: 0 auto;
+  padding: 10px;
+  position: relative;
+    color: rgba(0,0,0,0.5);
 `;
 
 const Title = styled.h3`
   margin: 8px;
   padding-top: 1%;
 `;
+
+//This save the algorithm the user creates as an array
+var algorithm = new Array();
 
 
 // The next 3 functions allow the items to be moved
@@ -86,6 +86,9 @@ const reorder = (list, startIndex, endIndex) => {
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
 
+    algorithm.splice(endIndex, 0, algorithm.splice(startIndex, 1)[0]);
+
+    localStorage.setItem("algorithm", JSON.stringify(algorithm));
     return result;
 };
 /**
@@ -95,6 +98,9 @@ const copy = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
     const item = sourceClone[droppableSource.index];
+
+    algorithm.splice(droppableDestination.index, 0, item.content);
+    localStorage.setItem("algorithm", JSON.stringify(algorithm));
 
     destClone.splice(droppableDestination.index, 0, { ...item, id: uuid() });
 
@@ -121,6 +127,7 @@ export default class Main extends Component {
     state = {
         [uuid()]: [],
     };
+
 
     // This is what combines everything to make move items work
     // This reads the source list and destination list to figure out
@@ -150,7 +157,7 @@ export default class Main extends Component {
                         this.state[destination.droppableId],
                         source,
                         destination
-                    )
+                    ),
                 });
                 break;
             default:
@@ -164,6 +171,9 @@ export default class Main extends Component {
                 );
                 break;
         }
+
+
+      console.log("Algor: " + localStorage.getItem("algorithm"));
     };
 
     // If we want to add more lists, this will do the job
@@ -172,6 +182,15 @@ export default class Main extends Component {
         this.setState({ [uuid()]: [] });
     };
 
+    // Refreshes the page so user canr restart algorithm
+    onRefresh = () => {
+      window.location.reload(false);
+    }
+
+    // Submits the algorithm
+    onSubmit = () => {
+
+    }
     // Normally you would want to split things out into separate components.
     // But in this example everything is just done in one place for simplicity
     render() {
@@ -209,7 +228,7 @@ export default class Main extends Component {
                                                   </Draggable>
                                               )
                                           )
-                                        : !provided.placeholder && (
+                                        : provided.placeholder && (
                                               <Notice>Drop items here</Notice>
                                           )}
                                     {provided.placeholder}
@@ -273,12 +292,12 @@ export default class Main extends Component {
 
               <div class="row" style={{margin:'8px', paddin: '1%'}}>
                       <div className="col">
-                        <button style={{float: 'left'}} class="btn btn-primary">Restart</button>
+                        <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onRefresh}>Restart</button>
                       </div>
 
 
                       <div className="col">
-                        <button style={{float: 'right'}} class="btn btn-success">Submit</button>
+                        <button style={{float: 'right'}} class="btn btn-success" onClick={this.onSubmit}>Submit</button>
                       </div>
 
               </div>
