@@ -132,12 +132,26 @@ export default class Main extends Component {
     onDragEnd = result => {
         const { source, destination } = result;
 
-        // dropped outside the list
-        if (!destination) {
-            return;
+        if((source.droppableId === "DISPLAYS" ||
+            source.droppableId === "PROBES" ||
+            source.droppableId === "HALF_TURNS" ||
+            source.droppableId === "QUARTER_TURNS" ||
+            source.droppableId === "EIGHTH_TURNS" ||
+            source.droppableId === "PARAMETRIZED" ||
+            source.droppableId === "SAMPLING" ||
+            source.droppableId === "PARITY" ) &&
+            (!destination || source.droppableId === destination.droppableId)) {
+          return;
         }
 
-        if(source.droppableId ==='ITEMS' && destination.droppableId === 'remove') {
+        // dropped outside the list
+        if (!destination) {
+          this.setState(
+              remove(
+                  this.state[source.droppableId],
+                  source,
+              )
+          );
           return;
         }
 
@@ -162,12 +176,6 @@ export default class Main extends Component {
                 });
                 break;
             default:
-                this.setState(
-                    remove(
-                        this.state[source.droppableId],
-                        source,
-                    )
-                );
                 break;
         }
 
@@ -284,17 +292,6 @@ export default class Main extends Component {
                     <Toolbox droppableId="PARITY" list={PARITY}/>
                   </COLUMN>
                 </div>
-
-                  <Droppable droppableId="remove" style={{minHeight: '100px', minWidth: '100px'}}>
-                  {(provided, snapshot) => (
-                      <Removed
-                          ref={provided.innerRef}
-                          isDraggingOver={snapshot.isDraggingOver}>
-                            <div className="col" style={{minWidth: '50px', minHeight: '100px'}}>
-                            </div>
-                        </Removed>
-                    )}
-                  </Droppable>
             </DragDropContext>
             </body>
             </div>
