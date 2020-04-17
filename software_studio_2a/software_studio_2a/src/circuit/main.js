@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import uuid from 'uuid/v4';
 import styled from 'styled-components';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
 
 // Main components
@@ -24,17 +24,6 @@ import PARITY from './data/parity.js';
 // You can then use that in the HTML instead of the word div
 // This just makes the code nicer and easier to read
 const Content = styled.div``;
-
-const Removed = styled.div`
-  background-image: url('https://image.flaticon.com/icons/svg/1214/1214428.svg');
-  background-repeat: no-repeat;
-  background-size: 60px 60px;
-  margin: 8px;
-  padding: 1%;
-  margin-left: 1%;
-  background-position: left center;
-  display: flex;
-`;
 
 const Title = styled.h3`
   margin: 8px;
@@ -178,6 +167,8 @@ export default class Main extends Component {
             default:
                 break;
         }
+
+        console.log("Destination id: "+ source.droppableId);
 
       console.log("Algor: " + localStorage.getItem("algorithm"));
     };

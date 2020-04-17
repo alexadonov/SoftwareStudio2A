@@ -1,7 +1,7 @@
 
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 
 // This file makes the droppable region for the algorithm maker
 // It is called in the main.js file
