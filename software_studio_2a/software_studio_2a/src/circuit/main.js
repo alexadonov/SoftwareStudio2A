@@ -18,6 +18,7 @@ import EIGHTH_TURNS from './data/eighth_turns.js';
 import PARAMETRIZED from './data/parametrized.js';
 import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
+import EMPTY from './data/empty.js';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -42,6 +43,17 @@ const COLUMN = styled.div`
 
 //This save the algorithm the user creates as an array
 var algorithm = new Array();
+var lineArray = new Array();
+
+const getId =(droppableDestination) => {
+  var id;
+  for(var i=0; i < lineArray.length; i++) {
+    if(droppableDestination.droppableId === lineArray[i][1]) {
+      id = lineArray[i][0];
+    }
+  }
+  return id;
+}
 
 // The next 3 functions allow the items to be moved
 // If moving from the toolbox to the algorithm maker,
@@ -49,13 +61,13 @@ var algorithm = new Array();
 // Reorder only works for the algorithm maker
 
 // a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
+const reorder = (list, startIndex, endIndex, droppableDestination) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
 
-    algorithm.splice(endIndex, 0, algorithm.splice(startIndex, 1)[0]);
-
+    var destination_id = getId(droppableDestination);
+    algorithm[destination_id][1].splice(endIndex, 0, algorithm[destination_id][1].splice(startIndex, 1)[0]);
     localStorage.setItem("algorithm", JSON.stringify(algorithm));
     return result;
 };
@@ -68,7 +80,9 @@ const copy = (source, destination, droppableSource, droppableDestination) => {
     const destClone = Array.from(destination);
     const item = sourceClone[droppableSource.index];
 
-    algorithm.splice(droppableDestination.index, 0, item.content);
+
+    var destination_id = getId(droppableDestination);
+    algorithm[destination_id][1].splice(droppableDestination.index, 0, item.content);
     localStorage.setItem("algorithm", JSON.stringify(algorithm));
 
     destClone.splice(droppableDestination.index, 0, { ...item, id: uuid() });
@@ -81,13 +95,75 @@ const remove = (source, droppableSource) => {
     const [removed] = sourceClone.splice(droppableSource.index, 1);
 
     sourceClone.splice(removed, 0);
-    algorithm.splice(droppableSource.index, 1);
+
+    var source_id = getId(droppableSource);
+    algorithm[source_id][1].splice(droppableSource.index, 1);
     localStorage.setItem('algorithm', JSON.stringify(algorithm));
+
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
 
     return result;
 };
+
+const move = (source, destination, droppableSource, droppableDestination) => {
+    const sourceClone = Array.from(source);
+    const destClone = Array.from(destination);
+    const [removed] = sourceClone.splice(droppableSource.index, 1);
+
+    destClone.splice(droppableDestination.index, 0, removed);
+
+    copy(source, destination, droppableSource, droppableDestination);
+    remove(source, droppableSource);
+
+    localStorage.setItem('algorithm', JSON.stringify(algorithm));
+
+    const result = {};
+    result[droppableSource.droppableId] = sourceClone;
+    result[droppableDestination.droppableId] = destClone;
+
+    return result;
+};
+
+const getLargestRow = () => {
+  var currentMax = 0;
+  for(var i = 0; i < algorithm.length; i++) {
+    if(algorithm[i][1].length > currentMax) {
+      currentMax = algorithm[i][1].length;
+    }
+  }
+  return currentMax;
+}
+
+const removeUndefined = () => {
+  for(var a = 0; a < getLargestRow(); a++) {
+    for(var i = 0; i < algorithm.length; i++) {
+        if(algorithm[i][1][a] === undefined) {
+          algorithm[i][1][a] = "1";
+        }
+    }
+  }
+}
+
+const getCircuitInput = () => {
+  removeUndefined();
+  var circuit_input = new Array();
+  var column = new Array();
+  var k = 0;
+  var p = 0;
+  for(var a = 0; a < getLargestRow(); a++) {
+    for(var i = 0; i < algorithm.length; i++) {
+        column[k] = algorithm[i][1][p];
+        k++;
+    }
+    circuit_input[a] = column;
+    p++;
+    column = [];
+    k=0;
+  }
+  console.log(circuit_input);
+  return circuit_input;
+}
 
 const findCopyItems = (id) => {
   switch(id) {
@@ -99,6 +175,7 @@ const findCopyItems = (id) => {
     case "PARAMETRIZED": { return PARAMETRIZED; }
     case "SAMPLING": { return SAMPLING; }
     case "PARITY": { return PARITY; }
+    case "EMPTY": { return EMPTY; }
     default: return;
   }
 }
@@ -106,13 +183,20 @@ const findCopyItems = (id) => {
 export default class Main extends Component {
 
     //This just sets the state of the list
-    state = {
-        [uuid()]: [],
-    };
+    constructor(props) {
+      super(props);
+      var id = uuid();
+        this.state = {
+          [id]: [],
+      };
+      lineArray[0] = new Array(0, id);
+      algorithm[0] = new Array(0, new Array());
+    }
 
     componentDidMount() {
       //Load last saved algorithm if any
       localStorage.getItem('algorithm');
+      console.log("Line " + lineArray.length + ": " + lineArray[0]);
     }
 
     // This is what combines everything to make move items work
@@ -128,7 +212,8 @@ export default class Main extends Component {
             source.droppableId === "EIGHTH_TURNS" ||
             source.droppableId === "PARAMETRIZED" ||
             source.droppableId === "SAMPLING" ||
-            source.droppableId === "PARITY" ) &&
+            source.droppableId === "PARITY" ||
+            source.droppableId === "EMPTY" ) &&
             (!destination || source.droppableId === destination.droppableId)) {
           return;
         }
@@ -141,6 +226,7 @@ export default class Main extends Component {
                   source,
               )
           );
+          console.log("Algor: " + localStorage.getItem("algorithm"));
           return;
         }
 
@@ -150,7 +236,8 @@ export default class Main extends Component {
                     [destination.droppableId]: reorder(
                         this.state[source.droppableId],
                         source.index,
-                        destination.index
+                        destination.index,
+                        destination
                     )
                 });
                 break;
@@ -168,14 +255,15 @@ export default class Main extends Component {
                 break;
         }
 
-        console.log("Destination id: "+ source.droppableId);
-
-      console.log("Algor: " + localStorage.getItem("algorithm"));
+        console.log("Algor: " + localStorage.getItem("algorithm"));
     };
 
     onCreate = () => {
       //Create a new List
-      this.setState({ [uuid()]: [] });
+      var id = uuid();
+      this.setState({ [id]: [] });
+      lineArray[lineArray.length] = new Array(lineArray.length, id);
+      algorithm[algorithm.length] = new Array(algorithm.length, new Array());
     }
 
     onLoad = () => {
@@ -194,8 +282,9 @@ export default class Main extends Component {
     }
 
     onSave = () => {
-        localStorage.setItem('algorithm', this.state.algorithm);
+      var circuit_input = getCircuitInput();
     }
+
 
     onExport = () => {
       //submit to database
@@ -281,6 +370,10 @@ export default class Main extends Component {
                   <COLUMN>
                     <SubTitle>Parity</SubTitle>
                     <Toolbox droppableId="PARITY" list={PARITY}/>
+                  </COLUMN>
+                  <COLUMN>
+                    <SubTitle>Empty </SubTitle>
+                    <Toolbox droppableId="EMPTY" list={EMPTY}/>
                   </COLUMN>
                 </div>
             </DragDropContext>

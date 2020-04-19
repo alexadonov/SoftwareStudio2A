@@ -15,19 +15,10 @@ const Notice = styled.h5`
   color: rgba(0,0,0,0.5);
 `;
 
-const List = styled.div`
-    border: 1px ${props => (props.isDraggingOver ? 'dashed #000' : 'solid #ddd')};
-    background: #fff;
-    padding: 0.5rem 0.5rem 0;
-    border-radius: 3px;
-    flex: 0 0 150px;
-    font-family: sans-serif;
-`;
-
-const Container = styled(List)`
+const Container = styled.div`
     min-height: 10vh;
-    background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'white')};
-    border: 2px solid ${props => (props.isDraggingOver ? 'lightblue' : 'grey')};
+    background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'transparant')};
+    border: 1px ${props => (props.isDraggingOver ? 'dashed #000' : 'solid #ddd')};
     margin: 8px;
     padding: 1%;
     display: flex;
