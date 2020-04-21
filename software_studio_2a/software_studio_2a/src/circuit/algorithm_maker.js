@@ -18,7 +18,7 @@ const Notice = styled.h5`
 const Container = styled.div`
     min-height: 10vh;
     background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'transparant')};
-    border: 1px ${props => (props.isDraggingOver ? 'dashed #000' : 'solid #ddd')};
+    border-bottom: 1px ${props => (props.isDraggingOver ? 'dashed #000' : 'solid #ddd')};
     margin: 8px;
     padding: 1%;
     display: flex;

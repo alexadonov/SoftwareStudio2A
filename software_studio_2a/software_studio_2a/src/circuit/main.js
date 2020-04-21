@@ -37,10 +37,6 @@ const SubTitle = styled.h5`
   padding-top: 1%;
 `;
 
-const COLUMN = styled.div`
-  float: 'left';
-`;
-
 //This save the algorithm the user creates as an array
 var algorithm = new Array();
 var lineArray = new Array();
@@ -165,6 +161,29 @@ const getCircuitInput = () => {
   return circuit_input;
 }
 
+const verifyCircuit = () => {
+  //Loop through the array to check all conditions are met
+  //Maybe make a new file for this
+  //e.g. there has to be 2 gates
+
+  //"SWAP" needs 2 in the same column
+  var circuit_input = getCircuitInput();
+  var count = 0;
+  for(var i = 0; i < circuit_input.length; i++) {
+    for(var j=0; j < circuit_input[i].length; j++) {
+      if(circuit_input[i][j] === "Swap") {
+        count++;
+      }
+    }
+    if(count === 1 ) {
+      alert("You need 2 SWAPS in one column");
+      return;
+    }
+    count = 0;
+  }
+  return;
+}
+
 const findCopyItems = (id) => {
   switch(id) {
     case "DISPLAYS": { return DISPLAYS; }
@@ -272,24 +291,33 @@ export default class Main extends Component {
     }
 
     // Refreshes the page so user can restart algorithm
-    onRefresh = () => {
+    onDelete = () => {
       window.location.reload(false);
+      localStorage.setItem('algorithm', null);
     }
 
     // Submits the algorithm
     onSubmit = () => {
+      //Only show this button if algorithm has been saved
+
       //submit to database
+      verifyCircuit();
+
+      //Make algorithm read only
     }
 
     onSave = () => {
       var circuit_input = getCircuitInput();
+      verifyCircuit();
     }
 
 
     onExport = () => {
+      //Check it has been saved first
+
       //submit to database
       if(localStorage.getItem('algorithm') === undefined) {
-        download("You have not created an algorithm yet.", "algorithm.html", "text/html");
+        alert("You have not created an algorithm yet.", "algorithm.html", "text/html");
         return;
       }
       download(localStorage.getItem('algorithm'), "algorithm.html", "text/html");
@@ -301,7 +329,7 @@ export default class Main extends Component {
         return (
           <div className="App">
             <NavBar />
-              <body onload={this.onLoad}>
+              <body onLoad={this.onLoad}>
 
               <div class="row" style={{margin:'8px', padding: '1%'}}>
                 <div className="col">
@@ -317,7 +345,7 @@ export default class Main extends Component {
                 </div>
 
                 <div className="col">
-                  <button style={{float: 'left'}} class="btn btn-success" onClick={this.onRefresh}>Delete</button>
+                  <button style={{float: 'left'}} class="btn btn-success" onClick={this.onDelete}>Delete</button>
                 </div>
 
                 <div className="col">
@@ -330,51 +358,68 @@ export default class Main extends Component {
               </div>
 
             <DragDropContext onDragEnd={this.onDragEnd}>
+            <div class="row">
+               <div class="col-8">
                 <Content>
                   <Title>Create Your Algorithm</Title>
-                    {Object.keys(this.state).map(list => (
-                      <Algorithm list={list} state={this.state}/>
+                    {Object.keys(this.state).map((list, i) => (
+                      <Algorithm key={i} list={list} state={this.state}/>
                     ))}
                 </Content>
+                <Content>
+                    <h6 style={{display: "flex", justifyContent: "center", alignItems: "center"}}>Graph goes here</h6>
+                </Content>
+                </div>
 
-                <Title>Toolbox</Title>
-                <div className="row" style={{paddingLeft: '5%'}}>
-                  <COLUMN>
-                    <SubTitle>Display's</SubTitle>
-                    <Toolbox droppableId="DISPLAYS" list={DISPLAYS}/>
-                  </COLUMN>
-                  <COLUMN>
-                    <SubTitle>Probes</SubTitle>
-                    <Toolbox droppableId="PROBES" list={PROBES}/>
-                  </COLUMN>
-                  <COLUMN>
-                    <SubTitle>Half Turns</SubTitle>
-                    <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS}/>
-                  </COLUMN>
-                  <COLUMN>
-                    <SubTitle>Quarter Turns</SubTitle>
-                    <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS}/>
-                  </COLUMN>
-                  <COLUMN>
-                    <SubTitle>Eighth Turns</SubTitle>
-                    <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS}/>
-                  </COLUMN>
-                  <COLUMN>
-                    <SubTitle>Parametrized</SubTitle>
-                    <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED}/>
-                  </COLUMN>
-                  <COLUMN>
-                    <SubTitle>Sampling</SubTitle>
-                    <Toolbox droppableId="SAMPLING" list={SAMPLING}/>
-                  </COLUMN>
-                  <COLUMN>
-                    <SubTitle>Parity</SubTitle>
-                    <Toolbox droppableId="PARITY" list={PARITY}/>
-                  </COLUMN>
-                  <COLUMN>
-                    <SubTitle>Empty </SubTitle>
-                    <Toolbox droppableId="EMPTY" list={EMPTY}/>
-                  </COLUMN>
+                <div class="col-4">
+                  <Title>Toolbox</Title>
+
+                  <div className="row" style={{paddingLeft: '5%'}}>
+                    <div class="col" style={{padding: 0}}>
+                      <SubTitle>Display's</SubTitle>
+                      <Toolbox droppableId="DISPLAYS" list={DISPLAYS}/>
+                    </div>
+                    <div class="col" style={{padding: 0}}>
+                      <SubTitle>Probes</SubTitle>
+                      <Toolbox droppableId="PROBES" list={PROBES}/>
+                    </div>
+                    <div class="col" style={{padding: 0}}>
+                      <SubTitle>Half Turns</SubTitle>
+                      <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS}/>
+                    </div>
+                  </div>
+
+                    <div className="row" style={{paddingLeft: '5%'}}>
+                      <div class="col" style={{padding: 0}}>
+                        <SubTitle>Quarter Turns</SubTitle>
+                        <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS}/>
+                      </div>
+                      <div class="col" style={{padding: 0}}>
+                        <SubTitle>Eighth Turns</SubTitle>
+                        <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS}/>
+                      </div>
+                      <div class="col" style={{padding: 0}}>
+                        <SubTitle>Parametrized</SubTitle>
+                        <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED}/>
+                      </div>
+                    </div>
+
+                    <div className="row" style={{paddingLeft: '5%'}}>
+                      <div class="col" style={{padding: 0}}>
+                          <SubTitle>Sampling</SubTitle>
+                          <Toolbox droppableId="SAMPLING" list={SAMPLING}/>
+                        </div>
+                        <div class="col" style={{padding: 0}}>
+                          <SubTitle>Parity</SubTitle>
+                          <Toolbox droppableId="PARITY" list={PARITY}/>
+                        </div>
+                        <div class="col" style={{padding: 0}}>
+                          <SubTitle>Empty </SubTitle>
+                          <Toolbox droppableId="EMPTY" list={EMPTY}/>
+                        </div>
+                      </div>
+                  </div>
+
                 </div>
             </DragDropContext>
             </body>

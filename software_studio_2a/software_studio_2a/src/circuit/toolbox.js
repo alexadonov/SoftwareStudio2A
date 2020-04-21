@@ -10,18 +10,18 @@ import Card from '../components/card.js';
 const Kiosk = styled.div`
   background-color: white;
   background: #fff;
-  padding: 0.5rem 0.5rem 0;
   border-radius: 3px;
   flex: 0 0 150px;
   font-family: sans-serif;
-  margin: 8px;
-  padding: 1%;
 `;
+
 const Hover = styled.div`
   visibility: hidden;
   background-color: white;
   position: absolute;
-
+  z-index: 2;
+  width: inherit;
+  height: inherit;
 `;
 
 const Item = styled.div`
@@ -30,14 +30,17 @@ const Item = styled.div`
   border-radius: 2px;
   padding: 8px;
   margin: 8px;
-  width: 80px;
-  height: 50px;
+  font-size: 11px;
+  z-index: 1;
+  float: left;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: ${props => (props.isDragging ? 'darkgrey' : 'white')};
   &:hover + ${Hover} {
     visibility: visible;
+    width: 58px;
+    height: 38px;
   }
 `;
 
