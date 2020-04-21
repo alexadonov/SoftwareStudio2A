@@ -331,35 +331,36 @@ export default class Main extends Component {
             <NavBar />
               <body onLoad={this.onLoad}>
 
-              <div class="row" style={{margin:'8px', padding: '1%'}}>
-                <div className="col">
-                  <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create</button>
-                </div>
 
-                <div className="col">
-                  <button style={{float: 'left'}} class="btn btn-success" onClick={this.onLoad}>Load</button>
-                </div>
-
-                <div className="col">
-                  <button style={{float: 'right'}} class="btn btn-secondary" onClick={this.onSubmit}>Submit</button>
-                </div>
-
-                <div className="col">
-                  <button style={{float: 'left'}} class="btn btn-success" onClick={this.onDelete}>Delete</button>
-                </div>
-
-                <div className="col">
-                  <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSave}>Save</button>
-                </div>
-
-                <div className="col">
-                  <button style={{float: 'right'}} class="btn btn-success" onClick={this.onExport}>Export</button>
-                </div>
-              </div>
 
             <DragDropContext onDragEnd={this.onDragEnd}>
             <div class="row">
                <div class="col-8">
+               <div class="row" style={{margin:'8px', padding: '1%'}}>
+                 <div className="col">
+                   <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'left'}} class="btn btn-success" onClick={this.onLoad}>Load</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-secondary" onClick={this.onSubmit}>Submit</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'left'}} class="btn btn-success" onClick={this.onDelete}>Delete</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSave}>Save</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onExport}>Export</button>
+                 </div>
+               </div>
                 <Content>
                   <Title>Create Your Algorithm</Title>
                     {Object.keys(this.state).map((list, i) => (
