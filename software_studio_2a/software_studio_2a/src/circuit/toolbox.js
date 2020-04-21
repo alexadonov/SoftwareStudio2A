@@ -20,8 +20,6 @@ const Hover = styled.div`
   background-color: white;
   position: absolute;
   z-index: 2;
-  width: inherit;
-  height: inherit;
 `;
 
 const Item = styled.div`
@@ -41,6 +39,7 @@ const Item = styled.div`
     visibility: visible;
     width: 58px;
     height: 38px;
+    left: -140%;
   }
 `;
 
