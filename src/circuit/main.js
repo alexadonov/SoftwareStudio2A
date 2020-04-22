@@ -168,6 +168,10 @@ const verifyCircuit = () => {
 
   //"SWAP" needs 2 in the same column
   var circuit_input = getCircuitInput();
+  if(circuit_input.length === 0) {
+    alert("This algorithm is empty!");
+    return false;
+  }
   var count = 0;
   for(var i = 0; i < circuit_input.length; i++) {
     for(var j=0; j < circuit_input[i].length; j++) {
@@ -177,11 +181,11 @@ const verifyCircuit = () => {
     }
     if(count === 1 ) {
       alert("You need 2 SWAPS in one column");
-      return;
+      return false;
     }
     count = 0;
   }
-  return;
+  return true;
 }
 
 const findCopyItems = (id) => {
@@ -308,7 +312,22 @@ export default class Main extends Component {
 
     onSave = () => {
       var circuit_input = getCircuitInput();
-      verifyCircuit();
+      if(verifyCircuit() === false) { return; }
+      var algorithm_name = window.prompt("Please name your algorithm:");
+      if(algorithm_name.length === 0) {
+        alert("Please enter a valid name.");
+        algorithm_name = window.prompt("Please name your algorithm:");
+      }
+
+      localStorage.setItem(algorithm_name, circuit_input);
+
+      alert("Your algorithm as been succesfully saved!");
+      if (window.confirm("Would you like to start a new algorithm?")) {
+        localStorage.clear('algorithm');
+        window.location.href = '/dnd';
+      } else {
+        return;
+      }
     }
 
 
