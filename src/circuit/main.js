@@ -249,12 +249,7 @@ export default class Main extends Component {
                   source,
               )
           );
-          var currentversion = this.state.currentversion;
-          history[currentversion+1] = localStorage.getItem("algorithm");
-          this.setState({
-            currentversion: currentversion + 1,
-            finalversion: currentversion + 1
-          });
+          this.addToHistory();
           
           console.log("Algor: " + localStorage.getItem("algorithm"));
           return;
@@ -270,12 +265,7 @@ export default class Main extends Component {
                         destination
                     )
                 });
-                var currentversion = this.state.currentversion;
-                history[currentversion+1] = localStorage.getItem("algorithm");
-                this.setState({
-                  currentversion: currentversion + 1,
-                  finalversion: currentversion + 1
-                });
+                this.addToHistory()
                 break;
             case source.droppableId:
                 this.setState({
@@ -286,12 +276,7 @@ export default class Main extends Component {
                         destination
                     ),
                 });
-                var currentversion = this.state.currentversion;
-                history[currentversion+1] = localStorage.getItem("algorithm");
-                this.setState({
-                  currentversion: currentversion + 1,
-                  finalversion: currentversion + 1
-                });
+                this.addToHistory()
                 break;
             default:
                 break;
@@ -334,6 +319,15 @@ export default class Main extends Component {
     onSave = () => {
       var circuit_input = getCircuitInput();
       verifyCircuit();
+    }
+
+    addToHistory = () => {
+      var currentversion = this.state.currentversion;
+      history[currentversion+1] = localStorage.getItem("algorithm");
+      this.setState({
+        currentversion: currentversion + 1,
+        finalversion: currentversion + 1
+      });
     }
 
     onUndo = () => {
