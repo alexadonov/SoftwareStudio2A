@@ -52,44 +52,8 @@ const getItems = (i) => {
     ciruit.map(function(item){
         array.push(item);
     });
-
-<<<<<<< Updated upstream
-  //"SWAP" needs 2 in the same column
-  var circuit_input = getCircuitInput();
-  var count = 0;
-  for(var i = 0; i < circuit_input.length; i++) {
-    for(var j=0; j < circuit_input[i].length; j++) {
-      if(circuit_input[i][j] === "Swap") {
-        count++;
-      }
-    }
-    if(count === 1 ) {
-      alert("You need 2 SWAPS in one column");
-      return;
-    }
-    count = 0;
-  }
-  return;
-}
-
-const findCopyItems = (id) => {
-  switch(id) {
-    case "DISPLAYS": { return DISPLAYS; }
-    case "PROBES": { return PROBES; }
-    case "HALF_TURNS": { return HALF_TURNS; }
-    case "QUARTER_TURNS": { return QUARTER_TURNS; }
-    case "EIGHTH_TURNS": { return EIGHTH_TURNS; }
-    case "PARAMETRIZED": { return PARAMETRIZED; }
-    case "SAMPLING": { return SAMPLING; }
-    case "PARITY": { return PARITY; }
-    case "EMPTY": { return EMPTY; }
-    default: return;
-  }
-}
-=======
     return array;
   }
->>>>>>> Stashed changes
 
 export default class Main extends Component {
 
@@ -241,10 +205,6 @@ export default class Main extends Component {
     }
 
     onSave = () => {
-<<<<<<< Updated upstream
-      var circuit_input = getCircuitInput();
-      verifyCircuit();
-=======
       var circuit_input = getCircuitInput(algorithm);
       if(verifyCircuit(algorithm) === false) { return; }
       var algorithm_name = window.prompt("Please name your algorithm:");
@@ -269,7 +229,6 @@ export default class Main extends Component {
       } else {
         return;
       }
->>>>>>> Stashed changes
     }
 
 
