@@ -402,11 +402,11 @@ export default class Main extends Component {
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onUndo}>Undo</button>
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onUndo} disabled={this.state.currentversion==0}>Undo</button>
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo}>Redo</button>
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} disabled={this.state.finalversion==this.state.currentversion}>Redo</button>
                  </div>
                </div>
                 <Content>
