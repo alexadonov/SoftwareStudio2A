@@ -63,32 +63,22 @@ export default class Main extends Component {
 
       var id = uuid();
         this.state = {
-          [id]: getItems(0),
+          [id]: [],
       };
 
       lineArray[0] = new Array(0, id);
-      algorithm[0] = getItems(0);
+      algorithm[0] = new Array();
       this.onDragEnd = this.onDragEnd.bind(this);
+      this.onNewLine = this.onNewLine.bind(this);
+      this.onCreate = this.onCreate.bind(this);
+      this.onLoad = this.onLoad.bind(this);
+      this.onDelete = this.onDelete.bind(this);
+      this.onSubmit = this.onSubmit.bind(this);
+      this.onSave = this.onSave.bind(this);
+      this.onExport = this.onExport.bind(this);
     }
 
     componentDidMount() {
-
-      //Load last saved algorithm if any
-      if(algor === null) { return; }
-      else {
-        var id = lineArray[0][1];
-        var length = algor.length;
-
-        for(var j = 1; j < length; j++) {
-          var id = uuid();
-          this.setState({ [id]: getItems(j) });
-          lineArray[lineArray.length] = new Array(lineArray.length, id);
-          algorithm[algorithm.length] = getItems(j);
-        }
-      }
-      console.log(this.state);
-      console.log("Algor: " + localStorage.getItem("algorithm"));
-
     }
 
     // This is what combines everything to make move items work
@@ -180,6 +170,24 @@ export default class Main extends Component {
     onLoad = () => {
       //Searches database for all algorithms the user has saved
       // Shows a drop down list of these so the user can choose
+      var id = lineArray[0][1];
+
+      this.setState({[id]: getItems(0)});
+      algorithm[0] = getItems(0);
+      console.log(this.state[id]);
+
+      if(algor === null) { return; }
+      else {
+          var length = algor.length;
+
+        for(var j = 1; j < length; j++) {
+          var id = uuid();
+          this.setState({ [id]: getItems(j) });
+          lineArray[lineArray.length] = new Array(lineArray.length, id);
+          algorithm[algorithm.length] = getItems(j);
+        }
+      }
+      console.log(this.state);
     }
 
     // Refreshes the page so user can restart algorithm
