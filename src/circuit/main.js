@@ -3,6 +3,7 @@ import uuid from 'uuid/v4';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
+import {saveCircuit} from '../circuit/apicaller';
 
 // Main components
 import NavBar from "../components/navBar.js";
@@ -311,23 +312,29 @@ export default class Main extends Component {
     }
 
     onSave = () => {
+      var studentid = 98106545; //getStudentID();
+      
       var circuit_input = getCircuitInput();
       if(verifyCircuit() === false) { return; }
       var algorithm_name = window.prompt("Please name your algorithm:");
-      if(algorithm_name.length === 0) {
+      while(algorithm_name != null && algorithm_name.length === 0) {
         alert("Please enter a valid name.");
         algorithm_name = window.prompt("Please name your algorithm:");
       }
-
-      localStorage.setItem(algorithm_name, circuit_input);
-
-      alert("Your algorithm as been succesfully saved!");
+      if (algorithm_name != null && algorithm_name.length != 0) {
+        localStorage.setItem(algorithm_name, circuit_input);
+        var alg = localStorage.getItem("algorithm");
+        saveCircuit(studentid, circuit_input, alg, "no results");
+        alert("Your algorithm as been succesfully saved!");
+      }
+      /*
       if (window.confirm("Would you like to start a new algorithm?")) {
         localStorage.clear('algorithm');
         window.location.href = '/dnd';
       } else {
         return;
       }
+      */
     }
 
 
