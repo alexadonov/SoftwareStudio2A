@@ -41,6 +41,8 @@ const SubTitle = styled.h5`
 var algorithm = new Array();
 var lineArray = new Array();
 var history = new Array();
+//var redoDisabled = false;
+//var undoDisabled = false;
 
 const getId =(droppableDestination) => {
   var id;
@@ -207,10 +209,12 @@ export default class Main extends Component {
       super(props);
       var id = uuid();
         this.state = {
-          [id]: [],
-          currentversion: 0,
-          finalversion: 0,
+          [id]: []
       };
+      //undoDisabled = true;
+      //redoDisabled = true;
+      sessionStorage.setItem("currentversion", 0);
+      sessionStorage.setItem("finalversion", 0);
       lineArray[0] = new Array(0, id);
       algorithm[0] = new Array(0, new Array());
       history[0] = JSON.stringify(algorithm[0]);
@@ -289,7 +293,9 @@ export default class Main extends Component {
     onCreate = () => {
       //Create a new List
       var id = uuid();
-      this.setState({ [id]: [], version: 0 });
+      this.setState({ [id]: [] });
+      //undoDisabled = true;
+      //redoDisabled = true;
       lineArray[lineArray.length] = new Array(lineArray.length, id);
       algorithm[algorithm.length] = new Array(algorithm.length, new Array());
       history = new Array();
@@ -322,32 +328,36 @@ export default class Main extends Component {
     }
 
     addToHistory = () => {
-      var currentversion = this.state.currentversion;
-      history[currentversion+1] = localStorage.getItem("algorithm");
-      this.setState({
-        currentversion: currentversion + 1,
-        finalversion: currentversion + 1
-      });
+      var vers = parseInt(sessionStorage.getItem("currentversion")) + 1;
+      history[vers] = localStorage.getItem("algorithm");
+      sessionStorage.setItem("currentversion", vers);
+      sessionStorage.setItem("finalversion", vers);
+      //undoDisabled = false;
+      //redoDisabled = true;
     }
 
     onUndo = () => {
-      var vers = this.state.currentversion;
+      var vers = parseInt(sessionStorage.getItem("currentversion"));
       if (vers > 0) {
-        localStorage.setItem('algorithm', history[vers-1]);
-        algorithm = JSON.parse(history[vers-1]);
-        this.setState({
-          currentversion: vers - 1
-        });
+        vers = vers - 1;
+        localStorage.setItem('algorithm', history[vers]);
+        algorithm = JSON.parse(history[vers]);
+        sessionStorage.setItem("currentversion", vers);
+        //undoDisabled = vers==0;
+        //redoDisabled = false;
       }
     }
 
     onRedo = () => {
-      var vers = this.state.currentversion;
-      var finalvers = this.state.finalversion;
+      var vers = parseInt(sessionStorage.getItem("currentversion"));
+      var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers < finalvers) {
-        localStorage.setItem('algorithm', history[vers + 1]);
-        algorithm = JSON.parse(history[vers+1]);
-        this.setState({currentversion: vers + 1});
+        vers = vers + 1;
+        localStorage.setItem('algorithm', history[vers]);
+        algorithm = JSON.parse(history[vers]);
+        sessionStorage.setItem("currentversion", vers);
+        //undoDisabled = false;
+        //redoDisabled = vers==finalvers;
       }
     }
 
@@ -402,11 +412,11 @@ export default class Main extends Component {
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onUndo} disabled={this.state.currentversion==0}>Undo</button>
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onUndo} >Undo</button>
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} disabled={this.state.finalversion==this.state.currentversion}>Redo</button>
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} >Redo</button>
                  </div>
                </div>
                 <Content>
