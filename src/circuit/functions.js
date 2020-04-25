@@ -121,7 +121,7 @@ export const getCircuitInput = (algorithm) => {
   var p = 0;
   for(var a = 0; a < getLargestRow(algorithm); a++) {
     for(var i = 0; i < algorithm.length; i++) {
-        column[k] = algorithm[i][p];
+        column[k] = algorithm[i][p].content;
         k++;
     }
     circuit_input[a] = column;
@@ -129,6 +129,7 @@ export const getCircuitInput = (algorithm) => {
     column = [];
     k=0;
   }
+  removeUndefined(circuit_input);
   console.log(circuit_input);
   return circuit_input;
 }

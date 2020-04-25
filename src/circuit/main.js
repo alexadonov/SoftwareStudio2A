@@ -41,8 +41,8 @@ const SubTitle = styled.h5`
 `;
 
 //This save the algorithm the user creates as an array
-var algorithm = new Array();
-var lineArray = new Array();
+var algorithm = [];
+var lineArray = [];
 var algor = JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
@@ -66,8 +66,8 @@ export default class Main extends Component {
           [id]: [],
       };
 
-      lineArray[0] = new Array(0, id);
-      algorithm[0] = new Array();
+      lineArray[0] = [0, id];
+      algorithm[0] = [];
       this.onDragEnd = this.onDragEnd.bind(this);
       this.onNewLine = this.onNewLine.bind(this);
       this.onCreate = this.onCreate.bind(this);
@@ -151,8 +151,8 @@ export default class Main extends Component {
       //Create a new List
       var id = uuid();
       this.setState({ [id]: [] });
-      lineArray[lineArray.length] = new Array(lineArray.length, id);
-      algorithm[algorithm.length] = new Array();
+      lineArray[lineArray.length] = [lineArray.length, id];
+      algorithm[algorithm.length] = [];
     }
 
     onCreate = () => {

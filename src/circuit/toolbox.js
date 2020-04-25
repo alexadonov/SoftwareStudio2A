@@ -39,7 +39,7 @@ const Item = styled.div`
     visibility: visible;
     width: 58px;
     height: 38px;
-    left: -140%;
+    margin-left: -18rem;
   }
 `;
 
