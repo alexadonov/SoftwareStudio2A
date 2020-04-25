@@ -71,8 +71,8 @@ export default class Login extends Component {
         <Form className="form-background" onSubmit={this.onSubmit}>
 
           <Title>
-            <img src={logo} id="imgUTSLogo" class="imgUTSLogo" alt="UTS" style={{width: '100px'}}/>
-            <Text>Quantum </Text><Text><b>Computing </b></Text><Text> Login</Text>
+            <img src={logo} class="Uts-logo"/>
+            <Text>Quantum Computing Login</Text>
           </Title>
           <Form.Group controlId="formBasicEmail">
             <Form.Control type="text" placeholder="Student ID" onChange={this.onChangeStudentID} required/>

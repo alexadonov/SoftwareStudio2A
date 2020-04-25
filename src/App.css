@@ -11,6 +11,14 @@
   pointer-events: none;
 }
 
+.Uts-logo {
+  height: 150px;
+  width: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  }
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -52,7 +60,7 @@
   .form-background {
     background-color: white;
     padding: 5%;
-    box-shadow: 20px 20px 100px 20px rgba(0,0,0,0.2);
+    
   }
 }
 

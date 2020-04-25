@@ -95,8 +95,8 @@ export default class Register extends Component {
         <Body>
         <Form className="form-background" onSubmit={this.onSubmit}>
         <Title>
-          <img src={logo} id="imgUTSLogo" class="imgUTSLogo" alt="UTS" style={{width: '100px'}}/>
-          <Text>Quantum </Text><Text><b>Computing </b></Text><Text>Register</Text>
+        <img src={logo} class="Uts-logo"/>
+        <Text>Quantum Computing Register</Text>
         </Title>
 
           <Form.Group controlId="formBasicEmail">
