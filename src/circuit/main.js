@@ -56,8 +56,6 @@ const getItems = (i) => {
     });
     return array;
   }
-  return id;
-}
 
 export default class Main extends Component {
 
@@ -218,9 +216,9 @@ export default class Main extends Component {
 
     onSave = () => {
       var studentid = 98106545; //getStudentID();
-      
-      var circuit_input = getCircuitInput();
-      if(verifyCircuit() === false) { return; }
+
+      var circuit_input = getCircuitInput(algorithm);
+      if(verifyCircuit(algorithm) === false) { return; }
       var algorithm_name = window.prompt("Please name your algorithm:");
       while(algorithm_name != null && algorithm_name.length === 0) {
         alert("Please enter a valid name.");
