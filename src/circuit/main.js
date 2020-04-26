@@ -21,7 +21,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import {remove, reorder, copy,  getCircuitInput, verifyCircuit, findCopyItems, loadData} from './functions';
+import {remove, reorder, copy,  getCircuitInput, verifyCircuit, findCopyItems} from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -170,6 +170,9 @@ export default class Main extends Component {
     onLoad = () => {
       //Searches database for all algorithms the user has saved
       // Shows a drop down list of these so the user can choose
+      if(algorithm !== null) {
+        alert("You must save your current algorithm first!");
+      }
       var id = lineArray[0][1];
 
       this.setState({[id]: getItems(0)});
