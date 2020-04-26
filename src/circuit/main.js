@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
 import {saveCircuit} from '../circuit/apicaller';
+import { Dropdown } from 'react-bootstrap';
+
 
 // Main components
 import NavBar from "../components/navBar.js";
@@ -20,6 +22,8 @@ import PARAMETRIZED from './data/parametrized.js';
 import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
+
+import {remove, reorder, copy,  getCircuitInput, verifyCircuit, findCopyItems} from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -39,169 +43,20 @@ const SubTitle = styled.h5`
 `;
 
 //This save the algorithm the user creates as an array
-var algorithm = new Array();
-var lineArray = new Array();
+var algorithm = [];
+var lineArray = [];
+var algor = JSON.parse(localStorage.getItem('algorithm'));
 
-const getId =(droppableDestination) => {
-  var id;
-  for(var i=0; i < lineArray.length; i++) {
-    if(droppableDestination.droppableId === lineArray[i][1]) {
-      id = lineArray[i][0];
-    }
+const getItems = (i) => {
+  if(algor === null) { return []; }
+    var ciruit = algor[i];
+    var array = [];
+    ciruit.map(function(item){
+        array.push(item);
+    });
+    return array;
   }
   return id;
-}
-
-// The next 3 functions allow the items to be moved
-// If moving from the toolbox to the algorithm maker,
-// You need to make a copy, hence copy() is called
-// Reorder only works for the algorithm maker
-
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex, droppableDestination) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-
-    var destination_id = getId(droppableDestination);
-    algorithm[destination_id][1].splice(endIndex, 0, algorithm[destination_id][1].splice(startIndex, 1)[0]);
-    localStorage.setItem("algorithm", JSON.stringify(algorithm));
-    return result;
-};
-
-/**
- * Moves an item from one list to another list.
- */
-const copy = (source, destination, droppableSource, droppableDestination) => {
-    const sourceClone = Array.from(source);
-    const destClone = Array.from(destination);
-    const item = sourceClone[droppableSource.index];
-
-
-    var destination_id = getId(droppableDestination);
-    algorithm[destination_id][1].splice(droppableDestination.index, 0, item.content);
-    localStorage.setItem("algorithm", JSON.stringify(algorithm));
-
-    destClone.splice(droppableDestination.index, 0, { ...item, id: uuid() });
-
-    return destClone;
-};
-
-const remove = (source, droppableSource) => {
-    const sourceClone = Array.from(source);
-    const [removed] = sourceClone.splice(droppableSource.index, 1);
-
-    sourceClone.splice(removed, 0);
-
-    var source_id = getId(droppableSource);
-    algorithm[source_id][1].splice(droppableSource.index, 1);
-    localStorage.setItem('algorithm', JSON.stringify(algorithm));
-
-    const result = {};
-    result[droppableSource.droppableId] = sourceClone;
-
-    return result;
-};
-
-const move = (source, destination, droppableSource, droppableDestination) => {
-    const sourceClone = Array.from(source);
-    const destClone = Array.from(destination);
-    const [removed] = sourceClone.splice(droppableSource.index, 1);
-
-    destClone.splice(droppableDestination.index, 0, removed);
-
-    copy(source, destination, droppableSource, droppableDestination);
-    remove(source, droppableSource);
-
-    localStorage.setItem('algorithm', JSON.stringify(algorithm));
-
-    const result = {};
-    result[droppableSource.droppableId] = sourceClone;
-    result[droppableDestination.droppableId] = destClone;
-
-    return result;
-};
-
-const getLargestRow = () => {
-  var currentMax = 0;
-  for(var i = 0; i < algorithm.length; i++) {
-    if(algorithm[i][1].length > currentMax) {
-      currentMax = algorithm[i][1].length;
-    }
-  }
-  return currentMax;
-}
-
-const removeUndefined = () => {
-  for(var a = 0; a < getLargestRow(); a++) {
-    for(var i = 0; i < algorithm.length; i++) {
-        if(algorithm[i][1][a] === undefined) {
-          algorithm[i][1][a] = "1";
-        }
-    }
-  }
-}
-
-const getCircuitInput = () => {
-  removeUndefined();
-  var circuit_input = new Array();
-  var column = new Array();
-  var k = 0;
-  var p = 0;
-  for(var a = 0; a < getLargestRow(); a++) {
-    for(var i = 0; i < algorithm.length; i++) {
-        column[k] = algorithm[i][1][p];
-        k++;
-    }
-    circuit_input[a] = column;
-    p++;
-    column = [];
-    k=0;
-  }
-  console.log(circuit_input);
-  return circuit_input;
-}
-
-const verifyCircuit = () => {
-  //Loop through the array to check all conditions are met
-  //Maybe make a new file for this
-  //e.g. there has to be 2 gates
-
-  //"SWAP" needs 2 in the same column
-  var circuit_input = getCircuitInput();
-  if(circuit_input.length === 0) {
-    alert("This algorithm is empty!");
-    return false;
-  }
-  var count = 0;
-  for(var i = 0; i < circuit_input.length; i++) {
-    for(var j=0; j < circuit_input[i].length; j++) {
-      if(circuit_input[i][j] === "Swap") {
-        count++;
-      }
-    }
-    if(count === 1 ) {
-      alert("You need 2 SWAPS in one column");
-      return false;
-    }
-    count = 0;
-  }
-  return true;
-}
-
-const findCopyItems = (id) => {
-  switch(id) {
-    case "DISPLAYS": { return DISPLAYS; }
-    case "PROBES": { return PROBES; }
-    case "HALF_TURNS": { return HALF_TURNS; }
-    case "QUARTER_TURNS": { return QUARTER_TURNS; }
-    case "EIGHTH_TURNS": { return EIGHTH_TURNS; }
-    case "PARAMETRIZED": { return PARAMETRIZED; }
-    case "SAMPLING": { return SAMPLING; }
-    case "PARITY": { return PARITY; }
-    case "EMPTY": { return EMPTY; }
-    default: return;
-  }
 }
 
 export default class Main extends Component {
@@ -209,18 +64,25 @@ export default class Main extends Component {
     //This just sets the state of the list
     constructor(props) {
       super(props);
+
       var id = uuid();
         this.state = {
           [id]: [],
       };
-      lineArray[0] = new Array(0, id);
-      algorithm[0] = new Array(0, new Array());
+
+      lineArray[0] = [0, id];
+      algorithm[0] = [];
+      this.onDragEnd = this.onDragEnd.bind(this);
+      this.onNewLine = this.onNewLine.bind(this);
+      this.onCreate = this.onCreate.bind(this);
+      this.onLoad = this.onLoad.bind(this);
+      this.onDelete = this.onDelete.bind(this);
+      this.onSubmit = this.onSubmit.bind(this);
+      this.onSave = this.onSave.bind(this);
+      this.onExport = this.onExport.bind(this);
     }
 
     componentDidMount() {
-      //Load last saved algorithm if any
-      localStorage.getItem('algorithm');
-      console.log("Line " + lineArray.length + ": " + lineArray[0]);
     }
 
     // This is what combines everything to make move items work
@@ -248,6 +110,8 @@ export default class Main extends Component {
               remove(
                   this.state[source.droppableId],
                   source,
+                  algorithm,
+                  lineArray
               )
           );
           console.log("Algor: " + localStorage.getItem("algorithm"));
@@ -261,7 +125,9 @@ export default class Main extends Component {
                         this.state[source.droppableId],
                         source.index,
                         destination.index,
-                        destination
+                        destination,
+                        algorithm,
+                        lineArray
                     )
                 });
                 break;
@@ -271,7 +137,9 @@ export default class Main extends Component {
                         findCopyItems(source.droppableId),
                         this.state[destination.droppableId],
                         source,
-                        destination
+                        destination,
+                        algorithm,
+                        lineArray
                     ),
                 });
                 break;
@@ -280,25 +148,63 @@ export default class Main extends Component {
         }
 
         console.log("Algor: " + localStorage.getItem("algorithm"));
+        console.log(this.state);
     };
 
-    onCreate = () => {
+    onNewLine = () => {
       //Create a new List
       var id = uuid();
       this.setState({ [id]: [] });
-      lineArray[lineArray.length] = new Array(lineArray.length, id);
-      algorithm[algorithm.length] = new Array(algorithm.length, new Array());
+      lineArray[lineArray.length] = [lineArray.length, id];
+      algorithm[algorithm.length] = [];
+    }
+
+    onCreate = () => {
+      //Checks the algorithm has been saved
+      // if not, prompts user to save
+      // Otherwise, clears session and begins a new one
+      if(window.confirm("Do you want to create a new algorithm?")) {
+        localStorage.setItem('algorithm', null);
+        window.location.href = '/dnd';
+      } else {
+        return;
+      }
     }
 
     onLoad = () => {
       //Searches database for all algorithms the user has saved
       // Shows a drop down list of these so the user can choose
+      var id = lineArray[0][1];
+
+      this.setState({[id]: getItems(0)});
+      algorithm[0] = getItems(0);
+      console.log(this.state[id]);
+
+      if(algor === null) { return; }
+      else {
+          var length = algor.length;
+
+        for(var j = 1; j < length; j++) {
+          var id = uuid();
+          this.setState({ [id]: getItems(j) });
+          lineArray[lineArray.length] = new Array(lineArray.length, id);
+          algorithm[algorithm.length] = getItems(j);
+        }
+      }
+      console.log(this.state);
     }
 
     // Refreshes the page so user can restart algorithm
-    onDelete = () => {
-      window.location.reload(false);
-      localStorage.setItem('algorithm', null);
+    onDelete = (e) => {
+      e.preventDefault();
+      if(window.confirm("Are you sure you want to delete this algorithm?")) {
+        // Delete from database
+        // Delete from local storage
+        localStorage.setItem('algorithm', null);
+        window.location.href = '/dnd';
+      } else {
+        return;
+      }
     }
 
     // Submits the algorithm
@@ -306,8 +212,7 @@ export default class Main extends Component {
       //Only show this button if algorithm has been saved
 
       //submit to database
-      verifyCircuit();
-
+      verifyCircuit(algorithm);
       //Make algorithm read only
     }
 
@@ -327,14 +232,7 @@ export default class Main extends Component {
         saveCircuit(studentid, algorithm_name, alg, "no results");
         alert("Your algorithm as been succesfully saved!");
       }
-      /*
-      if (window.confirm("Would you like to start a new algorithm?")) {
-        localStorage.clear('algorithm');
-        window.location.href = '/dnd';
-      } else {
-        return;
-      }
-      */
+
     }
 
 
@@ -363,28 +261,50 @@ export default class Main extends Component {
             <div class="row">
                <div class="col-8">
                <div class="row" style={{margin:'8px', padding: '1%'}}>
+               <div className="col">
+                 <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>New Line</button>
+               </div>
                  <div className="col">
-                   <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create</button>
+                   <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'left'}} class="btn btn-success" onClick={this.onLoad}>Load</button>
+                   <Dropdown>
+                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                       Load
+                     </Dropdown.Toggle>
+
+                     <Dropdown.Menu>
+                       <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
+                       <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
+                       <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
+                     </Dropdown.Menu>
+                   </Dropdown>
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-secondary" onClick={this.onSubmit}>Submit</button>
+                   <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSubmit}>Submit</button>
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'left'}} class="btn btn-success" onClick={this.onDelete}>Delete</button>
-                 </div>
+                   <Dropdown>
+                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                       Delete
+                     </Dropdown.Toggle>
 
+                     <Dropdown.Menu>
+                       <Dropdown.Item href="#/action-1" onClick={this.onDelete}>Algorithm 1</Dropdown.Item>
+                       <Dropdown.Item href="#/action-2" onClick={this.onDelete}>Algorithm 2</Dropdown.Item>
+                       <Dropdown.Item href="#/action-3" onClick={this.onDelete}>Algorithm 3</Dropdown.Item>
+                     </Dropdown.Menu>
+                   </Dropdown>
+                   </div>
                  <div className="col">
                    <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSave}>Save</button>
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onExport}>Export</button>
+                   <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onExport}>Export</button>
                  </div>
                </div>
                 <Content>
