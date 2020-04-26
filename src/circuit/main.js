@@ -45,6 +45,7 @@ const SubTitle = styled.h5`
 //This save the algorithm the user creates as an array
 var algorithm = [];
 var lineArray = [];
+var history = [];
 var algor = JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
@@ -65,8 +66,17 @@ export default class Main extends Component {
 
       var id = uuid();
         this.state = {
-          [id]: [],
+          [id]: []
       };
+
+      this.undoButton = React.createRef(); // quick solution, better to use states
+      this.redoButton = React.createRef();
+
+      sessionStorage.setItem("currentversion", 0);
+      sessionStorage.setItem("finalversion", 0);
+      lineArray[0] = new Array(0, id);
+      algorithm[0] = new Array(0, new Array());
+      history[0] = {... this.state};
 
       lineArray[0] = [0, id];
       algorithm[0] = [];
@@ -81,6 +91,15 @@ export default class Main extends Component {
     }
 
     componentDidMount() {
+      //Load last saved algorithm if any
+      localStorage.getItem('algorithm');
+      console.log("Line " + lineArray.length + ": " + lineArray[0]);
+
+      var vers = parseInt(sessionStorage.getItem("currentversion"));
+      var finalvers = parseInt(sessionStorage.getItem("finalversion"));
+
+      this.undoButton.current.disabled = (vers === 0);
+      this.redoButton.current.disabled = (vers === finalvers);
     }
 
     // This is what combines everything to make move items work
@@ -110,7 +129,9 @@ export default class Main extends Component {
                   source,
                   algorithm,
                   lineArray
-              )
+              ), () => {
+                this.addToHistory()
+              }
           );
           console.log("Algor: " + localStorage.getItem("algorithm"));
           return;
@@ -127,7 +148,10 @@ export default class Main extends Component {
                         algorithm,
                         lineArray
                     )
+                }, () => {
+                  this.addToHistory()
                 });
+                
                 break;
             case source.droppableId:
                 this.setState({
@@ -139,12 +163,15 @@ export default class Main extends Component {
                         algorithm,
                         lineArray
                     ),
+                }, () => {
+                  this.addToHistory()
                 });
                 break;
             default:
                 break;
         }
 
+        
         console.log("Algor: " + localStorage.getItem("algorithm"));
         console.log(this.state);
     };
@@ -233,6 +260,45 @@ export default class Main extends Component {
 
     }
 
+    addToHistory = () => {
+      var vers = parseInt(sessionStorage.getItem("currentversion")) + 1;
+      history[vers] = {... this.state};
+      history.slice(0, vers);
+      sessionStorage.setItem("currentversion", vers);
+      sessionStorage.setItem("finalversion", vers);
+
+      this.undoButton.current.disabled = (vers === 0);
+      this.redoButton.current.disabled = true;
+    }
+
+    onUndo = () => {
+      var vers = parseInt(sessionStorage.getItem("currentversion"));
+      var finalvers = parseInt(sessionStorage.getItem("finalversion"));
+      if (vers > 0) {
+        vers = vers - 1;
+        this.setState(
+          history[vers]
+        );
+        sessionStorage.setItem("currentversion", vers);
+        this.undoButton.current.disabled = (vers === 0);
+        this.redoButton.current.disabled = (vers === finalvers);
+      }
+    }
+
+    onRedo = () => {
+      var vers = parseInt(sessionStorage.getItem("currentversion"));
+      var finalvers = parseInt(sessionStorage.getItem("finalversion"));
+      if (vers < finalvers) {
+        vers = vers + 1;
+        this.setState(
+          history[vers]
+        );
+        sessionStorage.setItem("currentversion", vers);
+        this.undoButton.current.disabled = (vers === 0);
+        this.redoButton.current.disabled = (vers === finalvers);
+      }
+    }
+
 
     onExport = () => {
       //Check it has been saved first
@@ -303,6 +369,14 @@ export default class Main extends Component {
 
                  <div className="col">
                    <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onExport}>Export</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onUndo} ref={this.undoButton}>Undo</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
                  </div>
                </div>
                 <Content>
