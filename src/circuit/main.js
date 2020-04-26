@@ -211,19 +211,27 @@ export default class Main extends Component {
         this.state = {
           [id]: []
       };
-      //undoDisabled = true;
-      //redoDisabled = true;
+
+      this.undoButton = React.createRef(); // quick solution, better to use states
+      this.redoButton = React.createRef();
+
       sessionStorage.setItem("currentversion", 0);
       sessionStorage.setItem("finalversion", 0);
       lineArray[0] = new Array(0, id);
       algorithm[0] = new Array(0, new Array());
-      history[0] = JSON.stringify(algorithm[0]);
+      history[0] = {... this.state};
     }
 
     componentDidMount() {
       //Load last saved algorithm if any
       localStorage.getItem('algorithm');
       console.log("Line " + lineArray.length + ": " + lineArray[0]);
+
+      var vers = parseInt(sessionStorage.getItem("currentversion"));
+      var finalvers = parseInt(sessionStorage.getItem("finalversion"));
+
+      this.undoButton.current.disabled = (vers === 0);
+      this.redoButton.current.disabled = (vers === finalvers);
     }
 
     // This is what combines everything to make move items work
@@ -251,9 +259,9 @@ export default class Main extends Component {
               remove(
                   this.state[source.droppableId],
                   source,
-              )
-          );
-          this.addToHistory();
+              ), () => {
+                this.addToHistory()
+              });
           
           console.log("Algor: " + localStorage.getItem("algorithm"));
           return;
@@ -268,8 +276,10 @@ export default class Main extends Component {
                         destination.index,
                         destination
                     )
+                }, () => {
+                  this.addToHistory()
                 });
-                this.addToHistory()
+                
                 break;
             case source.droppableId:
                 this.setState({
@@ -279,8 +289,9 @@ export default class Main extends Component {
                         source,
                         destination
                     ),
+                }, () => {
+                  this.addToHistory()
                 });
-                this.addToHistory()
                 break;
             default:
                 break;
@@ -329,22 +340,26 @@ export default class Main extends Component {
 
     addToHistory = () => {
       var vers = parseInt(sessionStorage.getItem("currentversion")) + 1;
-      history[vers] = localStorage.getItem("algorithm");
+      history[vers] = {... this.state};
+      history.slice(0, vers);
       sessionStorage.setItem("currentversion", vers);
       sessionStorage.setItem("finalversion", vers);
-      //undoDisabled = false;
-      //redoDisabled = true;
+
+      this.undoButton.current.disabled = (vers === 0);
+      this.redoButton.current.disabled = true;
     }
 
     onUndo = () => {
       var vers = parseInt(sessionStorage.getItem("currentversion"));
+      var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers > 0) {
         vers = vers - 1;
-        localStorage.setItem('algorithm', history[vers]);
-        algorithm = JSON.parse(history[vers]);
+        this.setState(
+          history[vers]
+        );
         sessionStorage.setItem("currentversion", vers);
-        //undoDisabled = vers==0;
-        //redoDisabled = false;
+        this.undoButton.current.disabled = (vers === 0);
+        this.redoButton.current.disabled = (vers === finalvers);
       }
     }
 
@@ -353,11 +368,12 @@ export default class Main extends Component {
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers < finalvers) {
         vers = vers + 1;
-        localStorage.setItem('algorithm', history[vers]);
-        algorithm = JSON.parse(history[vers]);
+        this.setState(
+          history[vers]
+        );
         sessionStorage.setItem("currentversion", vers);
-        //undoDisabled = false;
-        //redoDisabled = vers==finalvers;
+        this.undoButton.current.disabled = (vers === 0);
+        this.redoButton.current.disabled = (vers === finalvers);
       }
     }
 
@@ -412,11 +428,11 @@ export default class Main extends Component {
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onUndo} >Undo</button>
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onUndo} ref={this.undoButton}>Undo</button>
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} >Redo</button>
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
                  </div>
                </div>
                 <Content>
