@@ -324,7 +324,7 @@ export default class Main extends Component {
       if (algorithm_name != null && algorithm_name.length != 0) {
         localStorage.setItem(algorithm_name, circuit_input);
         var alg = localStorage.getItem("algorithm");
-        saveCircuit(studentid, circuit_input, alg, "no results");
+        saveCircuit(studentid, algorithm_name, alg, "no results");
         alert("Your algorithm as been succesfully saved!");
       }
       /*
