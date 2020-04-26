@@ -170,9 +170,6 @@ export default class Main extends Component {
     onLoad = () => {
       //Searches database for all algorithms the user has saved
       // Shows a drop down list of these so the user can choose
-      if(algorithm !== null) {
-        alert("You must save your current algorithm first!");
-      }
       var id = lineArray[0][1];
 
       this.setState({[id]: getItems(0)});
