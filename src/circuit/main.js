@@ -71,6 +71,8 @@ export default class Main extends Component {
 
       this.undoButton = React.createRef(); // quick solution, better to use states
       this.redoButton = React.createRef();
+      this.submitButton = React.createRef();
+
 
       sessionStorage.setItem("currentversion", 0);
       sessionStorage.setItem("finalversion", 0);
@@ -88,6 +90,7 @@ export default class Main extends Component {
       this.onSubmit = this.onSubmit.bind(this);
       this.onSave = this.onSave.bind(this);
       this.onExport = this.onExport.bind(this);
+      this.isSaved = this.isSaved.bind(this);
     }
 
     componentDidMount() {
@@ -100,6 +103,7 @@ export default class Main extends Component {
 
       this.undoButton.current.disabled = (vers === 0);
       this.redoButton.current.disabled = (vers === finalvers);
+      this.submitButton.current.disabled = true;
     }
 
     // This is what combines everything to make move items work
@@ -232,44 +236,53 @@ export default class Main extends Component {
       }
     }
 
-    // Submits the algorithm
-    onSubmit = () => {
-      //Only show this button if algorithm has been saved
+    //isSaved = () => !!localStorage.getItem("algorithm") work you dumbass please :/
+    isSaved = () => sessionStorage.getItem("currentversion") === sessionStorage.getItem("finalversion");
 
-      //submit to database
-      verifyCircuit(algorithm);
-      //Make algorithm read only
+  // Submits the algorithm
+   onSubmit = () => {
+    if (!this.isSaved()) {
+      return;
     }
+    //Only show this button if algorithm has been saved
+    this.submitButton.current.disabled = true;
 
-    onSave = () => {
-      var studentid = 98106545; //getStudentID();
+    //submit to database
+    verifyCircuit(algorithm);
+    //Make algorithm read only
+  };
 
-      var circuit_input = getCircuitInput(algorithm);
-      if(verifyCircuit(algorithm) === false) { return; }
-      var algorithm_name = window.prompt("Please name your algorithm:");
-      while(algorithm_name != null && algorithm_name.length === 0) {
-        alert("Please enter a valid name.");
-        algorithm_name = window.prompt("Please name your algorithm:");
-      }
-      if (algorithm_name != null && algorithm_name.length != 0) {
-        localStorage.setItem(algorithm_name, circuit_input);
-        var alg = localStorage.getItem("algorithm");
-        saveCircuit(studentid, algorithm_name, alg, "no results");
-        alert("Your algorithm as been succesfully saved!");
-      }
+  onSave = () => {
+    var studentid = 98106545; //getStudentID();
 
+    var circuit_input = getCircuitInput(algorithm);
+    if (verifyCircuit(algorithm) === false) {
+      return;
     }
-
-    addToHistory = () => {
-      var vers = parseInt(sessionStorage.getItem("currentversion")) + 1;
-      history[vers] = {... this.state};
-      history.slice(0, vers);
-      sessionStorage.setItem("currentversion", vers);
-      sessionStorage.setItem("finalversion", vers);
-
-      this.undoButton.current.disabled = (vers === 0);
-      this.redoButton.current.disabled = true;
+    var algorithm_name = window.prompt("Please name your algorithm:");
+    while (algorithm_name != null && algorithm_name.length === 0) {
+      alert("Please enter a valid name.");
+      algorithm_name = window.prompt("Please name your algorithm:");
     }
+    if (algorithm_name != null && algorithm_name.length != 0) {
+      localStorage.setItem(algorithm_name, circuit_input);
+      var alg = localStorage.getItem("algorithm");
+      saveCircuit(studentid, algorithm_name, alg, "no results");
+      this.submitButton.current.disabled = false;
+      alert("Your algorithm as been succesfully saved!");
+    }
+  };
+
+  addToHistory = () => {
+    var vers = parseInt(sessionStorage.getItem("currentversion")) + 1;
+    history[vers] = { ...this.state };
+    history.slice(0, vers);
+    sessionStorage.setItem("currentversion", vers);
+    sessionStorage.setItem("finalversion", vers);
+    this.undoButton.current.disabled = vers === 0;
+    this.redoButton.current.disabled = true;
+    this.submitButton.current.disabled = true;
+  };
 
     onUndo = () => {
       var vers = parseInt(sessionStorage.getItem("currentversion"));
@@ -347,7 +360,7 @@ export default class Main extends Component {
                  </div>
 
                  <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSubmit}>Submit</button>
+                   <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSubmit} ref={this.submitButton}>Submit</button>
                  </div>
 
                  <div className="col">
@@ -380,7 +393,7 @@ export default class Main extends Component {
                  </div>
                </div>
                 <Content>
-                  <Title>Create Your Algorithm</Title>
+                  <Title><b>Create Your Algorithm Here!</b></Title>
                     {Object.keys(this.state).map((list, i) => (
                       <Algorithm key={i} list={list} state={this.state}/>
                     ))}
@@ -391,8 +404,7 @@ export default class Main extends Component {
                 </div>
 
                 <div class="col-4">
-                  <Title>Toolbox</Title>
-
+                  <Title><b>Toolbox</b></Title>
                   <div className="row" style={{paddingLeft: '5%'}}>
                     <div class="col" style={{padding: 0}}>
                       <SubTitle>Display's</SubTitle>

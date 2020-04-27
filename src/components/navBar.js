@@ -5,12 +5,12 @@ import logo from '../images/logo.png';
 import styled from 'styled-components';
 
 const Title = styled.div`
-  padding:14px 5px 14px 0px;
+padding:10px 5px 14px 950px;
 `;
 
 const Text = styled.span`
   vertical-align: sub;
-  font-size: calc(10px + 2vmin);
+  font-size: calc(10px + 1.5vmin);
 `;
 
 export default class NavBar extends Component {
@@ -28,8 +28,8 @@ export default class NavBar extends Component {
             <nav class="navbar navbar-light bg-light">
               <a class="navbar-brand" href="#">
                   <Title>
-                    <img src={logo} id="imgUTSLogo" class="imgUTSLogo" alt="UTS" style={{width: '100px'}}/>
-                    <Text>Quantum </Text><Text><b>Computing </b></Text>
+                    <img src={logo} id="imgUTSLogo" class="imgUTSLogo" alt="UTS" style={{width: '150px'}}/>
+                    <Text><b>Quantum Computing</b></Text>
                   </Title>
               </a>
               <span class="navbar-text">
