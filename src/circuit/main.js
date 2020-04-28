@@ -299,16 +299,16 @@ export default class Main extends Component {
       }
     }
 
-
     onExport = () => {
       //Check it has been saved first
 
       //submit to database
-      if(localStorage.getItem('algorithm') === undefined) {
-        alert("You have not created an algorithm yet.", "algorithm.html", "text/html");
+      if(localStorage.getItem('algorithm') !== "null") {
+        download(localStorage.getItem('algorithm'), "algorithm.json", "text/json");
         return;
       }
-      download(localStorage.getItem('algorithm'), "algorithm.html", "text/html");
+      
+      alert("You have not created an algorithm yet.");
     }
 
     // Normally you would want to split things out into separate components.
