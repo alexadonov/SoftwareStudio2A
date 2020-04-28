@@ -74,6 +74,8 @@ export default class Main extends Component {
 
       sessionStorage.setItem("currentversion", 0);
       sessionStorage.setItem("finalversion", 0);
+      localStorage.setItem("algorithm_input_saved", false);
+
       lineArray[0] = new Array(0, id);
       algorithm[0] = new Array(0, new Array());
       history[0] = {... this.state};
@@ -226,6 +228,7 @@ export default class Main extends Component {
         // Delete from database
         // Delete from local storage
         localStorage.setItem('algorithm', null);
+        localStorage.setItem("algorithm_input_saved", false);
         window.location.href = '/dnd';
       } else {
         return;
@@ -253,6 +256,7 @@ export default class Main extends Component {
       }
       if (algorithm_name != null && algorithm_name.length != 0) {
         localStorage.setItem(algorithm_name, circuit_input);
+        localStorage.setItem("algorithm_input_saved", true);
         var alg = localStorage.getItem("algorithm");
         saveCircuit(studentid, algorithm_name, alg, "no results");
         alert("Your algorithm as been succesfully saved!");
@@ -303,8 +307,13 @@ export default class Main extends Component {
       //Check it has been saved first
 
       //submit to database
-      if(localStorage.getItem('algorithm') !== "null") {
-        download(localStorage.getItem('algorithm'), "algorithm.json", "text/json");
+      if(localStorage.getItem("algorithm") !== "null") {
+        if(localStorage.getItem("algorithm_input_saved") !== "false") {
+          download(localStorage.getItem('algorithm'), "algorithm.json", "text/json");
+          return;
+        }
+
+        alert("You must first save your algorithm.");
         return;
       }
       
