@@ -3,7 +3,7 @@ import uuid from 'uuid/v4';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
-import {saveCircuit} from '../circuit/apicaller';
+import {saveCircuit, getResults} from '../circuit/apicaller';
 import { Dropdown } from 'react-bootstrap';
 
 
@@ -244,6 +244,11 @@ export default class Main extends Component {
       //Make algorithm read only
     }
 
+    onCalculate = () => {
+      var circuit_input = getCircuitInput(algorithm);
+      getResults(circuit_input);
+    }
+
     onSave = () => {
       var studentid = 98106545; //getStudentID();
 
@@ -386,6 +391,10 @@ export default class Main extends Component {
 
                  <div className="col">
                    <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onCalculate} >Calculate</button>
                  </div>
                </div>
                 <Content>
