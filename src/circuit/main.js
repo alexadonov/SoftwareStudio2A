@@ -246,7 +246,8 @@ export default class Main extends Component {
 
     onCalculate = () => {
       var circuit_input = getCircuitInput(algorithm);
-      getResults(circuit_input);
+      var results = getResults(circuit_input);
+      console.log(JSON.stringify(results))
     }
 
     onSave = () => {
