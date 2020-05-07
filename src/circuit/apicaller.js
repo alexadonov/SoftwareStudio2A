@@ -31,7 +31,7 @@ export const getResults = async (circuit_input) => {
     var data = JSON.stringify({
         circuit_input: JSON.stringify(circuit_input)
     });
-    //console.log(data);
+
     var response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -39,12 +39,14 @@ export const getResults = async (circuit_input) => {
         },
         body: data
     });
+
+    let parsedData = await response.json();
     var status = await response.status;
-    console.log(data);
-    console.log(response.json);
-    console.log(status);
+    console.log('data:', data);
+    console.log('parsedData:', parsedData);
+    console.log('status:', status);
     if (status == "200")
-        return response.json;
+        return parsedData;
     else
         return;
     
