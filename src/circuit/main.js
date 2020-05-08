@@ -173,7 +173,7 @@ export default class Main extends Component {
                 break;
         }
 
-        
+        this.calculateResults()
         console.log("Algor: " + localStorage.getItem("algorithm"));
         console.log(this.state);
     };
@@ -244,7 +244,7 @@ export default class Main extends Component {
       //Make algorithm read only
     }
 
-    onCalculate = () => {
+    calculateResults = () => {
       var circuit_input = getCircuitInput(algorithm);
       var results = getResults(circuit_input);
       console.log(JSON.stringify(results))
@@ -341,7 +341,7 @@ export default class Main extends Component {
                <div class="col-8">
                <div class="row" style={{margin:'8px', padding: '1%'}}>
                <div className="col">
-                 <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>New Line</button>
+                 <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>Add Wire</button>
                </div>
                  <div className="col">
                    <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
@@ -393,10 +393,6 @@ export default class Main extends Component {
                  <div className="col">
                    <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
                  </div>
-
-                 <div className="col">
-                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onCalculate} >Calculate</button>
-                 </div>
                </div>
                 <Content>
                   <Title>Create Your Algorithm</Title>
@@ -414,7 +410,7 @@ export default class Main extends Component {
 
                   <div className="row" style={{paddingLeft: '5%'}}>
                     <div class="col" style={{padding: 0}}>
-                      <SubTitle>Display's</SubTitle>
+                      <SubTitle>Displays</SubTitle>
                       <Toolbox droppableId="DISPLAYS" list={DISPLAYS}/>
                     </div>
                     <div class="col" style={{padding: 0}}>
