@@ -27,7 +27,7 @@ export const saveCircuit = async (student_id, circuit_name, circuit_input, circu
 }
 
 export const getResults = async (circuit_input) => {
-    const url = "http://127.0.0.1:8000/api/calculate";
+    const url = "http://13.210.43.87:8000/api/calculate";
     var data = JSON.stringify({
         circuit_input: JSON.stringify(circuit_input)
     });
@@ -48,6 +48,7 @@ export const getResults = async (circuit_input) => {
     if (status == "200")
         return parsedData;
     else
+    // Handle error here
         return;
     
 }
