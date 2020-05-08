@@ -11,6 +11,7 @@ import { Dropdown } from 'react-bootstrap';
 import NavBar from "../components/navBar.js";
 import Toolbox from './toolbox.js';
 import Algorithm from './algorithm_maker';
+import Results from '../components/results';
 
 // Data files
 import DISPLAYS from './data/displays.js'
@@ -46,6 +47,7 @@ const SubTitle = styled.h5`
 var algorithm = [];
 var lineArray = [];
 var history = [];
+var results = "Add a gate to the circuit to get started"
 var algor = JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
@@ -244,10 +246,10 @@ export default class Main extends Component {
       //Make algorithm read only
     }
 
-    calculateResults = () => {
+    calculateResults = async () => {
       var circuit_input = getCircuitInput(algorithm);
-      var results = getResults(circuit_input);
-      console.log(JSON.stringify(results))
+      results = await getResults(circuit_input);
+      console.log("results:",results)
     }
 
     onSave = () => {
@@ -393,6 +395,7 @@ export default class Main extends Component {
                  <div className="col">
                    <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
                  </div>
+                 
                </div>
                 <Content>
                   <Title>Create Your Algorithm</Title>
@@ -401,7 +404,7 @@ export default class Main extends Component {
                     ))}
                 </Content>
                 <Content>
-                    <h6 style={{display: "flex", justifyContent: "center", alignItems: "center"}}>Graph goes here</h6>
+                  <Results data = {results}/>
                 </Content>
                 </div>
 
