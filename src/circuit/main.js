@@ -24,7 +24,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import {remove, reorder, copy,  getCircuitInput, verifyCircuit, findCopyItems} from './functions';
+import {remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems} from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -95,10 +95,6 @@ export default class Main extends Component {
     }
 
     componentDidMount() {
-      //Load last saved algorithm if any
-      localStorage.getItem('algorithm');
-      console.log("Line " + lineArray.length + ": " + lineArray[0]);
-
       var vers = parseInt(sessionStorage.getItem("currentversion"));
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
 
@@ -155,9 +151,9 @@ export default class Main extends Component {
                 }, () => {
                   this.addToHistory()
                 });
-                
+
                 break;
-            case source.droppableId:
+            case findCopyItemsId(source.droppableId):
                 this.setState({
                     [destination.droppableId]: copy(
                         findCopyItems(source.droppableId),
@@ -172,7 +168,18 @@ export default class Main extends Component {
                 });
                 break;
             default:
-                break;
+            this.setState(
+                  move(
+                    this.state[source.droppableId],
+                    this.state[destination.droppableId],
+                    source,
+                    destination,
+                    algorithm,
+                    lineArray
+                  ), () => {
+                    this.addToHistory()
+                  });
+              break;
         }
 
         this.calculateResults()
@@ -324,7 +331,7 @@ export default class Main extends Component {
         alert("You must first save your algorithm.");
         return;
       }
-      
+
       alert("You have not created an algorithm yet.");
     }
 
