@@ -3,7 +3,7 @@ import uuid from 'uuid/v4';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
-import {saveCircuit} from '../circuit/apicaller';
+import {saveCircuit, getResults, healthCheck} from '../circuit/apicaller';
 import { Dropdown } from 'react-bootstrap';
 
 
@@ -11,6 +11,7 @@ import { Dropdown } from 'react-bootstrap';
 import NavBar from "../components/navBar.js";
 import Toolbox from './toolbox.js';
 import Algorithm from './algorithm_maker';
+import Results from '../components/results';
 
 // Data files
 import DISPLAYS from './data/displays.js'
@@ -46,6 +47,7 @@ const SubTitle = styled.h5`
 var algorithm = [];
 var lineArray = [];
 var history = [];
+var results = "Add a gate to the circuit to get started"
 var algor = JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
@@ -180,7 +182,7 @@ export default class Main extends Component {
               break;
         }
 
-
+        this.calculateResults()
         console.log("Algor: " + localStorage.getItem("algorithm"));
         console.log(this.state);
     };
@@ -249,6 +251,15 @@ export default class Main extends Component {
       //submit to database
       verifyCircuit(algorithm);
       //Make algorithm read only
+    }
+
+    calculateResults = async () => {
+      healthCheck();
+      var circuit_input = getCircuitInput(algorithm);
+      if (circuit_input !== null && !circuit_input.EMPTY) {
+        results = await getResults(circuit_input);
+        console.log("results:", results)
+      } else results = [[]]
     }
 
     onSave = () => {
@@ -342,7 +353,7 @@ export default class Main extends Component {
                <div class="col-8">
                <div class="row" style={{margin:'8px', padding: '1%'}}>
                <div className="col">
-                 <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>New Line</button>
+                 <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>Add Wire</button>
                </div>
                  <div className="col">
                    <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
@@ -394,6 +405,7 @@ export default class Main extends Component {
                  <div className="col">
                    <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
                  </div>
+                 
                </div>
                 <Content>
                   <Title>Create Your Algorithm</Title>
@@ -402,7 +414,7 @@ export default class Main extends Component {
                     ))}
                 </Content>
                 <Content>
-                    <h6 style={{display: "flex", justifyContent: "center", alignItems: "center"}}>Graph goes here</h6>
+                  <Results data = {results}/>
                 </Content>
                 </div>
 
@@ -411,7 +423,7 @@ export default class Main extends Component {
 
                   <div className="row" style={{paddingLeft: '5%'}}>
                     <div class="col" style={{padding: 0}}>
-                      <SubTitle>Display's</SubTitle>
+                      <SubTitle>Displays</SubTitle>
                       <Toolbox droppableId="DISPLAYS" list={DISPLAYS}/>
                     </div>
                     <div class="col" style={{padding: 0}}>
