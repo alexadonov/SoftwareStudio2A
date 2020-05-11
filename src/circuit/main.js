@@ -254,9 +254,12 @@ export default class Main extends Component {
     }
 
     calculateResults = async () => {
+      healthCheck();
       var circuit_input = getCircuitInput(algorithm);
-      results = await getResults(circuit_input);
-      console.log("results:",results)
+      if (circuit_input !== null && !circuit_input.EMPTY) {
+        results = await getResults(circuit_input);
+        console.log("results:", results)
+      } else results = [[]]
     }
 
     onSave = () => {
