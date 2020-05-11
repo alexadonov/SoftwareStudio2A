@@ -27,7 +27,7 @@ export const saveCircuit = async (student_id, circuit_name, circuit_input, circu
 }
 
 export const getResults = async (circuit_input) => {
-    const url = "http://13.210.43.87:8000/api/calculate";
+    const url = "http://127.0.0.1:8000/api/calculate";
     var data = JSON.stringify({
         circuit_input: JSON.stringify(circuit_input)
     });
@@ -51,4 +51,16 @@ export const getResults = async (circuit_input) => {
     // Handle error here
         return;
     
+}
+
+export const healthCheck = async () => {
+    const url = "http://127.0.0.1:8000/api/";
+
+    var response = await fetch(url, {
+        method: 'GET'
+    });
+
+    var status = await response.status;
+    console.log('response:', response);
+    console.log('status:', status);
 }
