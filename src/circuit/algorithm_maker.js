@@ -24,7 +24,7 @@ const Container = styled.div`
     display: flex;
 `;
 
-const Item = styled.div`
+const Item = styled.image`
   border: 3px solid darkgrey;
   box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.2);
   border-radius: 2px;
