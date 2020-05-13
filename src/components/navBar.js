@@ -17,6 +17,7 @@ export default class NavBar extends Component {
 
   onLogout = (e) => {
     e.preventDefault();
+    localStorage.removeItem('token');
     localStorage.setItem('loggedIn', false);
     window.location.href = '/';
   }

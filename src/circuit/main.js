@@ -5,6 +5,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
 import {saveCircuit, getResults, healthCheck} from '../circuit/apicaller';
 import { Dropdown } from 'react-bootstrap';
+import jwt_decode from 'jwt-decode';
 
 
 // Main components
@@ -66,6 +67,10 @@ export default class Main extends Component {
     constructor(props) {
       super(props);
 
+      this.state = {
+        email: ''
+      }
+
       var id = uuid();
         this.state = {
           [id]: []
@@ -100,6 +105,11 @@ export default class Main extends Component {
 
       this.undoButton.current.disabled = (vers === 0);
       this.redoButton.current.disabled = (vers === finalvers);
+
+      const token = localStorage.token;
+      this.setState({
+        email: token.sub
+      })
     }
 
     // This is what combines everything to make move items work
