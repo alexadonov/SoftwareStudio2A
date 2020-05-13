@@ -62,7 +62,7 @@ const ALGORITHM_MAKER = (props) => {
                                               {...provided.dragHandleProps}
                                               isDragging={ snapshot.isDragging }
                                               style={ provided.draggableProps.style}>
-                                              {item.content}
+                                              {item.image}
                                           </Item>
                                       )}
                                   </Draggable>
