@@ -78,8 +78,6 @@ export default class Main extends Component {
       sessionStorage.setItem("finalversion", 0);
       localStorage.setItem("algorithm_input_saved", false);
 
-      lineArray[0] = new Array(0, id);
-      algorithm[0] = new Array(0, new Array());
       history[0] = {... this.state};
 
       lineArray[0] = [0, id];
@@ -299,8 +297,14 @@ export default class Main extends Component {
       if (vers > 0) {
         vers = vers - 1;
         this.setState(
-          history[vers]
+          history[vers], () => {
+            localStorage.setItem("algorithm", {...this.state});
+            for(var i = 0; i < lineArray.length; i++) {
+              algorithm[i] = this.state[lineArray[i][1]];
+            }
+          }
         );
+
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
         this.redoButton.current.disabled = (vers === finalvers);
@@ -313,7 +317,12 @@ export default class Main extends Component {
       if (vers < finalvers) {
         vers = vers + 1;
         this.setState(
-          history[vers]
+          history[vers], () => {
+            localStorage.setItem("algorithm", {...this.state});
+            for(var i = 0; i < lineArray.length; i++) {
+              algorithm[i] = this.state[lineArray[i][1]];
+            }
+          }
         );
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
