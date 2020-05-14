@@ -22,7 +22,7 @@ const Hover = styled.div`
   z-index: 2;
 `;
 
-const Item = styled.div`
+const Item = styled.image`
   border: 3px solid darkgrey;
   box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.2);
   border-radius: 2px;
@@ -75,7 +75,7 @@ const List = (props) => {
                                     {...provided.dragHandleProps}
                                     isDragging={snapshot.isDragging}
                                     style={provided.draggableProps.style}>
-                                    {item.content}
+                                    {item.image}
                                 </Item>
                                 {snapshot.isDragging && (
                                     <Clone><h6>{item.content}</h6></Clone>
