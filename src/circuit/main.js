@@ -351,22 +351,6 @@ export default class Main extends Component {
 
                         <div class="row" style={{margin:'8px', padding: '1%'}}>
                            <div className="col">
-                             <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>Add Wire</button>
-                           </div>
-                           <div className="col">
-                             <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
-                           </div>
-                           <div className="col"></div>
-                           <div className="col">
-                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton}>Undo</button>
-                           </div>
-                           <div className="col">
-                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
-                           </div>
-                        </div>
-
-                        <div class="row" style={{margin:'8px', padding: '1%'}}>
-                           <div className="col">
                              <Dropdown>
                                <Dropdown.Toggle variant="primary" id="dropdown-basic">
                                  Load
@@ -401,6 +385,24 @@ export default class Main extends Component {
                              <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onExport}>Export</button>
                            </div>
                         </div>
+
+                        <div class="row" style={{margin:'8px', padding: '1%'}}>
+                          <div className="col">
+                            <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                          </div>
+                           <div className="col">
+                             <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>Add Wire</button>
+                           </div>
+                           <div className="col"></div>
+                           <div className="col">
+                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton}>Undo</button>
+                           </div>
+                           <div className="col">
+                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
+                           </div>
+                        </div>
+
+
                      <Content>
                         <Title>Create Your Algorithm</Title>
                         {Object.keys(this.state).map((list, i) => (
