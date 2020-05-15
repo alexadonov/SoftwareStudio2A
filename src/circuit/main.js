@@ -379,8 +379,62 @@ export default class Main extends Component {
           <div className="App">
             <NavBar />
               <body onLoad={this.onLoad}>
+                <DragDropContext onDragEnd={this.onDragEnd}>
+                  <div class="row">
+                     <div class="col-8">
 
+                        <div class="row" style={{margin:'8px', padding: '1%'}}>
+                           <div className="col">
+                             <Dropdown>
+                               <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                 Load
+                               </Dropdown.Toggle>
+                               <Dropdown.Menu>
+                                 <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
+                                 <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
+                                 <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
+                               </Dropdown.Menu>
+                             </Dropdown>
+                           </div>
+                           <div className="col">
+                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSave}>Save</button>
+                           </div>
+                           <div className="col">
+                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSubmit}>Submit</button>
+                           </div>
+                           <div className="col">
+                             <Dropdown>
+                               <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                 Delete
+                               </Dropdown.Toggle>
 
+                               <Dropdown.Menu>
+                                 <Dropdown.Item href="#/action-1" onClick={this.onDelete}>Algorithm 1</Dropdown.Item>
+                                 <Dropdown.Item href="#/action-2" onClick={this.onDelete}>Algorithm 2</Dropdown.Item>
+                                 <Dropdown.Item href="#/action-3" onClick={this.onDelete}>Algorithm 3</Dropdown.Item>
+                               </Dropdown.Menu>
+                             </Dropdown>
+                           </div>
+                           <div className="col">
+                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onExport}>Export</button>
+                           </div>
+                        </div>
+
+                        <div class="row" style={{margin:'8px', padding: '1%'}}>
+                          <div className="col">
+                            <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                          </div>
+                           <div className="col">
+                             <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>Add Wire</button>
+                           </div>
+                           <div className="col"></div>
+                           <div className="col">
+                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton}>Undo</button>
+                           </div>
+                           <div className="col">
+                             <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
+                           </div>
+                        </div>
 
             <DragDropContext onDragEnd={this.onDragEnd}>
             <div class="row">
@@ -473,40 +527,54 @@ export default class Main extends Component {
                     </div>
                   </div>
 
-                    <div className="row" style={{paddingLeft: '5%'}}>
-                      <div class="col" style={{padding: 0}}>
-                        <SubTitle>Quarter Turns</SubTitle>
-                        <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS}/>
+                  <div class="col-4">
+                    <Title>Toolbox</Title>
+                      <div className="row" style={{paddingLeft: '5%'}}>
+                        <div class="col" style={{padding: 0}}>
+                          <SubTitle>Displays</SubTitle>
+                          <Toolbox droppableId="DISPLAYS" list={DISPLAYS}/>
+                        </div>
+                        <div class="col" style={{padding: 0}}>
+                          <SubTitle>Probes</SubTitle>
+                          <Toolbox droppableId="PROBES" list={PROBES}/>
+                        </div>
+                        <div class="col" style={{padding: 0}}>
+                          <SubTitle>Half Turns</SubTitle>
+                          <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS}/>
+                        </div>
                       </div>
-                      <div class="col" style={{padding: 0}}>
-                        <SubTitle>Eighth Turns</SubTitle>
-                        <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS}/>
+                      <div className="row" style={{paddingLeft: '5%'}}>
+                        <div class="col" style={{padding: 0}}>
+                          <SubTitle>Quarter Turns</SubTitle>
+                          <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS}/>
+                        </div>
+                        <div class="col" style={{padding: 0}}>
+                          <SubTitle>Eighth Turns</SubTitle>
+                          <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS}/>
+                        </div>
+                        <div class="col" style={{padding: 0}}>
+                          <SubTitle>Parametrized</SubTitle>
+                          <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED}/>
+                        </div>
                       </div>
-                      <div class="col" style={{padding: 0}}>
-                        <SubTitle>Parametrized</SubTitle>
-                        <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED}/>
-                      </div>
+                      <div className="row" style={{paddingLeft: '5%'}}>
+                        <div class="col" style={{padding: 0}}>
+                            <SubTitle>Sampling</SubTitle>
+                            <Toolbox droppableId="SAMPLING" list={SAMPLING}/>
+                          </div>
+                          <div class="col" style={{padding: 0}}>
+                            <SubTitle>Parity</SubTitle>
+                            <Toolbox droppableId="PARITY" list={PARITY}/>
+                          </div>
+                          <div class="col" style={{padding: 0}}>
+                            <SubTitle>Empty </SubTitle>
+                            <Toolbox droppableId="EMPTY" list={EMPTY}/>
+                          </div>
+                        </div>
                     </div>
-
-                    <div className="row" style={{paddingLeft: '5%'}}>
-                      <div class="col" style={{padding: 0}}>
-                          <SubTitle>Sampling</SubTitle>
-                          <Toolbox droppableId="SAMPLING" list={SAMPLING}/>
-                        </div>
-                        <div class="col" style={{padding: 0}}>
-                          <SubTitle>Parity</SubTitle>
-                          <Toolbox droppableId="PARITY" list={PARITY}/>
-                        </div>
-                        <div class="col" style={{padding: 0}}>
-                          <SubTitle>Empty </SubTitle>
-                          <Toolbox droppableId="EMPTY" list={EMPTY}/>
-                        </div>
-                      </div>
                   </div>
-
-                </div>
-            </DragDropContext>
-            </body>
+                </DragDropContext>
+              </body>
             </div>
         );
     }
