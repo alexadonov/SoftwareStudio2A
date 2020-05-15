@@ -43,12 +43,27 @@ const SubTitle = styled.h5`
   padding-top: 1%;
 `;
 
+const Button = styled.button`
+  float: left;
+  vertical-align: middle;
+  min-height: 10vh;
+  background: ${props => props.primary ? "red" : "white"};
+  color: ${props => props.primary ? "white" : "red"};
+  border: 0px  rgba(0,0,0,0);
+  font-size: 1em;
+  margin: 0.25em 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none !important;
+  `;
+
 //This save the algorithm the user creates as an array
 var algorithm = [];
 var lineArray = [];
 var history = [];
 var results = "Add a gate to the circuit to get started"
-var algor = JSON.parse(localStorage.getItem('algorithm'));
+var algor //= JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
   if(algor === null) { return []; }
@@ -338,6 +353,25 @@ export default class Main extends Component {
       alert("You have not created an algorithm yet.");
     }
 
+    deleteLine = (list, i) => {
+      if(algorithm.length === 1) {
+        alert("You cannot delete this line");
+        return;
+      }
+      let newState = this.state;
+      delete newState[list];
+      this.setState(newState);
+      algorithm.splice(i, 1);
+      lineArray.splice(i, 1);
+      console.log(algorithm);
+      for(var j = i; j < lineArray.length; j++) {
+        lineArray[j][0]--;
+      }
+      console.log(lineArray)
+      localStorage.setItem("algorithm", JSON.stringify(algorithm));
+      this.addToHistory()
+    }
+
     // Normally you would want to split things out into separate components.
     // But in this example everything is just done in one place for simplicity
     render() {
@@ -402,16 +436,95 @@ export default class Main extends Component {
                            </div>
                         </div>
 
+            <DragDropContext onDragEnd={this.onDragEnd}>
+            <div class="row">
+               <div class="col-8">
+               <div class="row" style={{margin:'8px', padding: '1%'}}>
+               <div className="col">
+                 <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onNewLine}>Add Wire</button>
+               </div>
+                 <div className="col">
+                   <button style={{float: 'left'}} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                 </div>
 
-                     <Content>
-                        <Title>Create Your Algorithm</Title>
-                        {Object.keys(this.state).map((list, i) => (
-                          <Algorithm key={i} list={list} state={this.state}/>
-                        ))}
-                     </Content>
-                     <Content>
-                        <Results data = {results}/>
-                     </Content>
+                 <div className="col">
+                   <Dropdown>
+                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                       Load
+                     </Dropdown.Toggle>
+
+                     <Dropdown.Menu>
+                       <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
+                       <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
+                       <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
+                     </Dropdown.Menu>
+                   </Dropdown>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSubmit}>Submit</button>
+                 </div>
+
+                 <div className="col">
+                   <Dropdown>
+                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                       Delete
+                     </Dropdown.Toggle>
+
+                     <Dropdown.Menu>
+                       <Dropdown.Item href="#/action-1" onClick={this.onDelete}>Algorithm 1</Dropdown.Item>
+                       <Dropdown.Item href="#/action-2" onClick={this.onDelete}>Algorithm 2</Dropdown.Item>
+                       <Dropdown.Item href="#/action-3" onClick={this.onDelete}>Algorithm 3</Dropdown.Item>
+                     </Dropdown.Menu>
+                   </Dropdown>
+                   </div>
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onSave}>Save</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-primary" onClick={this.onExport}>Export</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onUndo} ref={this.undoButton}>Undo</button>
+                 </div>
+
+                 <div className="col">
+                   <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
+                 </div>
+
+               </div>
+                <Content>
+                  <Title>Create Your Algorithm</Title>
+                    {Object.keys(this.state).map((list, i) => (
+                      <div>
+                        <Button onClick={() => this.deleteLine(list, i)}>X</Button>
+                        <Algorithm key={i} list={list} state={this.state} style={{float: 'left'}}/>
+                      </div>
+                    ))}
+                </Content>
+                <Content>
+                  <Results data = {results}/>
+                </Content>
+                </div>
+
+                <div class="col-4">
+                  <Title>Toolbox</Title>
+
+                  <div className="row" style={{paddingLeft: '5%'}}>
+                    <div class="col" style={{padding: 0}}>
+                      <SubTitle>Displays</SubTitle>
+                      <Toolbox droppableId="DISPLAYS" list={DISPLAYS}/>
+                    </div>
+                    <div class="col" style={{padding: 0}}>
+                      <SubTitle>Probes</SubTitle>
+                      <Toolbox droppableId="PROBES" list={PROBES}/>
+                    </div>
+                    <div class="col" style={{padding: 0}}>
+                      <SubTitle>Half Turns</SubTitle>
+                      <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS}/>
+                    </div>
                   </div>
 
                   <div class="col-4">
