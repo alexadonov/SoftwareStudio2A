@@ -362,7 +362,14 @@ export default class Main extends Component {
       delete newState[list];
       this.setState(newState);
       algorithm.splice(i, 1);
+      lineArray.splice(i, 1);
+      console.log(algorithm);
+      for(var j = i; j < lineArray.length; j++) {
+        lineArray[j][0]--;
+      }
+      console.log(lineArray)
       localStorage.setItem("algorithm", JSON.stringify(algorithm));
+      this.addToHistory()
     }
 
     // Normally you would want to split things out into separate components.
@@ -439,7 +446,7 @@ export default class Main extends Component {
                     {Object.keys(this.state).map((list, i) => (
                       <div>
                         <Button onClick={() => this.deleteLine(list, i)}>X</Button>
-                        <Algorithm key={i} list={list} state={this.state} style={{float: 'left', }}/>
+                        <Algorithm key={i} list={list} state={this.state} style={{float: 'left'}}/>
                       </div>
                     ))}
                 </Content>
