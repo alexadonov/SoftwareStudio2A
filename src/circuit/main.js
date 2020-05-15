@@ -43,12 +43,27 @@ const SubTitle = styled.h5`
   padding-top: 1%;
 `;
 
+const Button = styled.button`
+  float: left;
+  vertical-align: middle;
+  min-height: 10vh;
+  background: ${props => props.primary ? "red" : "white"};
+  color: ${props => props.primary ? "white" : "red"};
+  border: 0px  rgba(0,0,0,0);
+  font-size: 1em;
+  margin: 0.25em 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none !important;
+  `;
+
 //This save the algorithm the user creates as an array
 var algorithm = [];
 var lineArray = [];
 var history = [];
 var results = "Add a gate to the circuit to get started"
-var algor = JSON.parse(localStorage.getItem('algorithm'));
+var algor //= JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
   if(algor === null) { return []; }
@@ -338,6 +353,18 @@ export default class Main extends Component {
       alert("You have not created an algorithm yet.");
     }
 
+    deleteLine = (list, i) => {
+      if(algorithm.length === 1) {
+        alert("You cannot delete this line");
+        return;
+      }
+      let newState = this.state;
+      delete newState[list];
+      this.setState(newState);
+      algorithm.splice(i, 1);
+      localStorage.setItem("algorithm", JSON.stringify(algorithm));
+    }
+
     // Normally you would want to split things out into separate components.
     // But in this example everything is just done in one place for simplicity
     render() {
@@ -405,12 +432,15 @@ export default class Main extends Component {
                  <div className="col">
                    <button style={{float: 'right'}} class="btn btn-success" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
                  </div>
-                 
+
                </div>
                 <Content>
                   <Title>Create Your Algorithm</Title>
                     {Object.keys(this.state).map((list, i) => (
-                      <Algorithm key={i} list={list} state={this.state}/>
+                      <div>
+                        <Button onClick={() => this.deleteLine(list, i)}>X</Button>
+                        <Algorithm key={i} list={list} state={this.state} style={{float: 'left', }}/>
+                      </div>
                     ))}
                 </Content>
                 <Content>
