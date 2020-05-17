@@ -295,13 +295,15 @@ export default class Main extends Component {
       var vers = parseInt(sessionStorage.getItem("currentversion"));
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers > 0) {
+
         vers = vers - 1;
         this.setState(
           history[vers], () => {
-            localStorage.setItem("algorithm", {...this.state});
             for(var i = 0; i < lineArray.length; i++) {
-              algorithm[i] = this.state[lineArray[i][1]];
+                algorithm[i] = this.state[lineArray[i][1]];
             }
+            console.log(this.state)
+            localStorage.setItem("algorithm", algorithm);
           }
         );
 
@@ -318,10 +320,10 @@ export default class Main extends Component {
         vers = vers + 1;
         this.setState(
           history[vers], () => {
-            localStorage.setItem("algorithm", {...this.state});
             for(var i = 0; i < lineArray.length; i++) {
               algorithm[i] = this.state[lineArray[i][1]];
             }
+            localStorage.setItem("algorithm", algorithm);
           }
         );
         sessionStorage.setItem("currentversion", vers);
