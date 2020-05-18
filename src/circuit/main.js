@@ -248,8 +248,7 @@ export default class Main extends Component {
     }
     this.submitButton.current.disabled = true;
     verifyCircuit(algorithm);
-    console.log(circuitInput);
-    saveCircuit(studentid, null, circuitInput,circuit_json);
+    saveCircuit(studentid, null, circuitInput, circuit_json);
 
   };
 
