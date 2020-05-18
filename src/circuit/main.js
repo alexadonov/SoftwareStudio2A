@@ -239,17 +239,18 @@ export default class Main extends Component {
     //isSaved = () => !!localStorage.getItem("algorithm") work you dumbass please :/
     isSaved = () => sessionStorage.getItem("currentversion") === sessionStorage.getItem("finalversion");
 
-  // Submits the algorithm
    onSubmit = () => {
+    var studentid = 98106545; //getStudentID();
+    var circuit_json = localStorage.getItem("algorithm");
+    var circuitInput = getCircuitInput(algorithm);
     if (!this.isSaved()) {
       return;
     }
-    //Only show this button if algorithm has been saved
     this.submitButton.current.disabled = true;
-
-    //submit to database
     verifyCircuit(algorithm);
-    //Make algorithm read only
+    console.log(circuitInput);
+    saveCircuit(studentid, null, circuitInput,circuit_json);
+
   };
 
   onSave = () => {
