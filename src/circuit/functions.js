@@ -161,6 +161,9 @@ export const verifyCircuit = (algorithm) => {
     if(count === 1 ) {
       alert("You need 2 SWAPS in one column");
       return false;
+    } else if (count >= 2) {
+      alert("Only 2 SWAPS allowed in a single column");
+      return false;
     }
     count = 0;
   }
