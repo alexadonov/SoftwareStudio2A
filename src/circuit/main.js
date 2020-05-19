@@ -107,9 +107,6 @@ export default class Main extends Component {
       this.redoButton.current.disabled = (vers === finalvers);
 
       const token = localStorage.token;
-      this.setState({
-        email: token.sub
-      })
     }
 
     // This is what combines everything to make move items work

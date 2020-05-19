@@ -41,7 +41,8 @@ class Login extends Component {
 
      this.state = {
          email: '',
-         password: ''
+         password: '',
+         invalid_details: false
      }
   }
 
@@ -66,13 +67,20 @@ class Login extends Component {
     }
 
     login(user).then(res => {
-      this.props.history.push('/dnd');
+      if (localStorage.successful === "True") {
+        this.setState({
+          invalid_details: false
+        });
+        localStorage.setItem('email', this.state.email);
+        localStorage.setItem('password', this.state.password);
+        localStorage.setItem('loggedIn', true);
+        this.props.history.push('/dnd');
+      } else {
+        this.setState({
+          invalid_details: true
+        });
+      }
     })
-
-    /*localStorage.setItem('email', this.state.email);
-    localStorage.setItem('password', this.state.password);
-    localStorage.setItem('loggedIn', true);
-    window.location.href = '/dnd';*/
   }
 
   render() {
@@ -93,9 +101,12 @@ class Login extends Component {
           <Form.Group controlId="formBasicPassword">
             <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onChangePassword} required/>
           </Form.Group>
-          <Button variant="outline-dark" type="submit" style={{width: '100%'}} >
+          <Button variant="outline-dark" type="submit" style={{width: '100%'}}>
             Submit
           </Button>
+          <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
+            Email or Password is incorrect.
+          </Form.Text>
           <hr/>
           <a href="/register" role="button"><h6 class="register-text">Not a member? Register here.</h6></a>
         </Form>

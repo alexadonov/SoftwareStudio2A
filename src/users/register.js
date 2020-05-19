@@ -6,7 +6,7 @@ import { Form, Button, Label } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import { register } from './userInfo';
+import { register, login } from './userInfo';
 
 const Body = styled.body`
   background-color: white;
@@ -47,7 +47,8 @@ class Register extends Component {
          lname: '',
          email: '',
          password: '',
-         confirmAdmin: ''
+         confirmAdmin: '',
+         invalid_details: false
      }
   }
 
@@ -95,17 +96,31 @@ class Register extends Component {
       confirm_admin: "confirmed"
     }
 
-    register(newUser).then(res => {
-      this.props.history.push('/');
+    const user = {
+      email: this.state.email,
+      password: this.state.password,
+    }
+
+    // create new account
+    register(newUser).then(res => {})
+
+    // login after registration
+    login(user).then(res => {
+      if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
+        this.setState({
+          invalid_details: false
+        });
+        localStorage.setItem('email', this.state.email);
+        localStorage.setItem('password', this.state.password);
+        localStorage.setItem('loggedIn', true);
+        localStorage.setItem('regoSuccess', 'False');
+        this.props.history.push('/dnd');
+      } else {
+        this.setState({
+          invalid_details: true
+        });
+      }
     })
-
-
-    /*localStorage.setItem('fname', this.state.fname);
-    localStorage.setItem('lname', this.state.lname);
-    localStorage.setItem('student_id', this.state.studentID);
-    localStorage.setItem('email', this.state.email);
-    localStorage.setItem('password', this.state.password);
-    window.location.href = '/dnd';*/
   }
 
 
@@ -142,6 +157,9 @@ class Register extends Component {
           <Button variant="outline-dark" type="submit" className="button">
             Submit
           </Button>
+          <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
+            Student ID or Email already exists.
+          </Form.Text>
           <hr/>
           <a href="/" role="button"><h6 class="register-text">Already a member? Login here.</h6></a>
         </Form>

@@ -10,7 +10,12 @@ export const register = newUser => {
         password: newUser.password,
         confirm_admin: newUser.confirm_admin
     }).then(res => {
+        localStorage.setItem('regoSuccess', 'True');
         console.log(res);
+    }, error => {
+        if (error.response.status !== 201) {
+            localStorage.setItem('regoSuccess', 'False');
+        }
     })
 }
 
@@ -19,12 +24,12 @@ export const login = user => {
         email: user.email,
         password: user.password
     }).then(res => {
-        localStorage.setItem('successful', res.data.authenticated);
-        if (localStorage.successful != "False") {
-            localStorage.setItem('token', res.data.token);
-            return res.data;
-        } else {
-            console.log(res);
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('successful', 'True');
+        return res.data;
+    }, error => {
+        if (error.response.status === 401) {
+            localStorage.setItem('successful', 'False');
         }
     })
 }
