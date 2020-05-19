@@ -1,8 +1,8 @@
 import uuid from 'uuid/v4';
-import Amps from '../images/Displays/Amps.png';
-import Bloch from '../images/Displays/Bloch.png';
-import Chance from '../images/Displays/Chance.png';
-import Density from '../images/Displays/Density.png';
+import Amps from '../../images/Displays/Amps.png';
+import Bloch from '../../images/Displays/Bloch.png';
+import Chance from '../../images/Displays/Chance.png';
+import Density from '../../images/Displays/Density.png';
 
 const DISPLAYS = [
 
