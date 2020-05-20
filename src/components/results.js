@@ -5,30 +5,29 @@ export default class Results extends Component {
   constructor(props) {
     super(props);
 
-    // This is a temporary block of mock output JSON data
-    const testData = {
-      "000": {
-        "int": 1,
-        "prob": 4.23
-      },
-      "010": {
-        "int": 0,
-        "prob": 1.54
-      },
-      "001": {
-        "int": 1,
-        "prob": 2.35
-      }
+    this.state = {
+      probs: [],
+      labels: [],
+      chartData: {}
+    };    
+  }
+
+  extractProbs = (data) => {
+    if (data === undefined || typeof data === "string") return; 
+    let newProbs = []
+
+    for (var key in data) {
+      newProbs.push(data[key].prob)
+    };
+
+    this.setState({labels: Object.getOwnPropertyNames(data)})
+    this.setState({probs: newProbs})
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps != this.props) {
+      this.extractProbs(this.props.resultChartData)
     }
-
-    // Get the keys of testData as an array into this.labels
-    this.labels = Object.getOwnPropertyNames(testData);
-    this.probs = [];
-
-    // Map each label in labels array to their probability and push to probs array
-    this.labels.map(label => {
-      this.probs.push(testData[label].prob);
-    });
   }
 
   render() {
@@ -36,10 +35,10 @@ export default class Results extends Component {
       <div class="row" style={{ margin: '8px', padding: '1%' }}>
         <Bar
           data={{
-            labels: this.labels,
+            labels: this.state.labels,
             datasets: [{
               label: 'Probability',
-              data: this.probs
+              data: this.state.probs
             }]
           }}
           width={this.props.width}
