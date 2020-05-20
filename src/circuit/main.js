@@ -5,7 +5,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
 import { saveCircuit, getResults, healthCheck } from '../circuit/apicaller';
 import { Dropdown } from 'react-bootstrap';
-
+import Alert from 'react-bootstrap/Alert'
 
 // Main components
 import NavBar from "../components/navBar.js";
@@ -85,7 +85,8 @@ export default class Main extends Component {
       canvas: {
         [id]: []
       },
-      results: {}
+      results: {},
+      circuit_valid_msg: verifyCircuit(algorithm)
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -271,16 +272,19 @@ export default class Main extends Component {
   }
 
   calculateResults = () => {
-    healthCheck();
-    var circuit_input = getCircuitInput(algorithm);
+    let circuit_input = getCircuitInput(algorithm);
+    let valid_msg = verifyCircuit(algorithm)
     if (circuit_input !== null && !circuit_input.EMPTY) {
-      getResults(circuit_input).then( res => {
-        this.state.results = res;
-        console.log("results:", this.state.results)
-        this.forceUpdate();
-      });
+      if (valid_msg === "valid") {
+        getResults(circuit_input).then( res => {
+          this.setState({results: res})
+          console.log("results:", this.state.results)
+        });
+      }
+      this.setState({circuit_valid_msg: valid_msg})
+      this.forceUpdate();
     } else {
-      this.state.results = {};
+      this.setState({results: {}})
     }
   }
 
@@ -288,13 +292,13 @@ export default class Main extends Component {
     var studentid = 98106545; //getStudentID();
 
     var circuit_input = getCircuitInput(algorithm);
-    if (verifyCircuit(algorithm) === false) { return; }
+    if (verifyCircuit(algorithm) !== "valid") { return; }
     var algorithm_name = window.prompt("Please name your algorithm:");
-    while (algorithm_name != null && algorithm_name.length === 0) {
+    while (algorithm_name !== null && algorithm_name.length === 0) {
       alert("Please enter a valid name.");
       algorithm_name = window.prompt("Please name your algorithm:");
     }
-    if (algorithm_name != null && algorithm_name.length != 0) {
+    if (algorithm_name !== null && algorithm_name.length !== 0) {
       localStorage.setItem(algorithm_name, circuit_input);
       localStorage.setItem("algorithm_input_saved", true);
       var alg = localStorage.getItem("algorithm");
@@ -450,6 +454,7 @@ export default class Main extends Component {
                       <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
                     </div>
                   ))}
+                  <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg!=="valid"} >{this.state.circuit_valid_msg}</Alert>
                 </Content>
                 <Content>
                   <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
