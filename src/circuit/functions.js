@@ -74,15 +74,21 @@ export const remove = (source, droppableSource, algorithm, lineArray) => {
     return result;
 };
 
-export const move = (source, destination, droppableSource, droppableDestination, algorithm) => {
+export const move = (source, destination, droppableSource, droppableDestination, algorithm, lineArray) => {
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
     const [removed] = sourceClone.splice(droppableSource.index, 1);
 
     destClone.splice(droppableDestination.index, 0, removed);
 
-    copy(source, destination, droppableSource, droppableDestination);
-    remove(source, droppableSource);
+    var source_id = getId(droppableSource, lineArray);
+    algorithm[source_id].splice(droppableSource.index, 1);
+
+    var destination_id = getId(droppableDestination, lineArray);
+    algorithm[destination_id].splice(droppableDestination.index, 0, removed);
+
+    // copy(source, destination, droppableSource, droppableDestination);
+    // remove(source, droppableSource);
 
     localStorage.setItem('algorithm', JSON.stringify(algorithm));
 
@@ -172,6 +178,21 @@ export const findCopyItems = (id) => {
     case "SAMPLING": { return SAMPLING; }
     case "PARITY": { return PARITY; }
     case "EMPTY": { return EMPTY; }
+    default: return;
+  }
+}
+
+export const findCopyItemsId = (id) => {
+  switch(id) {
+    case "DISPLAYS": { return "DISPLAYS"; }
+    case "PROBES": { return "PROBES"; }
+    case "HALF_TURNS": { return "HALF_TURNS"; }
+    case "QUARTER_TURNS": { return "QUARTER_TURNS"; }
+    case "EIGHTH_TURNS": { return "EIGHTH_TURNS"; }
+    case "PARAMETRIZED": { return "PARAMETRIZED"; }
+    case "SAMPLING": { return "SAMPLING"; }
+    case "PARITY": { return "PARITY"; }
+    case "EMPTY": { return "EMPTY"; }
     default: return;
   }
 }

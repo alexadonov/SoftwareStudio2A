@@ -2,7 +2,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
-
 // This file makes the droppable region for the algorithm maker
 // It is called in the main.js file
 
@@ -18,7 +17,9 @@ const Notice = styled.h5`
 const Container = styled.div`
     min-height: 10vh;
     background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'transparant')};
-    border-bottom: 1px ${props => (props.isDraggingOver ? 'dashed #000' : 'solid #ddd')};
+    background-image: url('https://pngriver.com/wp-content/uploads/2018/04/Download-Horizontal-Line-PNG-Transparent-Image-300x155.png');
+    background-size: 93.75rem 5rem;
+    background-repeat: no-repeat;
     margin: 8px;
     padding: 1%;
     display: flex;
@@ -69,7 +70,7 @@ const ALGORITHM_MAKER = (props) => {
                               )
                           )
                         : provided.placeholder && (
-                              <Notice>Drop items here</Notice>
+                              <Notice></Notice>
                           )}
                     {provided.placeholder}
                 </Container>
