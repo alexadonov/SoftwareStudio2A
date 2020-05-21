@@ -194,6 +194,7 @@ export default class Main extends Component {
       // Otherwise, clears session and begins a new one
       if(window.confirm("Do you want to create a new algorithm?")) {
         localStorage.setItem('algorithm', null);
+        localStorage.setItem('algorithm_name', null)
         window.location.href = '/dnd';
       } else {
         return;
@@ -230,6 +231,7 @@ export default class Main extends Component {
         // Delete from database
         // Delete from local storage
         localStorage.setItem('algorithm', null);
+        localStorage.setItem('algorithm_name', null)
         window.location.href = '/dnd';
       } else {
         return;
@@ -241,7 +243,7 @@ export default class Main extends Component {
 
    onSubmit = () => {
     var studentid = 98106545; //getStudentID();
-    var circuit_json = localStorage.getItem("algorithm");
+    var circuit_json = localStorage.getItem('algorithm');
     var circuitInput = getCircuitInput(algorithm);
     if (!this.isSaved()) {
       return;
@@ -253,21 +255,20 @@ export default class Main extends Component {
   };
 
   onSave = () => {
-    var studentid = 98106545; //getStudentID();
-
-    var circuit_input = getCircuitInput(algorithm);
-    if (verifyCircuit(algorithm) === false) {
-      return;
-    }
-    var algorithm_name = window.prompt("Please name your algorithm:");
-    while (algorithm_name != null && algorithm_name.length === 0) {
-      alert("Please enter a valid name.");
+    const studentid = 98106545; //getStudentID();
+    const circuit_input = getCircuitInput(algorithm);
+    var algorithm_name = localStorage.getItem('algorithm_name');
+    // Sets alg name if it hasn't already been named or it auto-saves
+    if (algorithm_name === null || algorithm_name === "null") {
       algorithm_name = window.prompt("Please name your algorithm:");
+      while (algorithm_name !== null && algorithm_name.length === 0) {
+        alert("Please enter a valid name.");
+        algorithm_name = window.prompt("Please name your algorithm:");
+      }
     }
-    if (algorithm_name != null && algorithm_name.length != 0) {
-      localStorage.setItem(algorithm_name, circuit_input);
-      var alg = localStorage.getItem("algorithm");
-      saveCircuit(studentid, algorithm_name, alg, "no results");
+    if (algorithm_name !== null && algorithm_name.length !== 0) {
+      localStorage.setItem("algorithm_name", algorithm_name);
+      saveCircuit(studentid, algorithm_name, circuit_input, "");
       this.submitButton.current.disabled = false;
       alert("Your algorithm as been succesfully saved!");
     }
