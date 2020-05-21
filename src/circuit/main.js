@@ -3,7 +3,7 @@ import uuid from 'uuid/v4';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
-import { saveCircuit, getResults, healthCheck } from '../circuit/apicaller';
+import { saveCircuit, getResults, healthCheck, submitCircuit } from '../circuit/apicaller';
 import { Dropdown } from 'react-bootstrap';
 
 
@@ -261,18 +261,22 @@ export default class Main extends Component {
     }
   }
 
-  isSaved = () => sessionStorage.getItem("currentversion") === sessionStorage.getItem("finalversion");  
   // Submits the algorithm
   onSubmit = () => {
-    var studentid = 98106545; //getStudentID();
-    var circuit_json = localStorage.getItem('algorithm');
-    var circuitInput = getCircuitInput(algorithm);
-    if (!this.isSaved()) {
-      return;
+    this.submit();
+  }
+
+  submit = async() => {
+    const saved = this.save();
+    if (saved) {
+      const studentid = 1234567890; //getStudentID();
+      const algorithm_name = await localStorage.getItem('algorithm_name');
+      const submitted = await submitCircuit(studentid, algorithm_name);
+      if (submitted) alert("Your circuit as been succesfully submitted!");
+      else alert("Something went wrong and your circuit couldn't be submitted");
+    } else {
+      alert("Something went wrong and your circuit couldn't be submitted");
     }
-    this.submitButton.current.disabled = true;
-    verifyCircuit(algorithm);
-    saveCircuit(studentid, null, circuitInput, circuit_json);
   }
 
   calculateResults = async () => {
@@ -285,7 +289,12 @@ export default class Main extends Component {
   }
 
   onSave = () => {
-    const studentid = 98106545; //getStudentID();
+    healthCheck();
+    this.save();
+  }
+
+  save = async () => {
+    const studentid = 1234567890; //getStudentID();
     const circuit_input = getCircuitInput(algorithm);
     var algorithm_name = localStorage.getItem('algorithm_name');
     // Sets alg name if it hasn't already been named or it auto-saves
@@ -298,10 +307,13 @@ export default class Main extends Component {
     }
     if (algorithm_name !== null && algorithm_name.length !== 0) {
       localStorage.setItem("algorithm_name", algorithm_name);
-      saveCircuit(studentid, algorithm_name, circuit_input, "");
-      this.submitButton.current.disabled = false;
-      alert("Your algorithm as been succesfully saved!");
+      const saved = await saveCircuit(studentid, algorithm_name, circuit_input, "");
+      //this.submitButton.current.disabled = false;
+      if (saved) alert("Your circuit as been succesfully saved!");
+      else alert("Something went wrong and your circuit couldn't be saved");
+      return saved;
     }
+    return false;
   }
 
   addToHistory = () => {
