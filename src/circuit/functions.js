@@ -167,6 +167,19 @@ export const verifyCircuit = (algorithm) => {
   return true;
 }
 
+export const escapeSpecialCharacters = (JSONfile) => {
+  var JSONstring = JSON.stringify(JSONfile);
+  var escapedJSONstring = JSONstring.replace(/[\\]/g, '\\\\')
+  .replace(/[\"]/g, '\\\"')
+  .replace(/[\/]/g, '\\/')
+  .replace(/[\b]/g, '\\b')
+  .replace(/[\f]/g, '\\f')
+  .replace(/[\n]/g, '\\n')
+  .replace(/[\r]/g, '\\r')
+  .replace(/[\t]/g, '\\t');
+  return escapedJSONstring;
+}
+
 export const findCopyItems = (id) => {
   switch(id) {
     case "DISPLAYS": { return DISPLAYS; }

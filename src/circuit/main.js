@@ -24,7 +24,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems } from './functions';
+import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -88,6 +88,7 @@ export default class Main extends Component {
 
     this.undoButton = React.createRef(); // quick solution, better to use states
     this.redoButton = React.createRef();
+    this.submitButton = React.createRef();
 
     sessionStorage.setItem("currentversion", 0);
     sessionStorage.setItem("finalversion", 0);
@@ -112,7 +113,7 @@ export default class Main extends Component {
   componentDidMount() {
     var vers = parseInt(sessionStorage.getItem("currentversion"));
     var finalvers = parseInt(sessionStorage.getItem("finalversion"));
-
+    this.submitButton.current.disabled = false
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = (vers === finalvers);
   }
@@ -267,15 +268,24 @@ export default class Main extends Component {
   }
 
   submit = async() => {
-    const saved = this.save();
-    if (saved) {
-      const studentid = 1234567890; //getStudentID();
-      const algorithm_name = await localStorage.getItem('algorithm_name');
-      const submitted = await submitCircuit(studentid, algorithm_name);
-      if (submitted) alert("Your circuit as been succesfully submitted!");
-      else alert("Something went wrong and your circuit couldn't be submitted");
-    } else {
-      alert("Something went wrong and your circuit couldn't be submitted");
+    const valid = verifyCircuit(algorithm);
+    if (valid) {
+      const saved = this.save();
+      if (saved) {
+        let submit = window.confirm("Are you sure you want to submit?");
+        if (submit) {
+          const studentid = 1234567890; //getStudentID();
+          const algorithm_name = await localStorage.getItem('algorithm_name');
+          const submitted = await submitCircuit(studentid, algorithm_name);
+          if (submitted) {
+            alert("Your circuit as been succesfully submitted!");
+            this.submitButton.current.disabled = true;
+          }
+          else alert("Something went wrong and your circuit couldn't be submitted");
+        }        
+      } else {
+        alert("Something went wrong and your circuit couldn't be submitted");
+      }
     }
   }
 
@@ -295,7 +305,7 @@ export default class Main extends Component {
 
   save = async () => {
     const studentid = 1234567890; //getStudentID();
-    const circuit_input = getCircuitInput(algorithm);
+    const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
     var algorithm_name = localStorage.getItem('algorithm_name');
     // Sets alg name if it hasn't already been named or it auto-saves
     if (algorithm_name === null || algorithm_name === "null") {
@@ -307,7 +317,8 @@ export default class Main extends Component {
     }
     if (algorithm_name !== null && algorithm_name.length !== 0) {
       localStorage.setItem("algorithm_name", algorithm_name);
-      const saved = await saveCircuit(studentid, algorithm_name, circuit_input, "");
+      const circuit_output = escapeSpecialCharacters(results)
+      const saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
       //this.submitButton.current.disabled = false;
       if (saved) alert("Your circuit as been succesfully saved!");
       else alert("Something went wrong and your circuit couldn't be saved");
@@ -419,7 +430,7 @@ export default class Main extends Component {
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave}>Save</button>
                   </div>
                   <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit}>Submit</button>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} ref={this.submitButton} >Submit</button>
                   </div>
                   <div className="col">
                     <Dropdown>

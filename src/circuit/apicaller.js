@@ -7,7 +7,8 @@ export const saveCircuit = async (student_id, circuit_name, circuit_input, circu
         'student_id': student_id,
         'circuit_name': circuit_name,
         'circuit_input': circuit_input,
-        'circuit_output_json': circuit_output_json
+        'circuit_output_json': circuit_output_json,
+        'grade': 0
     });
     
     var response = await fetch(url, {
