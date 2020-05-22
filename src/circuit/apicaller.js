@@ -110,3 +110,15 @@ export const healthCheck = async () => {
     console.log('health response:', response);
     console.log('health status:', status);
 }
+
+export const loadCircuit = async () => {
+    const url = "http://13.239.134.106:8000/api/load-circuit"
+
+    var response = await fetch(url, {
+        method: 'GET'
+    });
+
+    var status = await response.status;
+    console.log('health response: ', response);
+    console.log('health status: ', status);
+}
