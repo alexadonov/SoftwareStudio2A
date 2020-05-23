@@ -6,7 +6,7 @@ import { Form, Button, Label } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import { register, login } from './userInfo';
+import { register, login } from '../users/userInfo';
 
 const Body = styled.body`
   background-color: white;
@@ -28,7 +28,7 @@ const Body = styled.body`
   vertical-align: text-top;
   `;
 
-class Register extends Component {
+class adminRegister extends Component {
 
   constructor(props) {
      super(props);
@@ -88,7 +88,7 @@ class Register extends Component {
     const newUser = {
       // need to add admin registration 
       student_id: this.state.studentID,
-      is_admin: 0,
+      is_admin: 1,
       first_name: this.state.fname,
       last_name: this.state.lname,
       email: this.state.email,
@@ -116,7 +116,7 @@ class Register extends Component {
         localStorage.setItem('isAdmin', this.state.is_admin);
         localStorage.setItem('loggedIn', true);
         localStorage.setItem('regoSuccess', 'False');
-        this.props.history.push('/dnd');
+        this.props.history.push('/admin');
       } else {
         this.setState({
           invalid_details: true
@@ -134,7 +134,7 @@ class Register extends Component {
         <Form className="form-background" onSubmit={this.onSubmit}>
         <Title>
         <img src={logo} class="Uts-logo"/>
-        <Text>Quantum Computing Student Register</Text>
+        <Text>Quantum Computing Admin Register</Text>
         </Title>
 
           <Form.Group controlId="formBasicEmail">
@@ -163,7 +163,7 @@ class Register extends Component {
             Student ID or Email already exists.
           </Form.Text>
           <hr/>
-          <a href="/admin-register" role="button"><h6 class="register-text">Register as Admin.</h6></a>
+          <a href="/register" role="button"><h6 class="register-text">Register as Student.</h6></a>
           <a href="/" role="button"><h6 class="register-text">Already a member? Login here.</h6></a>
         </Form>
         </Body>
@@ -171,4 +171,4 @@ class Register extends Component {
       </BrowserRouter>
     );
   }
-} export default withRouter(Register);
+} export default withRouter(adminRegister);

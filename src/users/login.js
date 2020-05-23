@@ -66,15 +66,20 @@ class Login extends Component {
       password: this.state.password
     }
 
+    this.setState({
+      invalid_details: false
+    });
+    
     login(user).then(res => {
       if (localStorage.successful === "True") {
-        this.setState({
-          invalid_details: false
-        });
         localStorage.setItem('email', this.state.email);
         localStorage.setItem('password', this.state.password);
         localStorage.setItem('loggedIn', true);
-        this.props.history.push('/dnd');
+        if (localStorage.isAdmin === 0) { 
+          this.props.history.push('/dnd');
+        } else {
+          this.props.history.push('/admin');
+        }
       } else {
         this.setState({
           invalid_details: true
