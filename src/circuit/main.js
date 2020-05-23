@@ -25,7 +25,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters } from './functions';
+import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, resetTempStorage } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -98,9 +98,7 @@ export default class Main extends Component {
     this.redoButton = React.createRef();
     this.submitButton = React.createRef();
 
-    sessionStorage.setItem("currentversion", 0);
-    sessionStorage.setItem("finalversion", 0);
-    localStorage.setItem("algorithm_input_saved", false);
+    resetTempStorage();
 
     lineArray[0] = new Array(0, id);
     algorithm[0] = new Array(0, new Array());
@@ -231,8 +229,7 @@ export default class Main extends Component {
     // if not, prompts user to save
     // Otherwise, clears session and begins a new one
     if (window.confirm("Do you want to create a new algorithm?")) {
-      localStorage.setItem('algorithm', null);
-      localStorage.setItem('algorithm_name', null)
+      resetTempStorage();
       window.location.href = '/dnd';
     } else {
       return;
@@ -268,9 +265,7 @@ export default class Main extends Component {
     if (window.confirm("Are you sure you want to delete this algorithm?")) {
       // Delete from database
       // Delete from local storage
-      localStorage.setItem('algorithm', null);
-      localStorage.setItem('algorithm_name', null)
-      localStorage.setItem("algorithm_input_saved", false);
+      resetTempStorage();
       window.location.href = '/dnd';
     } else {
       return;
@@ -282,26 +277,35 @@ export default class Main extends Component {
     this.submit();
   }
 
-  submit = async() => {
-    const valid = verifyCircuit(algorithm);
-    if (valid) {
-      const saved = this.save();
-      if (saved) {
-        let submit = window.confirm("Are you sure you want to submit?");
-        if (submit) {
-          const studentid = 1234567890; //getStudentID();
-          const algorithm_name = await localStorage.getItem('algorithm_name');
-          const submitted = await submitCircuit(studentid, algorithm_name);
-          if (submitted) {
-            alert("Your circuit as been succesfully submitted!");
-            this.submitButton.current.disabled = true;
-          }
-          else alert("Something went wrong and your circuit couldn't be submitted");
-        }        
-      } else {
-        alert("Something went wrong and your circuit couldn't be submitted");
+  submit = async () => {
+    let submitted = false;
+    try {
+      const valid = verifyCircuit(algorithm);
+      if (valid) {
+        let saved = !!localStorage.getItem('saved');
+        if (!saved) saved = await this.save();
+
+        if (saved) {
+          let submit = window.confirm("Are you sure you want to submit?");
+          const studentid = getStudentID();
+          if (submit && studentid) {
+            const algorithm_name = localStorage.getItem('algorithm_name');
+            submitted = await submitCircuit(studentid, algorithm_name);
+            console.log("st id:", studentid);
+            console.log("submitted:", submitted);
+            if (submitted) {
+              alert("Your circuit as been succesfully submitted!");
+              this.submitButton.current.disabled = true;
+            }
+            else alert("Something went wrong and your circuit couldn't be submitted");
+          }        
+        }
       }
+    } catch (error) {
+      console.log(error);
+      alert(`An error occured: "${error}"`);
     }
+    return submitted;
   }
 
   calculateResults = () => {
@@ -316,32 +320,47 @@ export default class Main extends Component {
   }
 
   onSave = () => {
-    healthCheck();
     this.save();
   }
 
   save = async () => {
-    const studentid = 1234567890; //getStudentID();
-    const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
-    var algorithm_name = localStorage.getItem('algorithm_name');
-    // Sets alg name if it hasn't already been named or it auto-saves
-    if (algorithm_name === null || algorithm_name === "null") {
-      algorithm_name = window.prompt("Please name your algorithm:");
-      while (algorithm_name !== null && algorithm_name.length === 0) {
-        alert("Please enter a valid name.");
+    let saved = false;
+    try {
+      const studentid = getStudentID();
+      console.log("preescape in:", JSON.stringify(getCircuitInput(algorithm)));
+      console.log("preescape out:", JSON.stringify(getCircuitInput(this.state.results)));
+      const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
+      const circuit_output = escapeSpecialCharacters(this.state.results);
+      console.log("escape in:", getCircuitInput(circuit_input));
+      console.log("escape out:", getCircuitInput(circuit_output));
+      var algorithm_name = localStorage.getItem('algorithm_name');
+      const new_save = algorithm_name === null || algorithm_name === "null" || algorithm_name.length === 0;
+      
+      if (new_save) {
         algorithm_name = window.prompt("Please name your algorithm:");
+        while (algorithm_name === null || algorithm_name === "null" || algorithm_name.length === 0) {
+          alert("Please enter a valid name.");
+          algorithm_name = window.prompt("Please name your algorithm:");
+        }
+        if (algorithm_name !== "null" && algorithm_name !== null && algorithm_name.length !== 0 && studentid) {
+          saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
+          localStorage.setItem("algorithm_name", algorithm_name);
+        }
+      } else {
+        var backendisupdated = false;
+        if (studentid && backendisupdated) {
+          saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output, true);
+        }
       }
+      if (saved) {
+        localStorage.setItem("saved", true);
+        alert("Your circuit as been succesfully saved!");
+      } else alert("Something went wrong and your circuit couldn't be saved");
+    } catch (error) {
+      console.log(error);
+      alert(`An error occured: "${error}"`);
     }
-    if (algorithm_name !== null && algorithm_name.length !== 0) {
-      localStorage.setItem("algorithm_name", algorithm_name);
-      const circuit_output = escapeSpecialCharacters(results)
-      const saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
-      //this.submitButton.current.disabled = false;
-      if (saved) alert("Your circuit as been succesfully saved!");
-      else alert("Something went wrong and your circuit couldn't be saved");
-      return saved;
-    }
-    return false;
+    return saved;
   }
 
   addToHistory = () => {
@@ -350,7 +369,7 @@ export default class Main extends Component {
     history.slice(0, vers);
     sessionStorage.setItem("currentversion", vers);
     sessionStorage.setItem("finalversion", vers);
-
+    localStorage.setItem("saved", false);
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = true;
   }

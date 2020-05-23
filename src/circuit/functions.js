@@ -140,6 +140,22 @@ export const getCircuitInput = (algorithm) => {
   return circuit_input;
 }
 
+export const getStudentID = () => {
+  let student_id = localStorage.getItem('student_id');
+  if (student_id === null || student_id === "null") {
+    student_id = null;
+  }
+  return parseInt(student_id);
+}
+
+export const resetTempStorage = () => {
+  sessionStorage.setItem("currentversion", 0);
+  sessionStorage.setItem("finalversion", 0);
+  localStorage.setItem('algorithm', null);
+  localStorage.setItem('algorithm_name', null)
+  localStorage.setItem("saved", false);
+}
+
 export const verifyCircuit = (algorithm) => {
   //Loop through the array to check all conditions are met
   //Maybe make a new file for this
@@ -169,14 +185,7 @@ export const verifyCircuit = (algorithm) => {
 
 export const escapeSpecialCharacters = (JSONfile) => {
   var JSONstring = JSON.stringify(JSONfile);
-  var escapedJSONstring = JSONstring.replace(/[\\]/g, '\\\\')
-  .replace(/[\"]/g, '\\\"')
-  .replace(/[\/]/g, '\\/')
-  .replace(/[\b]/g, '\\b')
-  .replace(/[\f]/g, '\\f')
-  .replace(/[\n]/g, '\\n')
-  .replace(/[\r]/g, '\\r')
-  .replace(/[\t]/g, '\\t');
+  var escapedJSONstring = JSONstring.replace(/["]/g, '\"').replace(/[\/]/g, '\\/')
   return escapedJSONstring;
 }
 

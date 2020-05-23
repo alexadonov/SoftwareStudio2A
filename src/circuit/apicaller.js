@@ -1,9 +1,12 @@
 const proxy = "http://13.239.134.106:8000/api/"
 //const proxy = "http://127.0.0.1:8000/api/"
 
-export const saveCircuit = async (student_id, circuit_name, circuit_input, circuit_output_json) => {
+export const saveCircuit = async (student_id, circuit_name, circuit_input, circuit_output_json, is_update=false) => {
     try {
-        const url = proxy+"save-circuit";
+        let url = proxy;
+        if (is_update) url += "update-circuit";
+        else url += "save-circuit";
+
         var data = JSON.stringify({
             'student_id': student_id,
             'circuit_name': circuit_name,
@@ -19,8 +22,9 @@ export const saveCircuit = async (student_id, circuit_name, circuit_input, circu
             },
             body: data
         });
+        
         var status = await response.status;
-        return status == "200";
+        return status == "201" || status == "200";
 
     } catch (error) {
         console.log(error);
@@ -56,6 +60,34 @@ export const getResults = async (circuit_input) => {
         alert(`An error occured: "${error}"`);
     }
 
+}
+
+export const submitCircuit = async (student_id, circuit_name) => {
+    try {
+        const url = proxy + "submit";
+
+        var data = JSON.stringify({
+            'student_id': student_id,
+            'circuit_name': circuit_name
+        });
+
+        console.log('data:', data);
+        var response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: data
+        });
+
+        var status = await response.status;
+        console.log('status:', status);
+        return status == "200";
+
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
 }
 
 export const healthCheck = async () => {
