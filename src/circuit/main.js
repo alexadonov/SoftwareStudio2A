@@ -208,7 +208,9 @@ export default class Main extends Component {
   onNewLine = () => {
     //Create a new List
     var id = uuid();
-    this.setState({canvas: { [id]: [] }});
+    let newCanvas = this.state.canvas;
+    newCanvas[id] = [];
+    this.setState({canvas: newCanvas});
     lineArray[lineArray.length] = [lineArray.length, id];
     algorithm[algorithm.length] = [];
   }
