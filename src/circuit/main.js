@@ -81,22 +81,18 @@ export default class Main extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      email: ''
-    }
-
     var id = uuid();
     this.state = {
       canvas: {
         [id]: []
       },
       results: {},
+      is_submitted: false,
       circuit_valid_msg: verifyCircuit(algorithm)
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
     this.redoButton = React.createRef();
-    this.submitButton = React.createRef();
 
     resetTempStorage();
 
@@ -120,7 +116,6 @@ export default class Main extends Component {
   componentDidMount() {
     var vers = parseInt(sessionStorage.getItem("currentversion"));
     var finalvers = parseInt(sessionStorage.getItem("finalversion"));
-    this.submitButton.current.disabled = false;
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = (vers === finalvers);
     this.calculateResults();
@@ -131,97 +126,101 @@ export default class Main extends Component {
   // This reads the source list and destination list to figure out
   // What is meant to happen
   onDragEnd = result => {
-    const { source, destination } = result;
-    let newCanvas = this.state.canvas;
-
-    if ((source.droppableId === "DISPLAYS" ||
-      source.droppableId === "PROBES" ||
-      source.droppableId === "HALF_TURNS" ||
-      source.droppableId === "QUARTER_TURNS" ||
-      source.droppableId === "EIGHTH_TURNS" ||
-      source.droppableId === "PARAMETRIZED" ||
-      source.droppableId === "SAMPLING" ||
-      source.droppableId === "PARITY" ||
-      source.droppableId === "EMPTY") &&
-      (!destination || source.droppableId === destination.droppableId)) {
-      return;
-    }
-
-    // dropped outside the list
-    if (!destination) {
-      newCanvas = remove( 
-        this.state.canvas[source.droppableId], 
-        source, 
-        algorithm, 
-        lineArray
-        )
-      let merged = {...this.state.canvas, ...newCanvas};
-      this.setState({ canvas: merged }, () => {
-        this.addToHistory()
-      });
-      console.log("Algor: " + localStorage.getItem("algorithm"));
-      this.calculateResults()
-      return;
-    }
-
-    switch (source.droppableId) {
-      case destination.droppableId:
-        newCanvas[destination.droppableId] = reorder( 
+    if (!this.state.is_submitted) {
+      const { source, destination } = result;
+      let newCanvas = this.state.canvas;
+  
+      if ((source.droppableId === "DISPLAYS" ||
+        source.droppableId === "PROBES" ||
+        source.droppableId === "HALF_TURNS" ||
+        source.droppableId === "QUARTER_TURNS" ||
+        source.droppableId === "EIGHTH_TURNS" ||
+        source.droppableId === "PARAMETRIZED" ||
+        source.droppableId === "SAMPLING" ||
+        source.droppableId === "PARITY" ||
+        source.droppableId === "EMPTY") &&
+        (!destination || source.droppableId === destination.droppableId)) {
+        return;
+      }
+  
+      // dropped outside the list
+      if (!destination) {
+        newCanvas = remove( 
           this.state.canvas[source.droppableId], 
-          source.index, 
-          destination.index, 
-          destination, 
+          source, 
           algorithm, 
-          lineArray)
-          
-        this.setState({ canvas: newCanvas}, () => {
-          this.addToHistory()
-        });
-
-        break;
-      case findCopyItemsId(source.droppableId):
-        newCanvas[destination.droppableId] = copy(
-          findCopyItems(source.droppableId),
-          this.state.canvas[destination.droppableId],
-          source,
-          destination,
-          algorithm,
           lineArray
           )
-        this.setState({ canvas: newCanvas }, () => {
-          this.addToHistory()
-        });
-        break;
-      default:
-        newCanvas = move(
-          this.state.canvas[source.droppableId],
-          this.state.canvas[destination.droppableId],
-          source,
-          destination,
-          algorithm,
-          lineArray
-          )
-          
         let merged = {...this.state.canvas, ...newCanvas};
         this.setState({ canvas: merged }, () => {
           this.addToHistory()
         });
-        break;
+        console.log("Algor: " + localStorage.getItem("algorithm"));
+        this.calculateResults()
+        return;
+      }
+  
+      switch (source.droppableId) {
+        case destination.droppableId:
+          newCanvas[destination.droppableId] = reorder( 
+            this.state.canvas[source.droppableId], 
+            source.index, 
+            destination.index, 
+            destination, 
+            algorithm, 
+            lineArray)
+            
+          this.setState({ canvas: newCanvas}, () => {
+            this.addToHistory()
+          });
+  
+          break;
+        case findCopyItemsId(source.droppableId):
+          newCanvas[destination.droppableId] = copy(
+            findCopyItems(source.droppableId),
+            this.state.canvas[destination.droppableId],
+            source,
+            destination,
+            algorithm,
+            lineArray
+            )
+          this.setState({ canvas: newCanvas }, () => {
+            this.addToHistory()
+          });
+          break;
+        default:
+          newCanvas = move(
+            this.state.canvas[source.droppableId],
+            this.state.canvas[destination.droppableId],
+            source,
+            destination,
+            algorithm,
+            lineArray
+            )
+            
+          let merged = {...this.state.canvas, ...newCanvas};
+          this.setState({ canvas: merged }, () => {
+            this.addToHistory()
+          });
+          break;
+      }
+  
+      this.calculateResults()
+      console.log("Algor: " + localStorage.getItem("algorithm"));
+      console.log(this.state.canvas);
     }
-
-    this.calculateResults()
-    console.log("Algor: " + localStorage.getItem("algorithm"));
-    console.log(this.state.canvas);
   };
 
   onNewLine = () => {
     //Create a new List
-    var id = uuid();
-    let newCanvas = this.state.canvas;
-    newCanvas[id] = [];
-    this.setState({canvas: newCanvas});
-    lineArray[lineArray.length] = [lineArray.length, id];
-    algorithm[algorithm.length] = [];
+    if (!this.state.is_submitted) {
+      var id = uuid();
+      let newCanvas = this.state.canvas;
+      newCanvas[id] = [];
+      this.setState({canvas: newCanvas});
+      lineArray[lineArray.length] = [lineArray.length, id];
+      algorithm[algorithm.length] = [];
+    }
   }
 
   onCreate = () => {
@@ -282,7 +281,7 @@ export default class Main extends Component {
     try {
       const valid = verifyCircuit(algorithm);
       if (valid) {
-        let saved = !!localStorage.getItem('saved');
+        let saved = JSON.parse(localStorage.getItem("saved"));
         if (!saved) saved = await this.save();
 
         if (saved) {
@@ -291,11 +290,9 @@ export default class Main extends Component {
           if (submit && studentid) {
             const algorithm_name = localStorage.getItem('algorithm_name');
             submitted = await submitCircuit(studentid, algorithm_name);
-            console.log("st id:", studentid);
-            console.log("submitted:", submitted);
             if (submitted) {
               alert("Your circuit as been succesfully submitted!");
-              this.submitButton.current.disabled = true;
+              this.setState({is_submitted: true});
             }
             else alert("Something went wrong and your circuit couldn't be submitted");
           }        
@@ -327,12 +324,8 @@ export default class Main extends Component {
     let saved = false;
     try {
       const studentid = getStudentID();
-      console.log("preescape in:", JSON.stringify(getCircuitInput(algorithm)));
-      console.log("preescape out:", JSON.stringify(getCircuitInput(this.state.results)));
       const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
       const circuit_output = escapeSpecialCharacters(this.state.results);
-      console.log("escape in:", getCircuitInput(circuit_input));
-      console.log("escape out:", getCircuitInput(circuit_output));
       var algorithm_name = localStorage.getItem('algorithm_name');
       const new_save = algorithm_name === null || algorithm_name === "null" || algorithm_name.length === 0;
       
@@ -344,7 +337,7 @@ export default class Main extends Component {
         }
         if (algorithm_name !== "null" && algorithm_name !== null && algorithm_name.length !== 0 && studentid) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
-          localStorage.setItem("algorithm_name", algorithm_name);
+          if (saved) localStorage.setItem("algorithm_name", algorithm_name);
         }
       } else {
         var backendisupdated = false;
@@ -375,30 +368,34 @@ export default class Main extends Component {
   }
 
   onUndo = () => {
-    var vers = parseInt(sessionStorage.getItem("currentversion"));
-    var finalvers = parseInt(sessionStorage.getItem("finalversion"));
-    if (vers > 0) {
-      vers = vers - 1;
-      this.setState({canvas: 
-        history[vers]
-      });
-      sessionStorage.setItem("currentversion", vers);
-      this.undoButton.current.disabled = (vers === 0);
-      this.redoButton.current.disabled = (vers === finalvers);
+    if (!this.state.is_submitted) {
+      var vers = parseInt(sessionStorage.getItem("currentversion"));
+      var finalvers = parseInt(sessionStorage.getItem("finalversion"));
+      if (vers > 0) {
+        vers = vers - 1;
+        this.setState({canvas: 
+          history[vers]
+        });
+        sessionStorage.setItem("currentversion", vers);
+        this.undoButton.current.disabled = (vers === 0);
+        this.redoButton.current.disabled = (vers === finalvers);
+      }
     }
   }
 
   onRedo = () => {
-    var vers = parseInt(sessionStorage.getItem("currentversion"));
-    var finalvers = parseInt(sessionStorage.getItem("finalversion"));
-    if (vers < finalvers) {
-      vers = vers + 1;
-      this.setState({canvas: 
-        history[vers]
-      });
-      sessionStorage.setItem("currentversion", vers);
-      this.undoButton.current.disabled = (vers === 0);
-      this.redoButton.current.disabled = (vers === finalvers);
+    if (!this.state.is_submitted) {
+      var vers = parseInt(sessionStorage.getItem("currentversion"));
+      var finalvers = parseInt(sessionStorage.getItem("finalversion"));
+      if (vers < finalvers) {
+        vers = vers + 1;
+        this.setState({canvas: 
+          history[vers]
+        });
+        sessionStorage.setItem("currentversion", vers);
+        this.undoButton.current.disabled = (vers === 0);
+        this.redoButton.current.disabled = (vers === finalvers);
+      }
     }
   }
 
@@ -420,22 +417,24 @@ export default class Main extends Component {
   }
 
   deleteLine = (list, i) => {
-    if (algorithm.length === 1) {
-      alert("You cannot delete this line");
-      return;
+    if (!this.state.is_submitted) {
+      if (algorithm.length === 1) {
+        alert("You cannot delete this line");
+        return;
+      }
+      let newState = this.state.canvas;
+      delete newState[list];
+      this.setState({canvas: newState});
+      algorithm.splice(i, 1);
+      lineArray.splice(i, 1);
+      console.log(algorithm);
+      for (var j = i; j < lineArray.length; j++) {
+        lineArray[j][0]--;
+      }
+      console.log(lineArray)
+      localStorage.setItem("algorithm", JSON.stringify(algorithm));
+      this.addToHistory()
     }
-    let newState = this.state.canvas;
-    delete newState[list];
-    this.setState({canvas: newState});
-    algorithm.splice(i, 1);
-    lineArray.splice(i, 1);
-    console.log(algorithm);
-    for (var j = i; j < lineArray.length; j++) {
-      lineArray[j][0]--;
-    }
-    console.log(lineArray)
-    localStorage.setItem("algorithm", JSON.stringify(algorithm));
-    this.addToHistory()
   }
 
   // Normally you would want to split things out into separate components.
@@ -463,10 +462,10 @@ export default class Main extends Component {
                     </Dropdown>
                   </div>
                   <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave}>Save</button>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
                   </div>
                   <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} ref={this.submitButton} >Submit</button>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
                   </div>
                   <div className="col">
                     <Dropdown>
@@ -491,14 +490,14 @@ export default class Main extends Component {
                     <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
                   </div>
                   <div className="col">
-                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine}>Add Wire</button>
+                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
                   </div>
                   <div className="col"></div>
                   <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton}>Undo</button>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton} disabled={this.state.is_submitted} >Undo</button>
                   </div>
                   <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} >Redo</button>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} disabled={this.state.is_submitted} >Redo</button>
                   </div>
                 </div>
                 <Content>

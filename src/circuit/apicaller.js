@@ -64,7 +64,7 @@ export const getResults = async (circuit_input) => {
 
 export const submitCircuit = async (student_id, circuit_name) => {
     try {
-        const url = proxy + "submit";
+        const url = proxy + "submit-circuit";
 
         var data = JSON.stringify({
             'student_id': student_id,
