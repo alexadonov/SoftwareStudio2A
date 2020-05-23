@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavBar from "../components/navBar.js";
 import { Form, Button, Label } from 'react-bootstrap';
@@ -6,6 +7,7 @@ import '../App.css';
 import logo from '../images/logo.png';
 import { BrowserRouter } from "react-router-dom";
 import styled from 'styled-components';
+import { login } from './userInfo';
 
 const Title = styled.div`
   padding:14px 5px 14px 0px;
@@ -28,24 +30,25 @@ const Body = styled.body`
 `;
 
 
-export default class Login extends Component {
+class Login extends Component {
 
   constructor(props) {
      super(props);
 
-     this.onChangeStudentID = this.onChangeStudentID.bind(this); //Needed for input fields if they change
+     this.onChangeEmail = this.onChangeEmail.bind(this); //Needed for input fields if they change
      this.onChangePassword = this.onChangePassword.bind(this);
      this.onSubmit = this.onSubmit.bind(this);
 
      this.state = {
-         studentID: Number,
-         password: String,
+         email: '',
+         password: '',
+         invalid_details: false
      }
   }
 
-  onChangeStudentID(e) {
+  onChangeEmail(e) {
     this.setState({
-        studentID: e.target.value
+        email: e.target.value
     });
   }
 
@@ -57,10 +60,27 @@ export default class Login extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    localStorage.setItem('student_id', this.state.studentID);
-    localStorage.setItem('password', this.state.password);
-    localStorage.setItem('loggedIn', true);
-    window.location.href = '/dnd';
+
+    const user = {
+      email: this.state.email,
+      password: this.state.password
+    }
+
+    login(user).then(res => {
+      if (localStorage.successful === "True") {
+        this.setState({
+          invalid_details: false
+        });
+        localStorage.setItem('email', this.state.email);
+        localStorage.setItem('password', this.state.password);
+        localStorage.setItem('loggedIn', true);
+        this.props.history.push('/dnd');
+      } else {
+        this.setState({
+          invalid_details: true
+        });
+      }
+    })
   }
 
   render() {
@@ -75,15 +95,18 @@ export default class Login extends Component {
             <Text>Quantum Computing Login</Text>
           </Title>
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="text" placeholder="Student ID" onChange={this.onChangeStudentID} required/>
+            <Form.Control type="text" name="email" placeholder="Email" value={this.state.email} onChange={this.onChangeEmail} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicPassword">
-            <Form.Control type="password" placeholder="Password" onChange={this.onChangePassword} required/>
+            <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onChangePassword} required/>
           </Form.Group>
           <Button variant="outline-dark" type="submit" style={{width: '100%'}} >
             Submit
           </Button>
+          <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
+            Email or Password is incorrect.
+          </Form.Text>
           <hr/>
           <a href="/register" role="button"><h6 class="register-text">Not a member? Register here.</h6></a>
         </Form>
@@ -95,4 +118,4 @@ export default class Login extends Component {
       </BrowserRouter>
     );
   }
-}
+} export default withRouter(Login);

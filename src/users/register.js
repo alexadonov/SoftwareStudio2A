@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavBar from "../components/navBar.js";
 import { Form, Button, Label } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
+import { register, login } from './userInfo';
 
 const Body = styled.body`
   background-color: white;
@@ -26,7 +28,7 @@ const Body = styled.body`
   vertical-align: text-top;
   `;
 
-export default class Register extends Component {
+class Register extends Component {
 
   constructor(props) {
      super(props);
@@ -39,11 +41,14 @@ export default class Register extends Component {
      this.onSubmit = this.onSubmit.bind(this);
 
      this.state = {
-         fname: String,
-         lname: String,
-         studentID: Number,
-         email: String,
-         password: String,
+         studentID: '',
+         isAdmin: '',
+         fname: '',
+         lname: '',
+         email: '',
+         password: '',
+         confirmAdmin: '',
+         invalid_details: false
      }
   }
 
@@ -79,12 +84,43 @@ export default class Register extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    localStorage.setItem('fname', this.state.fname);
-    localStorage.setItem('lname', this.state.lname);
-    localStorage.setItem('student_id', this.state.studentID);
-    localStorage.setItem('email', this.state.email);
-    localStorage.setItem('password', this.state.password);
-    window.location.href = '/dnd';
+
+    const newUser = {
+      // need to add admin registration 
+      student_id: this.state.studentID,
+      is_admin: 1,
+      first_name: this.state.fname,
+      last_name: this.state.lname,
+      email: this.state.email,
+      password: this.state.password,
+      confirm_admin: "confirmed"
+    }
+
+    const user = {
+      email: this.state.email,
+      password: this.state.password,
+    }
+
+    // create new account
+    register(newUser).then(res => {})
+
+    // login after registration
+    login(user).then(res => {
+      if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
+        this.setState({
+          invalid_details: false
+        });
+        localStorage.setItem('email', this.state.email);
+        localStorage.setItem('password', this.state.password);
+        localStorage.setItem('loggedIn', true);
+        localStorage.setItem('regoSuccess', 'False');
+        this.props.history.push('/dnd');
+      } else {
+        this.setState({
+          invalid_details: true
+        });
+      }
+    })
   }
 
 
@@ -100,27 +136,30 @@ export default class Register extends Component {
         </Title>
 
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="text" placeholder="First Name" onChange={this.onChangeFirstName} required/>
+            <Form.Control type="text" name="fname" placeholder="First Name" value={this.state.fname} onChange={this.onChangeFirstName} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="text" placeholder="Last Name" onChange={this.onChangeLastName} required/>
+            <Form.Control type="text" name="lname" placeholder="Last Name" value={this.state.lname} onChange={this.onChangeLastName} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="text" placeholder="Student ID" onChange={this.onChangeStudentID} required/>
+            <Form.Control type="text" name="studentID" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="email" placeholder="Student Email" onChange={this.onChangeEmail} required/>
+            <Form.Control type="email" name="email" placeholder="Student Email" value={this.state.email} onChange={this.onChangeEmail} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicPassword">
-            <Form.Control type="password" placeholder="Password" onChange={this.onChangePassword} required/>
+            <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onChangePassword} required/>
           </Form.Group>
           <Button variant="outline-dark" type="submit" className="button">
             Submit
           </Button>
+          <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
+            Student ID or Email already exists.
+          </Form.Text>
           <hr/>
           <a href="/" role="button"><h6 class="register-text">Already a member? Login here.</h6></a>
         </Form>
@@ -129,4 +168,4 @@ export default class Register extends Component {
       </BrowserRouter>
     );
   }
-}
+} export default withRouter(Register);
