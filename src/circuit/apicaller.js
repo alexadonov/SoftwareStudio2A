@@ -1,112 +1,77 @@
+const proxy = "http://13.239.134.106:8000/api/"
+//const proxy = "http://127.0.0.1:8000/api/"
+
 export const saveCircuit = async (student_id, circuit_name, circuit_input, circuit_output_json) => {
-    const url = "http://13.210.43.87:8000/api/save-circuit";
-    var data = JSON.stringify({
-        student_id: student_id,
-        circuit_name: circuit_name,
-        circuit_input: circuit_input,
-        circuit_output_json: circuit_output_json
-    });
-    
-    var response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: data
-    });
-    var status = await response.status;
-    return status == "200";
-    /*
-    .then(response => {
-    console.log(response)
-    })
-    .catch(err => {
-    console.log(err);
-    });
-    */
-}
+    try {
+        const url = proxy+"save-circuit";
+        var data = JSON.stringify({
+            student_id: student_id,
+            circuit_name: circuit_name,
+            circuit_input: circuit_input,
+            circuit_output_json: circuit_output_json
+        });
+        
+        var response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: data
+        });
+        var status = await response.status;
+        return status == "200";
 
-export const register = async(student_id, is_admin, confirm_admin, first_name, last_name, email, password) => {
-    const url = "http://13.210.43.87:8000/api/register";
-    var data = JSON.stringify({
-        student_id: student_id,
-        is_admin: is_admin,
-        confirm_admin: confirm_admin,
-        first_name: first_name,
-        last_name: last_name,
-        email: email,
-        password: password
-    });
-    
-    var response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: data
-    });
-
-    var status = await response.status;
-    console.log('data:', data);
-    console.log('status:', status);   
-    return status == "201";
-}
-
-export const login = async(email, password) => {
-    const url = "http://13.210.43.87:8000/api/login";
-    var data = JSON.stringify({
-        email: email,
-        password: password
-    });
-    
-    var response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: data
-    });
-
-    var status = await response.status;
-    console.log('data:', data);
-    console.log('status:', status);   
-    return status == "200";
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
 }
 
 export const getResults = async (circuit_input) => {
-    const url = "http://13.210.43.87:8000/api/calculate";
-    //const url = "http://127.0.0.1:8000/api/calculate";
-    var data = JSON.stringify({
-        circuit_input: JSON.stringify(circuit_input)
-    });
+    try {
+        const url = proxy + "calculate";
+        var data = JSON.stringify({
+            'circuit_input': (circuit_input)
+        });
+        console.log('data:', data);
+        var response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: data
+        });
+    
+        let parsedData = await response.json();
+        var status = await response.status;
+        
+        console.log('parsedData:', parsedData);
+        console.log('status:', status);
+        if (status == "200")
+            return parsedData;
 
-    var response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: data
-    });
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
 
-    let parsedData = await response.json();
-    var status = await response.status;
-    console.log('data:', data);
-    console.log('parsedData:', parsedData);
-    console.log('status:', status);
-    if (status == "200")
-        return parsedData;
-    else
-        return; // Handle error here
 }
 
 export const healthCheck = async () => {
-    const url = "http://13.210.43.87:8000/api/";
+    try {
+        const url = proxy;
 
-    var response = await fetch(url, {
-        method: 'GET'
-    });
+        var response = await fetch(url, {
+            method: 'GET'
+        });
+    
+        var status = await response.status;
+        console.log('health response:', response);
+        console.log('health status:', status);
 
-    var status = await response.status;
-    console.log('health response:', response);
-    console.log('health status:', status);
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+
 }
