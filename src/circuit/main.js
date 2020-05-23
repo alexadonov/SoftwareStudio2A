@@ -126,7 +126,7 @@ export default class Main extends Component {
   // What is meant to happen
   onDragEnd = result => {
     const { source, destination } = result;
-    let newCanvas;
+    let newCanvas = this.state.canvas;
 
     if ((source.droppableId === "DISPLAYS" ||
       source.droppableId === "PROBES" ||
@@ -149,7 +149,8 @@ export default class Main extends Component {
         algorithm, 
         lineArray
         )
-      this.setState({ canvas: newCanvas}, () => {
+      let merged = {...this.state.canvas, ...newCanvas};
+      this.setState({ canvas: merged }, () => {
         this.addToHistory()
       });
       console.log("Algor: " + localStorage.getItem("algorithm"));
@@ -159,13 +160,13 @@ export default class Main extends Component {
 
     switch (source.droppableId) {
       case destination.droppableId:
-        newCanvas = {[destination.droppableId]: reorder( 
+        newCanvas[destination.droppableId] = reorder( 
           this.state.canvas[source.droppableId], 
           source.index, 
           destination.index, 
           destination, 
           algorithm, 
-          lineArray)}
+          lineArray)
           
         this.setState({ canvas: newCanvas}, () => {
           this.addToHistory()
@@ -173,14 +174,14 @@ export default class Main extends Component {
 
         break;
       case findCopyItemsId(source.droppableId):
-        newCanvas = {[destination.droppableId]: copy(
+        newCanvas[destination.droppableId] = copy(
           findCopyItems(source.droppableId),
           this.state.canvas[destination.droppableId],
           source,
           destination,
           algorithm,
           lineArray
-          )}
+          )
         this.setState({ canvas: newCanvas }, () => {
           this.addToHistory()
         });
@@ -193,8 +194,10 @@ export default class Main extends Component {
           destination,
           algorithm,
           lineArray
-        )
-        this.setState({ canvas: newCanvas }, () => {
+          )
+          
+        let merged = {...this.state.canvas, ...newCanvas};
+        this.setState({ canvas: merged }, () => {
           this.addToHistory()
         });
         break;
