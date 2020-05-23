@@ -5,7 +5,8 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
 import { saveCircuit, getResults, healthCheck, submitCircuit } from '../circuit/apicaller';
 import { Dropdown } from 'react-bootstrap';
-
+import Alert from 'react-bootstrap/Alert'
+import jwt_decode from 'jwt-decode';
 
 // Main components
 import NavBar from "../components/navBar.js";
@@ -62,7 +63,6 @@ const Button = styled.button`
 var algorithm = [];
 var lineArray = [];
 var history = [];
-var results = "Add a gate to the circuit to get started"
 var algor //= JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
@@ -81,9 +81,17 @@ export default class Main extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      email: ''
+    }
+
     var id = uuid();
     this.state = {
-      [id]: []
+      canvas: {
+        [id]: []
+      },
+      results: {},
+      circuit_valid_msg: verifyCircuit(algorithm)
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -96,7 +104,7 @@ export default class Main extends Component {
 
     lineArray[0] = new Array(0, id);
     algorithm[0] = new Array(0, new Array());
-    history[0] = { ... this.state };
+    history[0] = { ... this.state.canvas };
 
     lineArray[0] = [0, id];
     algorithm[0] = [];
@@ -108,14 +116,17 @@ export default class Main extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onExport = this.onExport.bind(this);
+    // this.results = "Add a gate to the circuit to get started"
   }
 
   componentDidMount() {
     var vers = parseInt(sessionStorage.getItem("currentversion"));
     var finalvers = parseInt(sessionStorage.getItem("finalversion"));
-    this.submitButton.current.disabled = false
+    this.submitButton.current.disabled = false;
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = (vers === finalvers);
+    this.calculateResults();
+    const token = localStorage.token;
   }
 
   // This is what combines everything to make move items work
@@ -123,6 +134,7 @@ export default class Main extends Component {
   // What is meant to happen
   onDragEnd = result => {
     const { source, destination } = result;
+    let newCanvas = this.state.canvas;
 
     if ((source.droppableId === "DISPLAYS" ||
       source.droppableId === "PROBES" ||
@@ -139,74 +151,77 @@ export default class Main extends Component {
 
     // dropped outside the list
     if (!destination) {
-      this.setState(
-        remove(
-          this.state[source.droppableId],
-          source,
-          algorithm,
-          lineArray
-        ), () => {
-          this.addToHistory()
-        }
-      );
+      newCanvas = remove( 
+        this.state.canvas[source.droppableId], 
+        source, 
+        algorithm, 
+        lineArray
+        )
+      let merged = {...this.state.canvas, ...newCanvas};
+      this.setState({ canvas: merged }, () => {
+        this.addToHistory()
+      });
       console.log("Algor: " + localStorage.getItem("algorithm"));
+      this.calculateResults()
       return;
     }
 
     switch (source.droppableId) {
       case destination.droppableId:
-        this.setState({
-          [destination.droppableId]: reorder(
-            this.state[source.droppableId],
-            source.index,
-            destination.index,
-            destination,
-            algorithm,
-            lineArray
-          )
-        }, () => {
+        newCanvas[destination.droppableId] = reorder( 
+          this.state.canvas[source.droppableId], 
+          source.index, 
+          destination.index, 
+          destination, 
+          algorithm, 
+          lineArray)
+          
+        this.setState({ canvas: newCanvas}, () => {
           this.addToHistory()
         });
 
         break;
       case findCopyItemsId(source.droppableId):
-        this.setState({
-          [destination.droppableId]: copy(
-            findCopyItems(source.droppableId),
-            this.state[destination.droppableId],
-            source,
-            destination,
-            algorithm,
-            lineArray
-          ),
-        }, () => {
+        newCanvas[destination.droppableId] = copy(
+          findCopyItems(source.droppableId),
+          this.state.canvas[destination.droppableId],
+          source,
+          destination,
+          algorithm,
+          lineArray
+          )
+        this.setState({ canvas: newCanvas }, () => {
           this.addToHistory()
         });
         break;
       default:
-        this.setState(
-          move(
-            this.state[source.droppableId],
-            this.state[destination.droppableId],
-            source,
-            destination,
-            algorithm,
-            lineArray
-          ), () => {
-            this.addToHistory()
-          });
+        newCanvas = move(
+          this.state.canvas[source.droppableId],
+          this.state.canvas[destination.droppableId],
+          source,
+          destination,
+          algorithm,
+          lineArray
+          )
+          
+        let merged = {...this.state.canvas, ...newCanvas};
+        this.setState({ canvas: merged }, () => {
+          this.addToHistory()
+        });
         break;
     }
 
     this.calculateResults()
     console.log("Algor: " + localStorage.getItem("algorithm"));
-    console.log(this.state);
+    console.log(this.state.canvas);
   };
 
   onNewLine = () => {
     //Create a new List
     var id = uuid();
-    this.setState({ [id]: [] });
+    let newCanvas = this.state.canvas;
+    newCanvas[id] = [];
+    this.setState({canvas: newCanvas});
     lineArray[lineArray.length] = [lineArray.length, id];
     algorithm[algorithm.length] = [];
   }
@@ -229,9 +244,9 @@ export default class Main extends Component {
     // Shows a drop down list of these so the user can choose
     var id = lineArray[0][1];
 
-    this.setState({ [id]: getItems(0) });
+    this.setState({canvas: { [id]: getItems(0) }});
     algorithm[0] = getItems(0);
-    console.log(this.state[id]);
+    console.log(this.state.canvas[id]);
 
     if (algor === null) { return; }
     else {
@@ -239,12 +254,12 @@ export default class Main extends Component {
 
       for (var j = 1; j < length; j++) {
         var id = uuid();
-        this.setState({ [id]: getItems(j) });
+        this.setState({canvas: { [id]: getItems(j) }});
         lineArray[lineArray.length] = new Array(lineArray.length, id);
         algorithm[algorithm.length] = getItems(j);
       }
     }
-    console.log(this.state);
+    console.log(this.state.canvas);
   }
 
   // Refreshes the page so user can restart algorithm
@@ -289,13 +304,15 @@ export default class Main extends Component {
     }
   }
 
-  calculateResults = async () => {
-    healthCheck();
-    var circuit_input = getCircuitInput(algorithm);
-    if (circuit_input !== null && !circuit_input.EMPTY) {
-      results = await getResults(circuit_input);
-      console.log("results:", results)
-    } else results = [[]]
+  calculateResults = () => {
+    let circuit_input = getCircuitInput(algorithm);
+    let valid_msg = verifyCircuit(algorithm)
+    getResults(circuit_input).then( res => {
+      this.setState({results: res})
+      console.log("results:", this.state.results)
+    });
+    this.setState({circuit_valid_msg: valid_msg})
+    this.forceUpdate();
   }
 
   onSave = () => {
@@ -329,7 +346,7 @@ export default class Main extends Component {
 
   addToHistory = () => {
     var vers = parseInt(sessionStorage.getItem("currentversion")) + 1;
-    history[vers] = { ... this.state };
+    history[vers] = { ... this.state.canvas };
     history.slice(0, vers);
     sessionStorage.setItem("currentversion", vers);
     sessionStorage.setItem("finalversion", vers);
@@ -343,9 +360,9 @@ export default class Main extends Component {
     var finalvers = parseInt(sessionStorage.getItem("finalversion"));
     if (vers > 0) {
       vers = vers - 1;
-      this.setState(
+      this.setState({canvas: 
         history[vers]
-      );
+      });
       sessionStorage.setItem("currentversion", vers);
       this.undoButton.current.disabled = (vers === 0);
       this.redoButton.current.disabled = (vers === finalvers);
@@ -357,9 +374,9 @@ export default class Main extends Component {
     var finalvers = parseInt(sessionStorage.getItem("finalversion"));
     if (vers < finalvers) {
       vers = vers + 1;
-      this.setState(
+      this.setState({canvas: 
         history[vers]
-      );
+      });
       sessionStorage.setItem("currentversion", vers);
       this.undoButton.current.disabled = (vers === 0);
       this.redoButton.current.disabled = (vers === finalvers);
@@ -388,9 +405,9 @@ export default class Main extends Component {
       alert("You cannot delete this line");
       return;
     }
-    let newState = this.state;
+    let newState = this.state.canvas;
     delete newState[list];
-    this.setState(newState);
+    this.setState({canvas: newState});
     algorithm.splice(i, 1);
     lineArray.splice(i, 1);
     console.log(algorithm);
@@ -467,15 +484,16 @@ export default class Main extends Component {
                 </div>
                 <Content>
                   <Title>Create Your Algorithm</Title>
-                  {Object.keys(this.state).map((list, i) => (
+                  {Object.keys(this.state.canvas).map((list, i) => (
                     <div>
                       <Button onClick={() => this.deleteLine(list, i)}>X</Button>
-                      <Algorithm key={i} list={list} state={this.state} style={{ float: 'left' }} />
+                      <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
                     </div>
                   ))}
+                  <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg!=="valid"} >{this.state.circuit_valid_msg}</Alert>
                 </Content>
                 <Content>
-                  <Results resultChartData={results} title={"Measurement Probability Graph"} width={400} height={100} />
+                  <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
                 </Content>
               </div>
               <div class="col-4">
