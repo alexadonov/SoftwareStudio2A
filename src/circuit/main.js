@@ -121,7 +121,7 @@ export default class Main extends Component {
   componentDidMount() {
     var vers = parseInt(sessionStorage.getItem("currentversion"));
     var finalvers = parseInt(sessionStorage.getItem("finalversion"));
-
+    this.calculateResults();
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = (vers === finalvers);
 
@@ -286,18 +286,12 @@ export default class Main extends Component {
   calculateResults = () => {
     let circuit_input = getCircuitInput(algorithm);
     let valid_msg = verifyCircuit(algorithm)
-    if (circuit_input !== null && !circuit_input.EMPTY) {
-      if (valid_msg === "valid") {
-        getResults(circuit_input).then( res => {
-          this.setState({results: res})
-          console.log("results:", this.state.results)
-        });
-      }
-      this.setState({circuit_valid_msg: valid_msg})
-      this.forceUpdate();
-    } else {
-      this.setState({results: {}})
-    }
+    getResults(circuit_input).then( res => {
+      this.setState({results: res})
+      console.log("results:", this.state.results)
+    });
+    this.setState({circuit_valid_msg: valid_msg})
+    this.forceUpdate();
   }
 
   onSave = () => {

@@ -1,4 +1,5 @@
-const proxy = "http://13.21011.43.87:8000/api/"
+const proxy = "http://13.239.134.106:8000/api/"
+//const proxy = "http://127.0.0.1:8000/api/"
 
 export const saveCircuit = async (student_id, circuit_name, circuit_input, circuit_output_json) => {
     try {
@@ -30,9 +31,9 @@ export const getResults = async (circuit_input) => {
     try {
         const url = proxy + "calculate";
         var data = JSON.stringify({
-            circuit_input: JSON.stringify(circuit_input)
+            'circuit_input': (circuit_input)
         });
-    
+        console.log('data:', data);
         var response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -43,7 +44,7 @@ export const getResults = async (circuit_input) => {
     
         let parsedData = await response.json();
         var status = await response.status;
-        console.log('data:', data);
+        
         console.log('parsedData:', parsedData);
         console.log('status:', status);
         if (status == "200")
