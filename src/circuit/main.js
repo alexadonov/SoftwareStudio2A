@@ -220,6 +220,7 @@ export default class Main extends Component {
       this.setState({canvas: newCanvas});
       lineArray[lineArray.length] = [lineArray.length, id];
       algorithm[algorithm.length] = [];
+      this.calculateResults();
     }
   }
 
@@ -386,6 +387,7 @@ export default class Main extends Component {
             });
           }
           localStorage.setItem('algorithm', JSON.stringify(algorithm));
+          this.calculateResults();
         });
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
@@ -410,6 +412,7 @@ export default class Main extends Component {
             });
           }
           localStorage.setItem('algorithm', JSON.stringify(algorithm));
+          this.calculateResults();
         });
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
@@ -450,9 +453,10 @@ export default class Main extends Component {
       for (var j = i; j < lineArray.length; j++) {
         lineArray[j][0]--;
       }
-      console.log(lineArray)
+      console.log(lineArray);
       localStorage.setItem("algorithm", JSON.stringify(algorithm));
-      this.addToHistory()
+      this.addToHistory();
+      this.calculateResults();
     }
   }
 
