@@ -25,7 +25,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, resetTempStorage } from './functions';
+import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -288,7 +288,7 @@ export default class Main extends Component {
           let submit = window.confirm("Are you sure you want to submit?");
           const studentid = getStudentID();
           if (submit && studentid) {
-            const algorithm_name = localStorage.getItem('algorithm_name');
+            const algorithm_name = getAlgorithmName();
             submitted = await submitCircuit(studentid, algorithm_name);
             if (submitted) {
               alert("Your circuit as been succesfully submitted!");
@@ -326,29 +326,31 @@ export default class Main extends Component {
       const studentid = getStudentID();
       const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
       const circuit_output = escapeSpecialCharacters(this.state.results);
-      var algorithm_name = localStorage.getItem('algorithm_name');
-      const new_save = algorithm_name === null || algorithm_name === "null" || algorithm_name.length === 0;
+      var algorithm_name = getAlgorithmName()
+      const new_save = algorithm_name === "null" || algorithm_name.length === 0;
       
       if (new_save) {
-        algorithm_name = window.prompt("Please name your algorithm:");
-        while (algorithm_name === null || algorithm_name === "null" || algorithm_name.length === 0) {
-          alert("Please enter a valid name.");
+        var valid = false;
+        do {
           algorithm_name = window.prompt("Please name your algorithm:");
-        }
-        if (algorithm_name !== "null" && algorithm_name !== null && algorithm_name.length !== 0 && studentid) {
+          valid = await isValidAlgorithmName(algorithm_name);
+        } while (algorithm_name !== null && !valid)
+
+        if (valid) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
-          if (saved) localStorage.setItem("algorithm_name", algorithm_name);
+          if (saved) setAlgorithmName(algorithm_name);
         }
+
       } else {
         var backendisupdated = false;
         if (studentid && backendisupdated) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output, true);
         }
       }
-      if (saved) {
+      if (saved && algorithm_name) {
         localStorage.setItem("saved", true);
         alert("Your circuit as been succesfully saved!");
-      } else alert("Something went wrong and your circuit couldn't be saved");
+      } else if (algorithm_name) alert("Something went wrong and your circuit couldn't be saved");
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
@@ -404,7 +406,7 @@ export default class Main extends Component {
 
     //submit to database
     if (localStorage.getItem("algorithm") !== "null") {
-      if (localStorage.getItem("algorithm_input_saved") !== "false") {
+      if (localStorage.getItem("saved") !== "false") {
         download(localStorage.getItem('algorithm'), "algorithm.json", "text/json");
         return;
       }

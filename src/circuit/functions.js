@@ -11,6 +11,8 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
+import {retrieveCircuits} from '../circuit/apicaller.js';
+
 export const getId =(droppableDestination, lineArray) => {
   var id;
   for(var i=0; i < lineArray.length; i++) {
@@ -142,8 +144,43 @@ export const getCircuitInput = (algorithm) => {
 
 // Gets student id and returns it (if it doesn't exist, returns NaN)
 export const getStudentID = () => {
-  let student_id = localStorage.getItem('student_id');
-  return parseInt(student_id);
+  return parseInt(localStorage.getItem('student_id'));
+}
+
+export const getAlgorithmName = () => {
+  return localStorage.getItem('algorithm_name');
+}
+
+export const setAlgorithmName = (algorithm_name) => {
+  localStorage.setItem('algorithm_name', algorithm_name);
+}
+
+const algorithmExists = async (student_id, algorithm_name) => {
+  const results = await retrieveCircuits({
+    'student_id': student_id,
+    'circuit_name': algorithm_name
+  });
+  console.log("ex res:",results);
+  return (results.length !== 0)
+};
+
+// Checks if a algorithm has a valid name (checking string and to see if there is a preexisting one)
+export const isValidAlgorithmName = async (algorithm_name) => {
+  if (algorithm_name === null) return false;
+  if (algorithm_name === "null" || algorithm_name.length === 0) {
+    alert("Please enter a valid name.");
+  } else {
+    const student_id = getStudentID();
+    if (student_id) {
+      const exists = await algorithmExists(student_id, algorithm_name);
+      if (!exists) {
+        return true;
+      } else {
+        alert("An algorithm with this name already exists!")
+      }
+    }
+  }
+  return false;
 }
 
 export const resetTempStorage = () => {
