@@ -38,6 +38,7 @@ class adminRegister extends Component {
      this.onChangeStudentID = this.onChangeStudentID.bind(this);
      this.onChangeEmail = this.onChangeEmail.bind(this);
      this.onChangePassword = this.onChangePassword.bind(this);
+     this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
      this.onSubmit = this.onSubmit.bind(this);
 
      this.state = {
@@ -47,8 +48,9 @@ class adminRegister extends Component {
          lname: '',
          email: '',
          password: '',
+         confirmPassword: '',
          confirmAdmin: '',
-         invalid_details: false
+         mismatched_password: false
      }
   }
 
@@ -82,6 +84,12 @@ class adminRegister extends Component {
    });
   }
 
+  onChangeConfirmPassword(e) {
+    this.setState({
+      confirmPassword: e.target.value
+    })
+  }
+
   onSubmit = (e) => {
     e.preventDefault();
 
@@ -101,30 +109,42 @@ class adminRegister extends Component {
       password: this.state.password,
     }
 
-    // create new account
-    register(newUser).then(res => {})
+    if (this.state.password === this.state.confirmPassword) {
 
-    this.setState({
-      invalid_details: false
-    });
+      this.setState({
+        mismatched_password: false
+      });
+
+      // create new account
+      register(newUser).then(res => {})
+
+      this.setState({
+        invalid_details: false
+      });
     
-    // login after registration
-    login(user).then(res => {
-      if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
-        /*
-        localStorage.setItem('email', this.state.email);
-        localStorage.setItem('password', this.state.password);
-        localStorage.setItem('isAdmin', this.state.is_admin);
-        localStorage.setItem('loggedIn', true);
-        */
-        localStorage.setItem('regoSuccess', 'False');
-        this.props.history.push('/login');
-      } else {
-        this.setState({
-          invalid_details: true
-        });
-      }
-    })
+      // login after registration
+      login(user).then(res => {
+        if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
+          /*
+          localStorage.setItem('email', this.state.email);
+          localStorage.setItem('password', this.state.password);
+          localStorage.setItem('isAdmin', this.state.is_admin);
+          localStorage.setItem('loggedIn', true);
+          */
+          localStorage.setItem('regoSuccess', 'False');
+          this.props.history.push('/');
+        } else {
+          this.setState({
+            invalid_details: true
+          });
+        }
+      })
+    } else {
+      this.setState({
+        mismatched_password: true,
+        invalid_details: true
+      });
+    }
   }
 
 
@@ -158,11 +178,19 @@ class adminRegister extends Component {
           <Form.Group controlId="formBasicPassword">
             <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onChangePassword} required/>
           </Form.Group>
+
+          <Form.Group controlId="formBasicPassword">
+            <Form.Control type="password" name="confirmPassword" placeholder="Confirm Password" value={this.state.confirmPassword} onChange={this.onChangeConfirmPassword} required/>
+          </Form.Group>
           <Button variant="outline-dark" type="submit" className="button">
             Register
           </Button>
           <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
-            Staff ID or Email already exists.
+            {this.state.mismatched_password ? (
+              "Password does not match." 
+            ) : (
+              "Student ID or Email already exists."
+            )}
           </Form.Text>
           <hr/>
           <a href="/register" role="button"><h6 class="register-text">Register as Student.</h6></a>
