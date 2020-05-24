@@ -556,16 +556,8 @@ export default class Main extends Component {
                 </Content>
               </div>
               <div class="col-4">
-                <Title>Toolbox</Title>
+                <Title style={{paddingLeft: '-50%'}}>Toolbox</Title>
                 <div className="row" style={{ paddingLeft: '5%' }}>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Displays</SubTitle>
-                    <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
-                  </div>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Probes</SubTitle>
-                    <Toolbox droppableId="PROBES" list={PROBES} />
-                  </div>
                   <div class="col" style={{ padding: 0 }}>
                     <SubTitle>Half Turns</SubTitle>
                     <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
@@ -576,10 +568,13 @@ export default class Main extends Component {
                     <SubTitle>Quarter Turns</SubTitle>
                     <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
                   </div>
+                </div>
+                <div className="row" style={{ paddingLeft: '5%' }}>
                   <div class="col" style={{ padding: 0 }}>
                     <SubTitle>Eighth Turns</SubTitle>
                     <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
                   </div>
+                  {/*
                   <div class="col" style={{ padding: 0 }}>
                     <SubTitle>Parametrized</SubTitle>
                     <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
@@ -594,9 +589,20 @@ export default class Main extends Component {
                     <SubTitle>Parity</SubTitle>
                     <Toolbox droppableId="PARITY" list={PARITY} />
                   </div>
+                  */}
+
+                </div>
+                <div className="row" style={{ paddingLeft: '5%' }}>
+                  {/*
                   <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Empty </SubTitle>
+                    <SubTitle>Displays</SubTitle>
+                    <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
+                  </div>
+                  */}
+                  <div class="col" style={{ padding: 0 }}>
+                    <SubTitle>Miscellaneous</SubTitle>
                     <Toolbox droppableId="EMPTY" list={EMPTY} />
+                    <Toolbox droppableId="PROBES" list={PROBES} />
                   </div>
                 </div>
               </div>
