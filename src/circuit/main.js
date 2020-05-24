@@ -88,7 +88,8 @@ export default class Main extends Component {
       },
       results: {},
       is_submitted: false,
-      circuit_valid_msg: verifyCircuit(algorithm)
+      circuit_valid_msg: verifyCircuit(algorithm),
+      is_new: true
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -269,14 +270,16 @@ export default class Main extends Component {
     try {
       // Delete from database
       // Delete from local storage
-      const student_id = getStudentID();
-      const algorithm_name = getAlgorithmName();
-      const deleted = await deleteCircuit(student_id, algorithm_name);
-      if (!deleted) {
-        alert("Something went wrong and the current algorithm couldn't be deleted")
-      } else {
-        resetTempStorage();
-        window.location.href = '/dnd';
+      if (!this.state.is_new) {
+        const student_id = getStudentID();
+        const algorithm_name = getAlgorithmName();
+        const deleted = await deleteCircuit(student_id, algorithm_name);
+        if (!deleted) {
+          alert("Something went wrong and the current algorithm couldn't be deleted")
+        } else {
+          resetTempStorage();
+          window.location.href = '/dnd';
+        }
       }
     } catch (error) {
       console.log(error);
@@ -351,7 +354,10 @@ export default class Main extends Component {
 
         if (valid) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
-          if (saved) setAlgorithmName(algorithm_name);
+          if (saved) {
+            setAlgorithmName(algorithm_name);
+            this.setState({is_new: false});
+          }
         }
 
       } else {
@@ -483,7 +489,7 @@ export default class Main extends Component {
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
                   </div>
                   <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted} >Delete</button>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
                   </div>
                   <div className="col">
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
