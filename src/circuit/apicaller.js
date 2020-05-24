@@ -58,8 +58,8 @@ export const getResults = async (circuit_input) => {
         let parsedData = await response.json();
         var status = await response.status;
         
-        console.log('parsedData:', parsedData);
-        console.log('status:', status);
+        //console.log('parsedData:', parsedData);
+        //console.log('status:', status);
         if (status == "200")
             return parsedData;
 
@@ -87,9 +87,7 @@ Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 export const retrieveCircuits = async (params) => {
     try {
         const url = proxy + "retrieve-circuits";
-        var data = JSON.stringify({
-            params
-        });
+        var data = JSON.stringify(params);
         console.log('data:', data);
         var response = await fetch(url, {
             method: 'POST',
@@ -98,12 +96,14 @@ export const retrieveCircuits = async (params) => {
             },
             body: data
         });
+
+        console.log(params)
     
         let parsedData = await response.json();
         var status = await response.status;
         
-        console.log('parsedData:', parsedData);
-        console.log('status:', status);
+        //console.log('parsedData:', parsedData);
+        //console.log('status:', status);
         if (status == "200")
             return parsedData;
 
@@ -201,7 +201,7 @@ export const submitCircuit = async (student_id, circuit_name) => {
         });
 
         var status = await response.status;
-        console.log('status:', status);
+        //console.log('status:', status);
         return status == "200";
 
     } catch (error) {

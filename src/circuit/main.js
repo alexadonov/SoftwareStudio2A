@@ -280,7 +280,7 @@ export default class Main extends Component {
     let submitted = false;
     try {
       const valid = verifyCircuit(algorithm);
-      if (valid) {
+      if (valid == "valid") {
         let saved = JSON.parse(localStorage.getItem("saved"));
         if (!saved) saved = await this.save();
 
@@ -297,7 +297,7 @@ export default class Main extends Component {
             else alert("Something went wrong and your circuit couldn't be submitted");
           }        
         }
-      }
+      } else alert("Make sure your circuit is valid before submitting");
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);

@@ -160,8 +160,7 @@ const algorithmExists = async (student_id, algorithm_name) => {
     'student_id': student_id,
     'circuit_name': algorithm_name
   });
-  console.log("ex res:",results);
-  return (results.length !== 0)
+  return (Object.keys(results['circuits']).length)
 };
 
 // Checks if a algorithm has a valid name (checking string and to see if there is a preexisting one)
