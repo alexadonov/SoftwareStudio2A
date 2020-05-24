@@ -2,7 +2,7 @@ import '../App.css';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-
+import { getStudentID } from '../circuit/functions.js';
 // Main Components
 import NavBar from "../components/navBar.js";
 import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
@@ -104,8 +104,7 @@ const Body = styled.body`
 export default class Admin extends Component {
 
   constructor(props) {
-     super(props);
-
+    super(props);
   }
 
 
@@ -117,18 +116,22 @@ export default class Admin extends Component {
 
 
   render() {
-    return (
-      <BrowserRouter>
-        <div className="App">
-            <NavBar />
-            <div><br></br></div>
-            <div class="container admin-table">
-                <div class="row" style={{ margin: '8px', padding: '1%' }}>
-                </div>    
-                <BootstrapTable keyField='student_id' data={ table_data } columns={ table_columns } pagination={ paginationFactory(tablePaginationOptions) } filter={ filterFactory() }  />
-            </div>
-        </div>
-      </BrowserRouter>
-    );
-  }
+    const admin_id = getStudentID();
+    if (admin_id) {
+      return (
+        <BrowserRouter>
+          <div className="App">
+              <NavBar />
+              <div><br></br></div>
+              <div class="container admin-table">
+                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                  </div>    
+                  <BootstrapTable keyField='student_id' data={ table_data } columns={ table_columns } pagination={ paginationFactory(tablePaginationOptions) } filter={ filterFactory() }  />
+              </div>
+          </div>
+        </BrowserRouter>
+      );
+    } else window.location.href = '/';
+  } 
+  
 }

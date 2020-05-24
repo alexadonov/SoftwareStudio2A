@@ -110,7 +110,6 @@ export default class Main extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onExport = this.onExport.bind(this);
-    // this.results = "Add a gate to the circuit to get started"
   }
 
   componentDidMount() {
@@ -442,129 +441,134 @@ export default class Main extends Component {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
-    return (
-      <div className="App">
-        <NavBar />
-        <body onLoad={this.onLoad}>
-          <DragDropContext onDragEnd={this.onDragEnd}>
-            <div class="row">
-              <div class="col-8">
+    const student_id = getStudentID();
+    if (student_id) {
+      return (
+        <div className="App">
+          <NavBar />
+          <body onLoad={this.onLoad}>
+            <DragDropContext onDragEnd={this.onDragEnd}>
+              <div class="row">
+                <div class="col-8">
 
-                <div class="row" style={{ margin: '8px', padding: '1%' }}>
-                  <div className="col">
-                    <Dropdown>
-                      <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        Load
-                               </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
-                  </div>
-                  <div className="col">
-                    <Dropdown>
-                      <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        Delete
-                               </Dropdown.Toggle>
-
-                      <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1" onClick={this.onDelete}>Algorithm 1</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2" onClick={this.onDelete}>Algorithm 2</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3" onClick={this.onDelete}>Algorithm 3</Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
-                  </div>
-                </div>
-
-                <div class="row" style={{ margin: '8px', padding: '1%' }}>
-                  <div className="col">
-                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
-                  </div>
-                  <div className="col"></div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton} disabled={this.state.is_submitted} >Undo</button>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} disabled={this.state.is_submitted} >Redo</button>
-                  </div>
-                </div>
-                <Content>
-                  <Title>Create Your Algorithm</Title>
-                  {Object.keys(this.state.canvas).map((list, i) => (
-                    <div>
-                      <Button onClick={() => this.deleteLine(list, i)}>X</Button>
-                      <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
+                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                    <div className="col">
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                          Load
+                                </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                          <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
+                          <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
+                          <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </div>
-                  ))}
-                  <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg!=="valid"} >{this.state.circuit_valid_msg}</Alert>
-                </Content>
-                <Content>
-                  <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
-                </Content>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
+                    </div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
+                    </div>
+                    <div className="col">
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                          Delete
+                                </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <Dropdown.Item href="#/action-1" onClick={this.onDelete}>Algorithm 1</Dropdown.Item>
+                          <Dropdown.Item href="#/action-2" onClick={this.onDelete}>Algorithm 2</Dropdown.Item>
+                          <Dropdown.Item href="#/action-3" onClick={this.onDelete}>Algorithm 3</Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
+                    </div>
+                  </div>
+
+                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                    <div className="col">
+                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                    </div>
+                    <div className="col">
+                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
+                    </div>
+                    <div className="col"></div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton} disabled={this.state.is_submitted} >Undo</button>
+                    </div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} disabled={this.state.is_submitted} >Redo</button>
+                    </div>
+                  </div>
+                  <Content>
+                    <Title>Create Your Algorithm</Title>
+                    {Object.keys(this.state.canvas).map((list, i) => (
+                      <div>
+                        <Button onClick={() => this.deleteLine(list, i)}>X</Button>
+                        <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
+                      </div>
+                    ))}
+                    <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg!=="valid"} >{this.state.circuit_valid_msg}</Alert>
+                  </Content>
+                  <Content>
+                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
+                  </Content>
+                </div>
+                <div class="col-4">
+                  <Title>Toolbox</Title>
+                  <div className="row" style={{ paddingLeft: '5%' }}>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Displays</SubTitle>
+                      <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Probes</SubTitle>
+                      <Toolbox droppableId="PROBES" list={PROBES} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Half Turns</SubTitle>
+                      <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
+                    </div>
+                  </div>
+                  <div className="row" style={{ paddingLeft: '5%' }}>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Quarter Turns</SubTitle>
+                      <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Eighth Turns</SubTitle>
+                      <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Parametrized</SubTitle>
+                      <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
+                    </div>
+                  </div>
+                  <div className="row" style={{ paddingLeft: '5%' }}>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Sampling</SubTitle>
+                      <Toolbox droppableId="SAMPLING" list={SAMPLING} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Parity</SubTitle>
+                      <Toolbox droppableId="PARITY" list={PARITY} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Empty </SubTitle>
+                      <Toolbox droppableId="EMPTY" list={EMPTY} />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="col-4">
-                <Title>Toolbox</Title>
-                <div className="row" style={{ paddingLeft: '5%' }}>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Displays</SubTitle>
-                    <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
-                  </div>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Probes</SubTitle>
-                    <Toolbox droppableId="PROBES" list={PROBES} />
-                  </div>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Half Turns</SubTitle>
-                    <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
-                  </div>
-                </div>
-                <div className="row" style={{ paddingLeft: '5%' }}>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Quarter Turns</SubTitle>
-                    <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
-                  </div>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Eighth Turns</SubTitle>
-                    <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
-                  </div>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Parametrized</SubTitle>
-                    <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
-                  </div>
-                </div>
-                <div className="row" style={{ paddingLeft: '5%' }}>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Sampling</SubTitle>
-                    <Toolbox droppableId="SAMPLING" list={SAMPLING} />
-                  </div>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Parity</SubTitle>
-                    <Toolbox droppableId="PARITY" list={PARITY} />
-                  </div>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Empty </SubTitle>
-                    <Toolbox droppableId="EMPTY" list={EMPTY} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </DragDropContext>
-        </body>
-      </div>
-    );
+            </DragDropContext>
+          </body>
+        </div>
+      );
+    } else {
+      window.location.href = '/';
+    }
   }
 }
