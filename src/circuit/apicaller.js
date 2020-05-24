@@ -1,4 +1,4 @@
-const proxy = "http://13.239.134.106:8000/api/"
+const proxy = "http://52.62.102.88:8000/api/"
 //const proxy = "http://127.0.0.1:8000/api/" // for use with local instance of appserver
 
 /*
