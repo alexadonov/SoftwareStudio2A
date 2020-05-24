@@ -26,14 +26,14 @@ const ITEMS = [
       id: uuid(),
       group: "probes",
       name: "Anti-Control",
-      content: "⚪",
+      content: "⚪", // ◦
       explanation: "Conditions on a qubit being OFF. Gates in the same column only apply to states meeting the condition."
     },
     {
       id: uuid(),
       group: "probes",
       name: "Control",
-      content: "⚫",
+      content: "⚫", // •
       explanation: "Conditions on a qubit being ON. Gates in the same column only apply to states meeting the condition."
     },
 

@@ -88,7 +88,10 @@ export default class Main extends Component {
       },
       results: {},
       is_submitted: false,
-      circuit_valid_msg: verifyCircuit(algorithm)
+      circuit_valid_msg: verifyCircuit(algorithm),
+      is_new: true,
+      is_graded: false,
+      grade: 0
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -260,15 +263,31 @@ export default class Main extends Component {
   }
 
   // Refreshes the page so user can restart algorithm
-  onDelete = (e) => {
-    e.preventDefault();
+  onDelete = () => {
     if (window.confirm("Are you sure you want to delete this algorithm?")) {
+      this.delete();
+    }
+  }
+
+  delete = async () => {
+    try {
       // Delete from database
       // Delete from local storage
-      resetTempStorage();
-      window.location.href = '/dnd';
-    } else {
-      return;
+      if (!this.state.is_new && !this.state.is_submitted) {
+        const student_id = getStudentID();
+        const algorithm_name = getAlgorithmName();
+        const deleted = await deleteCircuit(student_id, algorithm_name);
+        if (!deleted) {
+          alert("Something went wrong and the current algorithm couldn't be deleted")
+        } else {
+          alert(`"${algorithm_name}" was deleted successfully!`)
+          resetTempStorage();
+          window.location.href = '/dnd';
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      alert(`An error occured: "${error}"`);
     }
   }
 
@@ -292,13 +311,13 @@ export default class Main extends Component {
             const algorithm_name = getAlgorithmName();
             submitted = await submitCircuit(studentid, algorithm_name);
             if (submitted) {
-              alert("Your circuit as been succesfully submitted!");
+              alert(`Your algorithm "${algorithm_name}" has been succesfully submitted!`);
               this.setState({is_submitted: true});
             }
-            else alert("Something went wrong and your circuit couldn't be submitted");
-          }
+            else alert("Something went wrong and your algorithm couldn't be submitted");
+          }        
         }
-      } else alert("Make sure your circuit is valid before submitting");
+      } else alert("Make sure your algorithm is valid before submitting");
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
@@ -339,7 +358,10 @@ export default class Main extends Component {
 
         if (valid) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
-          if (saved) setAlgorithmName(algorithm_name);
+          if (saved) {
+            setAlgorithmName(algorithm_name);
+            this.setState({is_new: false});
+          }
         }
 
       } else {
@@ -350,8 +372,8 @@ export default class Main extends Component {
       }
       if (saved && algorithm_name) {
         localStorage.setItem("saved", true);
-        alert("Your circuit as been succesfully saved!");
-      } else if (algorithm_name) alert("Something went wrong and your circuit couldn't be saved");
+        alert(`Your algorithm "${algorithm_name}" as been succesfully saved!`);
+      } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
@@ -491,17 +513,7 @@ export default class Main extends Component {
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
                   </div>
                   <div className="col">
-                    <Dropdown>
-                      <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        Delete
-                               </Dropdown.Toggle>
-
-                      <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1" onClick={this.onDelete}>Algorithm 1</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2" onClick={this.onDelete}>Algorithm 2</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3" onClick={this.onDelete}>Algorithm 3</Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
                   </div>
                   <div className="col">
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
@@ -532,6 +544,12 @@ export default class Main extends Component {
                     </div>
                   ))}
                   <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg!=="valid"} >{this.state.circuit_valid_msg}</Alert>
+                  <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
+                    <Alert.Heading>Successfully submitted</Alert.Heading>
+                  </Alert>
+                  <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
+                    <Alert.Heading>Successfully submitted and graded: {this.state.grade}/100</Alert.Heading>
+                  </Alert>
                 </Content>
                 <Content>
                   <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
