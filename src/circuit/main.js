@@ -279,6 +279,7 @@ export default class Main extends Component {
         if (!deleted) {
           alert("Something went wrong and the current algorithm couldn't be deleted")
         } else {
+          alert(`"${algorithm_name}" was deleted successfully!`)
           resetTempStorage();
           window.location.href = '/dnd';
         }
@@ -309,13 +310,13 @@ export default class Main extends Component {
             const algorithm_name = getAlgorithmName();
             submitted = await submitCircuit(studentid, algorithm_name);
             if (submitted) {
-              alert("Your circuit as been succesfully submitted!");
+              alert(`Your algorithm "${algorithm_name}" has been succesfully submitted!`);
               this.setState({is_submitted: true});
             }
-            else alert("Something went wrong and your circuit couldn't be submitted");
+            else alert("Something went wrong and your algorithm couldn't be submitted");
           }        
         }
-      } else alert("Make sure your circuit is valid before submitting");
+      } else alert("Make sure your algorithm is valid before submitting");
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
@@ -370,8 +371,8 @@ export default class Main extends Component {
       }
       if (saved && algorithm_name) {
         localStorage.setItem("saved", true);
-        alert("Your circuit as been succesfully saved!");
-      } else if (algorithm_name) alert("Something went wrong and your circuit couldn't be saved");
+        alert(`Your algorithm "${algorithm_name}" as been succesfully saved!`);
+      } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
