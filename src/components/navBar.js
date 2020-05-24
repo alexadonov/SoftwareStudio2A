@@ -5,7 +5,7 @@ import logo from '../images/logo.png';
 import styled from 'styled-components';
 
 const Title = styled.div`
-  padding:14px 5px 14px 0px;
+padding:14px 5px 14px 0px;
 `;
 
 const Text = styled.span`
@@ -28,7 +28,7 @@ export default class NavBar extends Component {
             <nav class="navbar navbar-light bg-light">
               <a class="navbar-brand" href="#">
                   <Title>
-                    <img src={logo} id="imgUTSLogo" class="imgUTSLogo" alt="UTS" style={{width: '100px'}}/>
+                    <img src={logo} id="imgUTSLogo" class="imgUTSLogo" alt="UTS" style={{width: '150px'}}/>
                     <Text>Quantum </Text><Text><b>Computing </b></Text>
                   </Title>
               </a>

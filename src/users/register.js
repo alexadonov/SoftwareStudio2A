@@ -112,6 +112,7 @@ class Register extends Component {
     login(user).then(res => {
       if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
         localStorage.setItem('email', this.state.email);
+        localStorage.setItem('student_id', this.state.studentID);
         localStorage.setItem('password', this.state.password);
         localStorage.setItem('isAdmin', this.state.is_admin);
         localStorage.setItem('loggedIn', true);
