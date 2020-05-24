@@ -75,7 +75,7 @@ const List = (props) => {
                                     {...provided.dragHandleProps}
                                     isDragging={snapshot.isDragging}
                                     style={provided.draggableProps.style}>
-                                    {item.image}
+                                    <img src={item.image} />
                                 </Item>
                                 {snapshot.isDragging && (
                                     <Clone><h6>{item.content}</h6></Clone>
