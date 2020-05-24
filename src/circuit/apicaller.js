@@ -1,5 +1,5 @@
 const proxy = "http://13.239.134.106:8000/api/"
-//const proxy = "http://127.0.0.1:8000/api/"
+//const proxy = "http://127.0.0.1:8000/api/" // for use with local instance of appserver
 
 /*
 Saves circuit using the args listed, currently does not support updating a saved circuit and returns true if successful
@@ -151,7 +151,7 @@ Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 */
 export const gradeCircuit = async (student_id, circuit_name, grade) => {
     try {
-        const url = proxy + "delete-circuit";
+        const url = proxy + "grade-circuit";
 
         var data = JSON.stringify({
             'student_id': student_id,
@@ -225,7 +225,7 @@ export const healthCheck = async () => {
         var status = await response.status;
         console.log('health response:', response);
         console.log('health status:', status);
-
+        return status == "200";
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
