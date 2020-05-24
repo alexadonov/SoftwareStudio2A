@@ -495,6 +495,9 @@ export default class Main extends Component {
 
                 <div class="row" style={{ margin: '8px', padding: '1%' }}>
                   <div className="col">
+                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                  </div>
+                  <div className="col">
                     <Dropdown>
                       <Dropdown.Toggle variant="primary" id="dropdown-basic">
                         Load
@@ -506,26 +509,23 @@ export default class Main extends Component {
                       </Dropdown.Menu>
                     </Dropdown>
                   </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
-                  </div>
+
                   <div className="col">
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
                   </div>
                   <div className="col">
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
                   </div>
+                  <div className="col">
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
+                  </div>
                 </div>
-
                 <div class="row" style={{ margin: '8px', padding: '1%' }}>
                   <div className="col">
-                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
                   </div>
                   <div className="col">
-                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
                   </div>
                   <div className="col"></div>
                   <div className="col">
@@ -556,7 +556,7 @@ export default class Main extends Component {
                 </Content>
               </div>
               <div class="col-4">
-                <Title style={{paddingLeft: '-50%'}}>Toolbox</Title>
+                <Title>Toolbox</Title>
                 <div className="row" style={{ paddingLeft: '5%' }}>
                   <div class="col" style={{ padding: 0 }}>
                     <SubTitle>Half Turns</SubTitle>
