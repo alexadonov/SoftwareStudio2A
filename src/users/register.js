@@ -111,6 +111,7 @@ class Register extends Component {
           invalid_details: false
         });
         localStorage.setItem('email', this.state.email);
+        localStorage.setItem('student_id', this.state.studentID);
         localStorage.setItem('password', this.state.password);
         localStorage.setItem('loggedIn', true);
         localStorage.setItem('regoSuccess', 'False');

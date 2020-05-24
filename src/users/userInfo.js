@@ -24,6 +24,7 @@ export const login = user => {
         email: user.email,
         password: user.password
     }).then(res => {
+        localStorage.setItem('student_id', res.data.student_id);
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('successful', 'True');
         return res.data;
