@@ -89,7 +89,9 @@ export default class Main extends Component {
       results: {},
       is_submitted: false,
       circuit_valid_msg: verifyCircuit(algorithm),
-      is_new: true
+      is_new: true,
+      is_graded: false,
+      grade: 0
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -270,7 +272,7 @@ export default class Main extends Component {
     try {
       // Delete from database
       // Delete from local storage
-      if (!this.state.is_new) {
+      if (!this.state.is_new && !this.state.is_submitted) {
         const student_id = getStudentID();
         const algorithm_name = getAlgorithmName();
         const deleted = await deleteCircuit(student_id, algorithm_name);
@@ -520,6 +522,12 @@ export default class Main extends Component {
                     </div>
                   ))}
                   <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg!=="valid"} >{this.state.circuit_valid_msg}</Alert>
+                  <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
+                    <Alert.Heading>Successfully submitted</Alert.Heading>
+                  </Alert>
+                  <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
+                    <Alert.Heading>Successfully submitted and graded: {this.state.grade}/100</Alert.Heading>
+                  </Alert>
                 </Content>
                 <Content>
                   <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
