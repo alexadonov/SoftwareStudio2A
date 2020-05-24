@@ -77,6 +77,7 @@ const getItems = (i) => {
 
 export default class Main extends Component {
 
+<<<<<<< HEAD
   //This just sets the state of the list
   constructor(props) {
     super(props);
@@ -90,6 +91,37 @@ export default class Main extends Component {
       is_submitted: false,
       circuit_valid_msg: verifyCircuit(algorithm)
     };
+=======
+    //This just sets the state of the list
+    constructor(props) {
+      super(props);
+
+      var id = uuid();
+        this.state = {
+          [id]: []
+      };
+
+      this.undoButton = React.createRef(); // quick solution, better to use states
+      this.redoButton = React.createRef();
+
+      sessionStorage.setItem("currentversion", 0);
+      sessionStorage.setItem("finalversion", 0);
+      localStorage.setItem("algorithm_input_saved", false);
+
+      history[0] = {... this.state};
+
+      lineArray[0] = [0, id];
+      algorithm[0] = [];
+      this.onDragEnd = this.onDragEnd.bind(this);
+      this.onNewLine = this.onNewLine.bind(this);
+      this.onCreate = this.onCreate.bind(this);
+      this.onLoad = this.onLoad.bind(this);
+      this.onDelete = this.onDelete.bind(this);
+      this.onSubmit = this.onSubmit.bind(this);
+      this.onSave = this.onSave.bind(this);
+      this.onExport = this.onExport.bind(this);
+    }
+>>>>>>> 6a707ebe3ab80ec02288042476651fe262747c8e
 
     this.undoButton = React.createRef(); // quick solution, better to use states
     this.redoButton = React.createRef();
@@ -374,6 +406,7 @@ export default class Main extends Component {
       var vers = parseInt(sessionStorage.getItem("currentversion"));
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers > 0) {
+
         vers = vers - 1;
         this.setState({canvas:
           history[vers]

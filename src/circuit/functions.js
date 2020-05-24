@@ -52,6 +52,7 @@ export const copy = (source, destination, droppableSource, droppableDestination,
 
 
     var destination_id = getId(droppableDestination, lineArray);
+    console.log(destination_id)
     algorithm[destination_id].splice(droppableDestination.index, 0, item);
     localStorage.setItem("algorithm", JSON.stringify(algorithm));
 
