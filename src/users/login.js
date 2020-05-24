@@ -75,7 +75,7 @@ class Login extends Component {
         localStorage.setItem('email', this.state.email);
         localStorage.setItem('password', this.state.password);
         localStorage.setItem('loggedIn', true);
-        if (localStorage.isAdmin === 0) { 
+        if (localStorage.isAdmin === "0") { 
           this.props.history.push('/dnd');
         } else {
           this.props.history.push('/admin');
@@ -95,9 +95,9 @@ class Login extends Component {
         <Body>
         <Form className="form-background" onSubmit={this.onSubmit}>
 
-          <Title>
+          <Title style={{textAlign:"center"}}>
             <img src={logo} class="Uts-logo"/>
-            <Text>Quantum Computing Login</Text>
+            <Text> Quantum Computing Login</Text>
           </Title>
           <Form.Group controlId="formBasicEmail">
             <Form.Control type="text" name="email" placeholder="Email" value={this.state.email} onChange={this.onChangeEmail} required/>
@@ -107,7 +107,7 @@ class Login extends Component {
             <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onChangePassword} required/>
           </Form.Group>
           <Button variant="outline-dark" type="submit" style={{width: '100%'}} >
-            Submit
+            Login
           </Button>
           <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
             Email or Password is incorrect.

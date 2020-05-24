@@ -111,13 +111,15 @@ class Register extends Component {
     // login after registration
     login(user).then(res => {
       if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
+        /*
         localStorage.setItem('email', this.state.email);
         localStorage.setItem('student_id', this.state.studentID);
         localStorage.setItem('password', this.state.password);
         localStorage.setItem('isAdmin', this.state.is_admin);
         localStorage.setItem('loggedIn', true);
+        */
         localStorage.setItem('regoSuccess', 'False');
-        this.props.history.push('/dnd');
+        this.props.history.push('/login');
       } else {
         this.setState({
           invalid_details: true
@@ -133,9 +135,9 @@ class Register extends Component {
       <div className="App">
         <Body>
         <Form className="form-background" onSubmit={this.onSubmit}>
-        <Title>
+        <Title style={{textAlign:"center"}}>
         <img src={logo} class="Uts-logo"/>
-        <Text>Quantum Computing Student Register</Text>
+        <Text>Register as a Student</Text>
         </Title>
 
           <Form.Group controlId="formBasicEmail">
@@ -158,7 +160,7 @@ class Register extends Component {
             <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onChangePassword} required/>
           </Form.Group>
           <Button variant="outline-dark" type="submit" className="button">
-            Submit
+            Register
           </Button>
           <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
             Student ID or Email already exists.

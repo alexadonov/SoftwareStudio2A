@@ -111,12 +111,14 @@ class adminRegister extends Component {
     // login after registration
     login(user).then(res => {
       if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
+        /*
         localStorage.setItem('email', this.state.email);
         localStorage.setItem('password', this.state.password);
         localStorage.setItem('isAdmin', this.state.is_admin);
         localStorage.setItem('loggedIn', true);
+        */
         localStorage.setItem('regoSuccess', 'False');
-        this.props.history.push('/admin');
+        this.props.history.push('/login');
       } else {
         this.setState({
           invalid_details: true
@@ -132,9 +134,9 @@ class adminRegister extends Component {
       <div className="App">
         <Body>
         <Form className="form-background" onSubmit={this.onSubmit}>
-        <Title>
+        <Title style={{textAlign:"center"}}>
         <img src={logo} class="Uts-logo"/>
-        <Text>Quantum Computing Admin Register</Text>
+        <Text>Register as an Admin</Text>
         </Title>
 
           <Form.Group controlId="formBasicEmail">
@@ -146,21 +148,21 @@ class adminRegister extends Component {
           </Form.Group>
 
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="text" name="studentID" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required/>
+            <Form.Control type="text" name="studentID" placeholder="Staff ID" value={this.state.studentID} onChange={this.onChangeStudentID} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="email" name="email" placeholder="Student Email" value={this.state.email} onChange={this.onChangeEmail} required/>
+            <Form.Control type="email" name="email" placeholder="Staff Email" value={this.state.email} onChange={this.onChangeEmail} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicPassword">
             <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onChangePassword} required/>
           </Form.Group>
           <Button variant="outline-dark" type="submit" className="button">
-            Submit
+            Register
           </Button>
           <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
-            Student ID or Email already exists.
+            Staff ID or Email already exists.
           </Form.Text>
           <hr/>
           <a href="/register" role="button"><h6 class="register-text">Register as Student.</h6></a>
