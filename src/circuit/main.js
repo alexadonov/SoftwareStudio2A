@@ -129,7 +129,7 @@ export default class Main extends Component {
     if (!this.state.is_submitted) {
       const { source, destination } = result;
       let newCanvas = this.state.canvas;
-  
+
       if ((source.droppableId === "DISPLAYS" ||
         source.droppableId === "PROBES" ||
         source.droppableId === "HALF_TURNS" ||
@@ -142,13 +142,13 @@ export default class Main extends Component {
         (!destination || source.droppableId === destination.droppableId)) {
         return;
       }
-  
+
       // dropped outside the list
       if (!destination) {
-        newCanvas = remove( 
-          this.state.canvas[source.droppableId], 
-          source, 
-          algorithm, 
+        newCanvas = remove(
+          this.state.canvas[source.droppableId],
+          source,
+          algorithm,
           lineArray
           )
         let merged = {...this.state.canvas, ...newCanvas};
@@ -159,21 +159,21 @@ export default class Main extends Component {
         this.calculateResults()
         return;
       }
-  
+
       switch (source.droppableId) {
         case destination.droppableId:
-          newCanvas[destination.droppableId] = reorder( 
-            this.state.canvas[source.droppableId], 
-            source.index, 
-            destination.index, 
-            destination, 
-            algorithm, 
+          newCanvas[destination.droppableId] = reorder(
+            this.state.canvas[source.droppableId],
+            source.index,
+            destination.index,
+            destination,
+            algorithm,
             lineArray)
-            
+
           this.setState({ canvas: newCanvas}, () => {
             this.addToHistory()
           });
-  
+
           break;
         case findCopyItemsId(source.droppableId):
           newCanvas[destination.droppableId] = copy(
@@ -197,14 +197,14 @@ export default class Main extends Component {
             algorithm,
             lineArray
             )
-            
+
           let merged = {...this.state.canvas, ...newCanvas};
           this.setState({ canvas: merged }, () => {
             this.addToHistory()
           });
           break;
       }
-  
+
       this.calculateResults()
       console.log("Algor: " + localStorage.getItem("algorithm"));
       console.log(this.state.canvas);
@@ -295,7 +295,7 @@ export default class Main extends Component {
               this.setState({is_submitted: true});
             }
             else alert("Something went wrong and your circuit couldn't be submitted");
-          }        
+          }
         }
       } else alert("Make sure your circuit is valid before submitting");
     } catch (error) {
@@ -328,7 +328,7 @@ export default class Main extends Component {
       const circuit_output = escapeSpecialCharacters(this.state.results);
       var algorithm_name = getAlgorithmName()
       const new_save = algorithm_name === "null" || algorithm_name.length === 0;
-      
+
       if (new_save) {
         var valid = false;
         do {
@@ -375,8 +375,16 @@ export default class Main extends Component {
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers > 0) {
         vers = vers - 1;
-        this.setState({canvas: 
+        this.setState({canvas:
           history[vers]
+        }, () => {
+          for(var i = 0; i < lineArray.length; i++) {
+            algorithm[i] = [];
+            [this.state.canvas[lineArray[i][1]]].map(function (item) {
+              algorithm[i].push(item[0]);
+            });
+          }
+          localStorage.setItem('algorithm', JSON.stringify(algorithm));
         });
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
@@ -391,8 +399,16 @@ export default class Main extends Component {
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers < finalvers) {
         vers = vers + 1;
-        this.setState({canvas: 
+        this.setState({canvas:
           history[vers]
+        }, () => {
+          for(var i = 0; i < lineArray.length; i++) {
+            algorithm[i] = [];
+            [this.state.canvas[lineArray[i][1]]].map(function (item) {
+              algorithm[i].push(item[0]);
+            });
+          }
+          localStorage.setItem('algorithm', JSON.stringify(algorithm));
         });
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
