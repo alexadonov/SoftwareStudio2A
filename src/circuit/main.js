@@ -3,7 +3,7 @@ import uuid from 'uuid/v4';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
-import { saveCircuit, getResults, healthCheck, submitCircuit } from '../circuit/apicaller';
+import { saveCircuit, getResults, healthCheck, deleteCircuit, retrieveCircuits, submitCircuit } from '../circuit/apicaller';
 import { Dropdown } from 'react-bootstrap';
 import Alert from 'react-bootstrap/Alert'
 import jwt_decode from 'jwt-decode';

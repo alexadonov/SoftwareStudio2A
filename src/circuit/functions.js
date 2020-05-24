@@ -140,11 +140,9 @@ export const getCircuitInput = (algorithm) => {
   return circuit_input;
 }
 
+// Gets student id and returns it (if it doesn't exist, returns NaN)
 export const getStudentID = () => {
   let student_id = localStorage.getItem('student_id');
-  if (student_id === null || student_id === "null") {
-    student_id = null;
-  }
   return parseInt(student_id);
 }
 
