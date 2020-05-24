@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import logo from '../images/logo.png';
 import styled from 'styled-components';
-import {vresetTempStorage } from '../circuit/functions.js';
+import {resetTempStorage } from '../circuit/functions.js';
 const Title = styled.div`
 padding:14px 5px 14px 0px;
 `;
