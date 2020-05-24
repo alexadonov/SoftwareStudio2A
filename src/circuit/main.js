@@ -259,15 +259,28 @@ export default class Main extends Component {
   }
 
   // Refreshes the page so user can restart algorithm
-  onDelete = (e) => {
-    e.preventDefault();
+  onDelete = () => {
     if (window.confirm("Are you sure you want to delete this algorithm?")) {
+      this.delete();
+    }
+  }
+
+  delete = async () => {
+    try {
       // Delete from database
       // Delete from local storage
-      resetTempStorage();
-      window.location.href = '/dnd';
-    } else {
-      return;
+      const student_id = getStudentID();
+      const algorithm_name = getAlgorithmName();
+      const deleted = await deleteCircuit(student_id, algorithm_name);
+      if (!deleted) {
+        alert("Something went wrong and the current algorithm couldn't be deleted")
+      } else {
+        resetTempStorage();
+        window.location.href = '/dnd';
+      }
+    } catch (error) {
+      console.log(error);
+      alert(`An error occured: "${error}"`);
     }
   }
 
@@ -470,17 +483,7 @@ export default class Main extends Component {
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
                   </div>
                   <div className="col">
-                    <Dropdown>
-                      <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        Delete
-                               </Dropdown.Toggle>
-
-                      <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1" onClick={this.onDelete}>Algorithm 1</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2" onClick={this.onDelete}>Algorithm 2</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3" onClick={this.onDelete}>Algorithm 3</Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted} >Delete</button>
                   </div>
                   <div className="col">
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
