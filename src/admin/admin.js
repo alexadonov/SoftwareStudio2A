@@ -117,7 +117,8 @@ export default class Admin extends Component {
 
   render() {
     const admin_id = getStudentID();
-    if (admin_id) {
+    const is_admin = parseInt(localStorage.getItem('isAdmin'));
+    if (admin_id && is_admin) {
       return (
         <BrowserRouter>
           <div className="App">
