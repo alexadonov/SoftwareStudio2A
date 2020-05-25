@@ -295,12 +295,10 @@ export default class Main extends Component {
   getList = () => {
     let student_id = getStudentID();
     var list = [];
-    retrieveCircuits({'student_id': student_id}).then(res => {
+    retrieveCircuits({'student_id': student_id, 'is_deleted': false, 'is_submitted': false}).then(res => {
       console.log(res);
       for(var i = 0; i < res['circuits'].length; i++) {
-        if(res['circuits'][i].is_deleted != 1 && res['circuits'][i].is_submitted != 1) {
           list[i] = res['circuits'][i];
-        }
       }
       this.setState({ all: list});
       console.log(this.state.all);
