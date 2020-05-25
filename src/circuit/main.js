@@ -282,7 +282,6 @@ export default class Main extends Component {
         } else {
           alert(`"${algorithm_name}" was deleted successfully!`)
           // resetTempStorage();
-          this.getList();
           window.location.href = '/dnd';
         }
       }
@@ -292,17 +291,15 @@ export default class Main extends Component {
     }
   }
 
-  getList = () => {
+  getList = async () => {
     let student_id = getStudentID();
     var list = [];
-    retrieveCircuits({'student_id': student_id, 'is_deleted': false, 'is_submitted': false}).then(res => {
-      console.log(res);
-      for(var i = 0; i < res['circuits'].length; i++) {
-          list[i] = res['circuits'][i];
-      }
-      this.setState({ all: list});
-      console.log(this.state.all);
-    });
+    const results = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0});
+    for(var i = 0; i < results['circuits'].length; i++) {
+      list[i] = results['circuits'][i];
+    }
+    this.setState({ all: list});
+    console.log(this.state.all);
   }
 
 
@@ -354,6 +351,7 @@ export default class Main extends Component {
 
   onSave = () => {
     this.save();
+    this.getList();
   }
 
   save = async () => {
