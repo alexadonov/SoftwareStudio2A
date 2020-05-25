@@ -91,7 +91,8 @@ export default class Main extends Component {
       circuit_valid_msg: verifyCircuit(algorithm),
       is_new: true,
       is_graded: false,
-      grade: 0
+      grade: 0,
+      all: []
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -113,7 +114,6 @@ export default class Main extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onExport = this.onExport.bind(this);
-    // this.results = "Add a gate to the circuit to get started"
   }
 
   componentDidMount() {
@@ -123,6 +123,7 @@ export default class Main extends Component {
     this.redoButton.current.disabled = (vers === finalvers);
     this.calculateResults();
     const token = localStorage.token;
+    this.getList();
   }
 
   // This is what combines everything to make move items work
@@ -153,8 +154,8 @@ export default class Main extends Component {
           source,
           algorithm,
           lineArray
-          )
-        let merged = {...this.state.canvas, ...newCanvas};
+        )
+        let merged = { ...this.state.canvas, ...newCanvas };
         this.setState({ canvas: merged }, () => {
           this.addToHistory()
         });
@@ -173,7 +174,7 @@ export default class Main extends Component {
             algorithm,
             lineArray)
 
-          this.setState({ canvas: newCanvas}, () => {
+          this.setState({ canvas: newCanvas }, () => {
             this.addToHistory()
           });
 
@@ -186,7 +187,7 @@ export default class Main extends Component {
             destination,
             algorithm,
             lineArray
-            )
+          )
           this.setState({ canvas: newCanvas }, () => {
             this.addToHistory()
           });
@@ -199,9 +200,9 @@ export default class Main extends Component {
             destination,
             algorithm,
             lineArray
-            )
+          )
 
-          let merged = {...this.state.canvas, ...newCanvas};
+          let merged = { ...this.state.canvas, ...newCanvas };
           this.setState({ canvas: merged }, () => {
             this.addToHistory()
           });
@@ -220,7 +221,7 @@ export default class Main extends Component {
       var id = uuid();
       let newCanvas = this.state.canvas;
       newCanvas[id] = [];
-      this.setState({canvas: newCanvas});
+      this.setState({ canvas: newCanvas });
       lineArray[lineArray.length] = [lineArray.length, id];
       algorithm[algorithm.length] = [];
       this.calculateResults();
@@ -244,7 +245,7 @@ export default class Main extends Component {
     // Shows a drop down list of these so the user can choose
     var id = lineArray[0][1];
 
-    this.setState({canvas: { [id]: getItems(0) }});
+    this.setState({ canvas: { [id]: getItems(0) } });
     algorithm[0] = getItems(0);
     console.log(this.state.canvas[id]);
 
@@ -254,7 +255,7 @@ export default class Main extends Component {
 
       for (var j = 1; j < length; j++) {
         var id = uuid();
-        this.setState({canvas: { [id]: getItems(j) }});
+        this.setState({ canvas: { [id]: getItems(j) } });
         lineArray[lineArray.length] = new Array(lineArray.length, id);
         algorithm[algorithm.length] = getItems(j);
       }
@@ -263,25 +264,24 @@ export default class Main extends Component {
   }
 
   // Refreshes the page so user can restart algorithm
-  onDelete = () => {
-    if (window.confirm("Are you sure you want to delete this algorithm?")) {
-      this.delete();
+  onDelete = (algorithm_name) => {
+    if (window.confirm("Are you sure you want to delete this algorithm? ")) {
+      this.delete(algorithm_name);
     }
   }
 
-  delete = async () => {
+  delete = async (algorithm_name) => {
     try {
       // Delete from database
       // Delete from local storage
-      if (!this.state.is_new && !this.state.is_submitted) {
+      if (!this.state.is_submitted) {
         const student_id = getStudentID();
-        const algorithm_name = getAlgorithmName();
         const deleted = await deleteCircuit(student_id, algorithm_name);
         if (!deleted) {
           alert("Something went wrong and the current algorithm couldn't be deleted")
         } else {
           alert(`"${algorithm_name}" was deleted successfully!`)
-          resetTempStorage();
+          // resetTempStorage();
           window.location.href = '/dnd';
         }
       }
@@ -290,6 +290,19 @@ export default class Main extends Component {
       alert(`An error occured: "${error}"`);
     }
   }
+
+  getList = async () => {
+    let student_id = getStudentID();
+    var list = [];
+    const results = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0});
+    for(var i = 0; i < results['circuits'].length; i++) {
+      list[i] = results['circuits'][i];
+    }
+    this.setState({ all: list});
+    console.log(this.state.all);
+  }
+
+
 
   // Submits the algorithm
   onSubmit = () => {
@@ -312,10 +325,10 @@ export default class Main extends Component {
             submitted = await submitCircuit(studentid, algorithm_name);
             if (submitted) {
               alert(`Your algorithm "${algorithm_name}" has been succesfully submitted!`);
-              this.setState({is_submitted: true});
+              this.setState({ is_submitted: true });
             }
             else alert("Something went wrong and your algorithm couldn't be submitted");
-          }        
+          }
         }
       } else alert("Make sure your algorithm is valid before submitting");
     } catch (error) {
@@ -328,16 +341,17 @@ export default class Main extends Component {
   calculateResults = () => {
     let circuit_input = getCircuitInput(algorithm);
     let valid_msg = verifyCircuit(algorithm)
-    getResults(circuit_input).then( res => {
-      this.setState({results: res})
+    getResults(circuit_input).then(res => {
+      this.setState({ results: res })
       console.log("results:", this.state.results)
     });
-    this.setState({circuit_valid_msg: valid_msg})
+    this.setState({ circuit_valid_msg: valid_msg })
     this.forceUpdate();
   }
 
   onSave = () => {
     this.save();
+    this.getList();
   }
 
   save = async () => {
@@ -360,7 +374,7 @@ export default class Main extends Component {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
           if (saved) {
             setAlgorithmName(algorithm_name);
-            this.setState({is_new: false});
+            this.setState({ is_new: false });
           }
         }
 
@@ -399,10 +413,11 @@ export default class Main extends Component {
       if (vers > 0) {
 
         vers = vers - 1;
-        this.setState({canvas:
-          history[vers]
+        this.setState({
+          canvas:
+            history[vers]
         }, () => {
-          for(var i = 0; i < lineArray.length; i++) {
+          for (var i = 0; i < lineArray.length; i++) {
             algorithm[i] = [];
             [this.state.canvas[lineArray[i][1]]].map(function (item) {
               algorithm[i].push(item[0]);
@@ -424,10 +439,11 @@ export default class Main extends Component {
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers < finalvers) {
         vers = vers + 1;
-        this.setState({canvas:
-          history[vers]
+        this.setState({
+          canvas:
+            history[vers]
         }, () => {
-          for(var i = 0; i < lineArray.length; i++) {
+          for (var i = 0; i < lineArray.length; i++) {
             algorithm[i] = [];
             [this.state.canvas[lineArray[i][1]]].map(function (item) {
               algorithm[i].push(item[0]);
@@ -468,7 +484,7 @@ export default class Main extends Component {
       }
       let newState = this.state.canvas;
       delete newState[list];
-      this.setState({canvas: newState});
+      this.setState({ canvas: newState });
       algorithm.splice(i, 1);
       lineArray.splice(i, 1);
       console.log(algorithm);
@@ -485,6 +501,8 @@ export default class Main extends Component {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
+    const student_id = getStudentID();
+    if (student_id) {
     return (
       <div className="App">
         <NavBar />
@@ -511,7 +529,16 @@ export default class Main extends Component {
                   </div>
 
                   <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
+                    <Dropdown>
+                      <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={this.state.is_submitted }>
+                        Delete
+                      </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                        {this.state.all.map((item, i) => {
+                          return (<Dropdown.Item key={i} onClick={() => {this.onDelete(item.circuit_name)}}>{item.circuit_name}</Dropdown.Item>
+                        )})}
+                      </Dropdown.Menu>
+                    </Dropdown>
                   </div>
                   <div className="col">
                     <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
@@ -579,15 +606,55 @@ export default class Main extends Component {
                     <SubTitle>Parametrized</SubTitle>
                     <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
                   </div>
+                  <Content>
+                    <Title>Create Your Algorithm</Title>
+                    {Object.keys(this.state.canvas).map((list, i) => (
+                      <div>
+                        <Button onClick={() => this.deleteLine(list, i)}>X</Button>
+                        <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
+                      </div>
+                    ))}
+                    <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
+                    <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
+                      <Alert.Heading>Successfully submitted</Alert.Heading>
+                    </Alert>
+                    <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
+                      <Alert.Heading>Successfully submitted and graded: {this.state.grade}/100</Alert.Heading>
+                    </Alert>
+                  </Content>
+                  <Content>
+                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
+                  </Content>
                 </div>
-                <div className="row" style={{ paddingLeft: '5%' }}>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Sampling</SubTitle>
-                    <Toolbox droppableId="SAMPLING" list={SAMPLING} />
+                <div class="col-4">
+                  <Title>Toolbox</Title>
+                  <div className="row" style={{ paddingLeft: '5%' }}>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Displays</SubTitle>
+                      <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Probes</SubTitle>
+                      <Toolbox droppableId="PROBES" list={PROBES} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Half Turns</SubTitle>
+                      <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
+                    </div>
                   </div>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Parity</SubTitle>
-                    <Toolbox droppableId="PARITY" list={PARITY} />
+                  <div className="row" style={{ paddingLeft: '5%' }}>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Quarter Turns</SubTitle>
+                      <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Eighth Turns</SubTitle>
+                      <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
+                    </div>
+                    <div class="col" style={{ padding: 0 }}>
+                      <SubTitle>Parametrized</SubTitle>
+                      <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
+                    </div>
                   </div>
                   */}
 
@@ -606,10 +673,13 @@ export default class Main extends Component {
                   </div>
                 </div>
               </div>
-            </div>
-          </DragDropContext>
-        </body>
-      </div>
-    );
+            </DragDropContext>
+          </body>
+        </div>
+      );
+    }
+    else {
+      window.location.href = '/';
+    }
   }
 }

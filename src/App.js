@@ -3,6 +3,8 @@ import {BrowserRouter, Route} from 'react-router-dom';
 import Home from "./home.js";
 import Login from "./users/login.js";
 import Register from "./users/register.js";
+import AdminRegister from "./admin/adminRegister.js";
+import Admin from "./admin/admin.js";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Main from "./circuit/main.js";
 /**
@@ -58,9 +60,21 @@ class App extends Component {
               </div>
             )}/>
 
+            <Route exact={true} path='/admin-register' render={() => (
+              <div className="App">
+                <AdminRegister />
+              </div>
+            )}/>
+
             <Route exact={true} path='/dnd' render={() => (
               <div className="App">
                 <Main />
+              </div>
+            )}/>
+
+            <Route exact={true} path='/admin' render={() => (
+              <div className="App">
+                <Admin />
               </div>
             )}/>
 
