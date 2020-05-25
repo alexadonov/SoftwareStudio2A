@@ -52,6 +52,7 @@ export const copy = (source, destination, droppableSource, droppableDestination,
 
 
     var destination_id = getId(droppableDestination, lineArray);
+    console.log(destination_id)
     algorithm[destination_id].splice(droppableDestination.index, 0, item);
     localStorage.setItem("algorithm", JSON.stringify(algorithm));
 
@@ -182,12 +183,17 @@ export const isValidAlgorithmName = async (algorithm_name) => {
   return false;
 }
 
-export const resetTempStorage = () => {
-  sessionStorage.setItem("currentversion", 0);
-  sessionStorage.setItem("finalversion", 0);
-  localStorage.setItem('algorithm', null);
-  localStorage.setItem('algorithm_name', null)
-  localStorage.setItem("saved", false);
+export const resetTempStorage = (clear_all=false) => {
+  if (clear_all) {
+    localStorage.clear();
+    sessionStorage.clear();
+  } else {
+    sessionStorage.setItem("currentversion", 0);
+    sessionStorage.setItem("finalversion", 0);
+    localStorage.setItem('algorithm', null);
+    localStorage.setItem('algorithm_name', null)
+    localStorage.setItem("saved", false);
+  }
 }
 
 export const verifyCircuit = (algorithm) => {

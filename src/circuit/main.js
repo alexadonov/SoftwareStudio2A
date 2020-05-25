@@ -88,7 +88,10 @@ export default class Main extends Component {
       },
       results: {},
       is_submitted: false,
-      circuit_valid_msg: verifyCircuit(algorithm)
+      circuit_valid_msg: verifyCircuit(algorithm),
+      is_new: true,
+      is_graded: false,
+      grade: 0
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -128,7 +131,7 @@ export default class Main extends Component {
     if (!this.state.is_submitted) {
       const { source, destination } = result;
       let newCanvas = this.state.canvas;
-  
+
       if ((source.droppableId === "DISPLAYS" ||
         source.droppableId === "PROBES" ||
         source.droppableId === "HALF_TURNS" ||
@@ -141,13 +144,13 @@ export default class Main extends Component {
         (!destination || source.droppableId === destination.droppableId)) {
         return;
       }
-  
+
       // dropped outside the list
       if (!destination) {
-        newCanvas = remove( 
-          this.state.canvas[source.droppableId], 
-          source, 
-          algorithm, 
+        newCanvas = remove(
+          this.state.canvas[source.droppableId],
+          source,
+          algorithm,
           lineArray
           )
         let merged = {...this.state.canvas, ...newCanvas};
@@ -158,21 +161,21 @@ export default class Main extends Component {
         this.calculateResults()
         return;
       }
-  
+
       switch (source.droppableId) {
         case destination.droppableId:
-          newCanvas[destination.droppableId] = reorder( 
-            this.state.canvas[source.droppableId], 
-            source.index, 
-            destination.index, 
-            destination, 
-            algorithm, 
+          newCanvas[destination.droppableId] = reorder(
+            this.state.canvas[source.droppableId],
+            source.index,
+            destination.index,
+            destination,
+            algorithm,
             lineArray)
-            
+
           this.setState({ canvas: newCanvas}, () => {
             this.addToHistory()
           });
-  
+
           break;
         case findCopyItemsId(source.droppableId):
           newCanvas[destination.droppableId] = copy(
@@ -196,14 +199,14 @@ export default class Main extends Component {
             algorithm,
             lineArray
             )
-            
+
           let merged = {...this.state.canvas, ...newCanvas};
           this.setState({ canvas: merged }, () => {
             this.addToHistory()
           });
           break;
       }
-  
+
       this.calculateResults()
       console.log("Algor: " + localStorage.getItem("algorithm"));
       console.log(this.state.canvas);
@@ -219,6 +222,7 @@ export default class Main extends Component {
       this.setState({canvas: newCanvas});
       lineArray[lineArray.length] = [lineArray.length, id];
       algorithm[algorithm.length] = [];
+      this.calculateResults();
     }
   }
 
@@ -258,15 +262,31 @@ export default class Main extends Component {
   }
 
   // Refreshes the page so user can restart algorithm
-  onDelete = (e) => {
-    e.preventDefault();
+  onDelete = () => {
     if (window.confirm("Are you sure you want to delete this algorithm?")) {
+      this.delete();
+    }
+  }
+
+  delete = async () => {
+    try {
       // Delete from database
       // Delete from local storage
-      resetTempStorage();
-      window.location.href = '/dnd';
-    } else {
-      return;
+      if (!this.state.is_new && !this.state.is_submitted) {
+        const student_id = getStudentID();
+        const algorithm_name = getAlgorithmName();
+        const deleted = await deleteCircuit(student_id, algorithm_name);
+        if (!deleted) {
+          alert("Something went wrong and the current algorithm couldn't be deleted")
+        } else {
+          alert(`"${algorithm_name}" was deleted successfully!`)
+          resetTempStorage();
+          window.location.href = '/dnd';
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      alert(`An error occured: "${error}"`);
     }
   }
 
@@ -290,13 +310,13 @@ export default class Main extends Component {
             const algorithm_name = getAlgorithmName();
             submitted = await submitCircuit(studentid, algorithm_name);
             if (submitted) {
-              alert("Your circuit as been succesfully submitted!");
+              alert(`Your algorithm "${algorithm_name}" has been succesfully submitted!`);
               this.setState({is_submitted: true});
             }
-            else alert("Something went wrong and your circuit couldn't be submitted");
+            else alert("Something went wrong and your algorithm couldn't be submitted");
           }        
         }
-      } else alert("Make sure your circuit is valid before submitting");
+      } else alert("Make sure your algorithm is valid before submitting");
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
@@ -327,7 +347,7 @@ export default class Main extends Component {
       const circuit_output = escapeSpecialCharacters(this.state.results);
       var algorithm_name = getAlgorithmName()
       const new_save = algorithm_name === "null" || algorithm_name.length === 0;
-      
+
       if (new_save) {
         var valid = false;
         do {
@@ -337,7 +357,10 @@ export default class Main extends Component {
 
         if (valid) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
-          if (saved) setAlgorithmName(algorithm_name);
+          if (saved) {
+            setAlgorithmName(algorithm_name);
+            this.setState({is_new: false});
+          }
         }
 
       } else {
@@ -348,8 +371,8 @@ export default class Main extends Component {
       }
       if (saved && algorithm_name) {
         localStorage.setItem("saved", true);
-        alert("Your circuit as been succesfully saved!");
-      } else if (algorithm_name) alert("Something went wrong and your circuit couldn't be saved");
+        alert(`Your algorithm "${algorithm_name}" as been succesfully saved!`);
+      } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
@@ -373,9 +396,19 @@ export default class Main extends Component {
       var vers = parseInt(sessionStorage.getItem("currentversion"));
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers > 0) {
+
         vers = vers - 1;
-        this.setState({canvas: 
+        this.setState({canvas:
           history[vers]
+        }, () => {
+          for(var i = 0; i < lineArray.length; i++) {
+            algorithm[i] = [];
+            [this.state.canvas[lineArray[i][1]]].map(function (item) {
+              algorithm[i].push(item[0]);
+            });
+          }
+          localStorage.setItem('algorithm', JSON.stringify(algorithm));
+          this.calculateResults();
         });
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
@@ -390,8 +423,17 @@ export default class Main extends Component {
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers < finalvers) {
         vers = vers + 1;
-        this.setState({canvas: 
+        this.setState({canvas:
           history[vers]
+        }, () => {
+          for(var i = 0; i < lineArray.length; i++) {
+            algorithm[i] = [];
+            [this.state.canvas[lineArray[i][1]]].map(function (item) {
+              algorithm[i].push(item[0]);
+            });
+          }
+          localStorage.setItem('algorithm', JSON.stringify(algorithm));
+          this.calculateResults();
         });
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
@@ -432,9 +474,10 @@ export default class Main extends Component {
       for (var j = i; j < lineArray.length; j++) {
         lineArray[j][0]--;
       }
-      console.log(lineArray)
+      console.log(lineArray);
       localStorage.setItem("algorithm", JSON.stringify(algorithm));
-      this.addToHistory()
+      this.addToHistory();
+      this.calculateResults();
     }
   }
 
@@ -443,49 +486,38 @@ export default class Main extends Component {
   render() {
     const student_id = getStudentID();
     if (student_id) {
-      return (
-        <div className="App">
-          <NavBar />
-          <body onLoad={this.onLoad}>
-            <DragDropContext onDragEnd={this.onDragEnd}>
-              <div class="row">
-                <div class="col-8">
+    return (
+      <div className="App">
+        <NavBar />
+        <body onLoad={this.onLoad}>
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            <div class="row">
+              <div class="col-8">
 
-                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
-                    <div className="col">
-                      <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                          Load
-                                </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
-                          <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
-                          <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
-                    <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
-                    </div>
-                    <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
-                    </div>
-                    <div className="col">
-                      <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                          Delete
-                                </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                          <Dropdown.Item href="#/action-1" onClick={this.onDelete}>Algorithm 1</Dropdown.Item>
-                          <Dropdown.Item href="#/action-2" onClick={this.onDelete}>Algorithm 2</Dropdown.Item>
-                          <Dropdown.Item href="#/action-3" onClick={this.onDelete}>Algorithm 3</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
-                    <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
-                    </div>
+                <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                  <div className="col">
+                    <Dropdown>
+                      <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                        Load
+                               </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
+                        <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
+                        <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+                  <div className="col">
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
+                  </div>
+                  <div className="col">
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
+                  </div>
+                  <div className="col">
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
+                  </div>
+                  <div className="col">
+                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
                   </div>
 
                   <div class="row" style={{ margin: '8px', padding: '1%' }}>
@@ -502,6 +534,47 @@ export default class Main extends Component {
                     <div className="col">
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} disabled={this.state.is_submitted} >Redo</button>
                     </div>
+                  ))}
+                  <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg!=="valid"} >{this.state.circuit_valid_msg}</Alert>
+                  <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
+                    <Alert.Heading>Successfully submitted</Alert.Heading>
+                  </Alert>
+                  <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
+                    <Alert.Heading>Successfully submitted and graded: {this.state.grade}/100</Alert.Heading>
+                  </Alert>
+                </Content>
+                <Content>
+                  <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
+                </Content>
+              </div>
+              <div class="col-4">
+                <Title>Toolbox</Title>
+                <div className="row" style={{ paddingLeft: '5%' }}>
+                  <div class="col" style={{ padding: 0 }}>
+                    <SubTitle>Displays</SubTitle>
+                    <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
+                  </div>
+                  <div class="col" style={{ padding: 0 }}>
+                    <SubTitle>Probes</SubTitle>
+                    <Toolbox droppableId="PROBES" list={PROBES} />
+                  </div>
+                  <div class="col" style={{ padding: 0 }}>
+                    <SubTitle>Half Turns</SubTitle>
+                    <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
+                  </div>
+                </div>
+                <div className="row" style={{ paddingLeft: '5%' }}>
+                  <div class="col" style={{ padding: 0 }}>
+                    <SubTitle>Quarter Turns</SubTitle>
+                    <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
+                  </div>
+                  <div class="col" style={{ padding: 0 }}>
+                    <SubTitle>Eighth Turns</SubTitle>
+                    <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
+                  </div>
+                  <div class="col" style={{ padding: 0 }}>
+                    <SubTitle>Parametrized</SubTitle>
+                    <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
                   </div>
                   <Content>
                     <Title>Create Your Algorithm</Title>
