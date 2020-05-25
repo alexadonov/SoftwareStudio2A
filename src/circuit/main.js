@@ -25,7 +25,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import { remove, reorder, copy, move, getSavedCircuits, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -91,7 +91,8 @@ export default class Main extends Component {
       circuit_valid_msg: verifyCircuit(algorithm),
       is_new: true,
       is_graded: false,
-      grade: 0
+      grade: 0,
+      all: []
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -122,6 +123,7 @@ export default class Main extends Component {
     this.redoButton.current.disabled = (vers === finalvers);
     this.calculateResults();
     const token = localStorage.token;
+    this.getList();
   }
 
   // This is what combines everything to make move items work
@@ -262,25 +264,25 @@ export default class Main extends Component {
   }
 
   // Refreshes the page so user can restart algorithm
-  onDelete = () => {
-    if (window.confirm("Are you sure you want to delete this algorithm?")) {
-      this.delete();
+  onDelete = (algorithm_name) => {
+    if (window.confirm("Are you sure you want to delete this algorithm? ")) {
+      this.delete(algorithm_name);
     }
   }
 
-  delete = async () => {
+  delete = async (algorithm_name) => {
     try {
       // Delete from database
       // Delete from local storage
-      if (!this.state.is_new && !this.state.is_submitted) {
+      if (!this.state.is_submitted) {
         const student_id = getStudentID();
-        const algorithm_name = getAlgorithmName();
         const deleted = await deleteCircuit(student_id, algorithm_name);
         if (!deleted) {
           alert("Something went wrong and the current algorithm couldn't be deleted")
         } else {
           alert(`"${algorithm_name}" was deleted successfully!`)
-          resetTempStorage();
+          // resetTempStorage();
+          this.getList();
           window.location.href = '/dnd';
         }
       }
@@ -289,6 +291,21 @@ export default class Main extends Component {
       alert(`An error occured: "${error}"`);
     }
   }
+
+  getList = () => {
+    let student_id = getStudentID();
+    var list = [];
+    retrieveCircuits({'student_id': student_id}).then(res => {
+      console.log(res);
+      for(var i = 0; i < res['circuits'].length; i++) {
+        list[i] = res['circuits'][i];
+      }
+      this.setState({ all: list});
+      console.log(this.state.all);
+    });
+  }
+
+
 
   // Submits the algorithm
   onSubmit = () => {
@@ -516,7 +533,16 @@ export default class Main extends Component {
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
                     </div>
                     <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={this.state.is_submitted }>
+                          Delete
+                        </Dropdown.Toggle>
+                          <Dropdown.Menu>
+                          {this.state.all.map((item, i) => {
+                            return (<Dropdown.Item key={i} onClick={() => {this.onDelete(item.circuit_name)}}>{item.circuit_name}</Dropdown.Item>
+                          )})}
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </div>
                     <div className="col">
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
