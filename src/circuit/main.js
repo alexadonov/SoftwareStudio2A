@@ -298,7 +298,9 @@ export default class Main extends Component {
     retrieveCircuits({'student_id': student_id}).then(res => {
       console.log(res);
       for(var i = 0; i < res['circuits'].length; i++) {
-        list[i] = res['circuits'][i];
+        if(res['circuits'][i].is_deleted != 1) {
+          list[i] = res['circuits'][i];
+        }
       }
       this.setState({ all: list});
       console.log(this.state.all);
