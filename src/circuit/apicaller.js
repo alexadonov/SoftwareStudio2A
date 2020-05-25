@@ -232,3 +232,20 @@ export const healthCheck = async () => {
     }
 
 }
+
+export const loadCircuit = async () => {
+    try {
+        const url = proxy + "load-circuit";
+
+        var response = await fetch(url, {
+            method: 'GET'
+        });
+
+        var status = await response.status;
+        console.log('health response: ', response);
+        console.log('health status: ', status);
+    } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+    }
+}

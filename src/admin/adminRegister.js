@@ -6,7 +6,7 @@ import { Form, Button, Label } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
-import { register, login } from './userInfo';
+import { register, login } from '../users/userInfo';
 
 const Body = styled.body`
   background-color: white;
@@ -28,7 +28,7 @@ const Body = styled.body`
   vertical-align: text-top;
   `;
 
-class Register extends Component {
+class adminRegister extends Component {
 
   constructor(props) {
      super(props);
@@ -50,7 +50,6 @@ class Register extends Component {
          password: '',
          confirmPassword: '',
          confirmAdmin: '',
-         invalid_details: false,
          mismatched_password: false
      }
   }
@@ -94,14 +93,10 @@ class Register extends Component {
   onSubmit = (e) => {
     e.preventDefault();
 
-    this.setState({
-      mismatched_password: false
-    });
-
     const newUser = {
       // need to add admin registration 
       student_id: this.state.studentID,
-      is_admin: 0,
+      is_admin: 1,
       first_name: this.state.fname,
       last_name: this.state.lname,
       email: this.state.email,
@@ -132,7 +127,6 @@ class Register extends Component {
         if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
           /*
           localStorage.setItem('email', this.state.email);
-          localStorage.setItem('student_id', this.state.studentID);
           localStorage.setItem('password', this.state.password);
           localStorage.setItem('isAdmin', this.state.is_admin);
           localStorage.setItem('loggedIn', true);
@@ -162,7 +156,7 @@ class Register extends Component {
         <Form className="form-background" onSubmit={this.onSubmit}>
         <Title style={{textAlign:"center"}}>
         <img src={logo} class="Uts-logo"/>
-        <Text>Register as a Student</Text>
+        <Text>Register as an Admin</Text>
         </Title>
 
           <Form.Group controlId="formBasicEmail">
@@ -174,11 +168,11 @@ class Register extends Component {
           </Form.Group>
 
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="text" name="studentID" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required/>
+            <Form.Control type="text" name="studentID" placeholder="Staff ID" value={this.state.studentID} onChange={this.onChangeStudentID} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicEmail">
-            <Form.Control type="email" name="email" placeholder="Student Email" value={this.state.email} onChange={this.onChangeEmail} required/>
+            <Form.Control type="email" name="email" placeholder="Staff Email" value={this.state.email} onChange={this.onChangeEmail} required/>
           </Form.Group>
 
           <Form.Group controlId="formBasicPassword">
@@ -192,7 +186,6 @@ class Register extends Component {
             Register
           </Button>
           <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
-            {console.log(this.state.mismatched_password)}
             {this.state.mismatched_password ? (
               "Password does not match." 
             ) : (
@@ -200,7 +193,7 @@ class Register extends Component {
             )}
           </Form.Text>
           <hr/>
-          <a href="/admin-register" role="button"><h6 class="register-text">Register as Admin.</h6></a>
+          <a href="/register" role="button"><h6 class="register-text">Register as Student.</h6></a>
           <a href="/" role="button"><h6 class="register-text">Already a member? Login here.</h6></a>
         </Form>
         </Body>
@@ -208,4 +201,4 @@ class Register extends Component {
       </BrowserRouter>
     );
   }
-} export default withRouter(Register);
+} export default withRouter(adminRegister);
