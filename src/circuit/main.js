@@ -25,7 +25,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, getSavedCircuits, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -298,7 +298,7 @@ export default class Main extends Component {
     retrieveCircuits({'student_id': student_id}).then(res => {
       console.log(res);
       for(var i = 0; i < res['circuits'].length; i++) {
-        if(res['circuits'][i].is_deleted != 1) {
+        if(res['circuits'][i].is_deleted != 1 && res['circuits'][i].is_submitted != 1) {
           list[i] = res['circuits'][i];
         }
       }
