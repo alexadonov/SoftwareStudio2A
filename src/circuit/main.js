@@ -262,7 +262,21 @@ export default class Main extends Component {
     }
     console.log(this.state.canvas);
   }
-
+  
+  load = async (algorithm_name) => {
+    try{
+     const student_id = getStudentID();
+     const load = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0});
+      if(!load){
+       alert("Something went wrong and the selected algorithm couldn't be loaded")
+      } else {
+       alert(`"${algorithm_name}" has been loaded`)
+      }
+    } catch (error) {
+      console.log(error);
+      alert(`An error occured: "${error}"`);
+    }
+   }
   // Refreshes the page so user can restart algorithm
   onDelete = (algorithm_name) => {
     if (window.confirm("Are you sure you want to delete this algorithm? ")) {
@@ -302,7 +316,7 @@ export default class Main extends Component {
     console.log(this.state.all);
   }
 
-
+   
 
   // Submits the algorithm
   onSubmit = () => {
