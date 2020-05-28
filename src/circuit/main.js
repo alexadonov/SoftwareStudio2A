@@ -231,14 +231,12 @@ export default class Main extends Component {
   }
 
   onCreate = () => {
-    //Checks the algorithm has been saved
+    // Checks the algorithm has been saved
     // if not, prompts user to save
     // Otherwise, clears session and begins a new one
-    if (window.confirm("Do you want to create a new algorithm?")) {
+    if (this.state.saved || window.confirm("You have unsaved changes - are you sure you want to create a new algorithm?")) {
       resetTempStorage();
       window.location.href = '/dnd';
-    } else {
-      return;
     }
   }
 
