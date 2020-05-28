@@ -191,8 +191,8 @@ export const resetTempStorage = (clear_all=false) => {
     sessionStorage.setItem("currentversion", 0);
     sessionStorage.setItem("finalversion", 0);
     localStorage.setItem('algorithm', null);
-    localStorage.setItem('algorithm_name', null)
-    localStorage.setItem("saved", false);
+    localStorage.setItem('algorithm_name', null);
+    //localStorage.setItem("saved", false);
   }
 }
 

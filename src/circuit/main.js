@@ -88,6 +88,7 @@ export default class Main extends Component {
       },
       results: {},
       is_submitted: false,
+      is_saved: false,
       circuit_valid_msg: verifyCircuit(algorithm),
       is_new: true,
       is_graded: false,
@@ -387,7 +388,8 @@ export default class Main extends Component {
         }
       }
       if (saved && algorithm_name) {
-        localStorage.setItem("saved", true);
+        //localStorage.setItem("saved", true);
+        this.setState({saved: true});
         alert(`Your algorithm "${algorithm_name}" as been succesfully saved!`);
       } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
@@ -403,7 +405,8 @@ export default class Main extends Component {
     history.slice(0, vers);
     sessionStorage.setItem("currentversion", vers);
     sessionStorage.setItem("finalversion", vers);
-    localStorage.setItem("saved", false);
+    //localStorage.setItem("saved", false);
+    this.setState({saved: false});
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = true;
   }
@@ -556,6 +559,7 @@ export default class Main extends Component {
                     </div>
                   </div>
                   <Content>
+                    <Alert style={{ marginLeft: 20 }} variant='warning' show={!this.state.saved} > You have unsaved changes</Alert>
                     <Title>Create Your Algorithm: {this.state.algorithm_name} </Title>
                     {Object.keys(this.state.canvas).map((list, i) => (
                       <div>
