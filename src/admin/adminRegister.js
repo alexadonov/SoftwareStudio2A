@@ -122,6 +122,7 @@ class adminRegister extends Component {
       // create new account
       register(newUser).then(res => {
         if (localStorage.regoSuccess === "True") {
+          localStorage.setItem('regoSuccess', 'False');
           this.props.history.push('/');
         } else {
           this.setState({
