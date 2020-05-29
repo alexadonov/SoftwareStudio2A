@@ -128,6 +128,7 @@ class Register extends Component {
       register(newUser).then(res => {
         if (localStorage.regoSuccess === "True") {
           localStorage.setItem('regoSuccess', 'False');
+          alert('Your new account was successfully created!');
           this.props.history.push('/');
         } else {
           this.setState({
@@ -187,7 +188,7 @@ class Register extends Component {
             {this.state.mismatched_password ? (
               "Password does not match." 
             ) : (
-              "Student ID or Email already exists."
+              "An account with this student ID/email exists."
             )}
           </Form.Text>
           <hr/>
