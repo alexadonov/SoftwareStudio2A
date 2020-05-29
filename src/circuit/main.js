@@ -294,11 +294,11 @@ export default class Main extends Component {
   getList = async () => {
     let student_id = getStudentID();
     var list = [];
-    const results = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0});
-    for(var i = 0; i < results['circuits'].length; i++) {
+    const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0 });
+    for (var i = 0; i < results['circuits'].length; i++) {
       list[i] = results['circuits'][i];
     }
-    this.setState({ all: list});
+    this.setState({ all: list });
     console.log(this.state.all);
   }
 
@@ -503,108 +503,63 @@ export default class Main extends Component {
   render() {
     const student_id = getStudentID();
     if (student_id) {
-    return (
-      <div className="App">
-        <NavBar />
-        <body onLoad={this.onLoad}>
-          <DragDropContext onDragEnd={this.onDragEnd}>
-            <div class="row">
-              <div class="col-8">
-
-                <div class="row" style={{ margin: '8px', padding: '1%' }}>
-                  <div className="col">
-                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
-                  </div>
-                  <div className="col">
-                    <Dropdown>
-                      <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        Load
+      return (
+        <div className="App">
+          <NavBar />
+          <body onLoad={this.onLoad}>
+            <DragDropContext onDragEnd={this.onDragEnd}>
+              <div class="row">
+                <div class="col-8">
+                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                    <div className="col">
+                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                    </div>
+                    <div className="col">
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                          Load
                                </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-
-                  <div className="col">
-                    <Dropdown>
-                      <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={this.state.is_submitted }>
-                        Delete
+                        <Dropdown.Menu>
+                          <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
+                          <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
+                          <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                    <div className="col">
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={this.state.is_submitted}>
+                          Delete
                       </Dropdown.Toggle>
                         <Dropdown.Menu>
-                        {this.state.all.map((item, i) => {
-                          return (<Dropdown.Item key={i} onClick={() => {this.onDelete(item.circuit_name)}}>{item.circuit_name}</Dropdown.Item>
-                        )})}
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
-                  </div>
-                </div>
-                <div class="row" style={{ margin: '8px', padding: '1%' }}>
-                  <div className="col">
-                    <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
-                  </div>
-                  <div className="col"></div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton} disabled={this.state.is_submitted} >Undo</button>
-                  </div>
-                  <div className="col">
-                    <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} disabled={this.state.is_submitted} >Redo</button>
-                  </div>
-                </div>
-                <Content>
-                  <Title>Create Your Algorithm</Title>
-                  {Object.keys(this.state.canvas).map((list, i) => (
-                    <div>
-                      <Button onClick={() => this.deleteLine(list, i)}>X</Button>
-                      <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
+                          {this.state.all.map((item, i) => {
+                            return (<Dropdown.Item key={i} onClick={() => { this.onDelete(item.circuit_name) }}>{item.circuit_name}</Dropdown.Item>
+                            )
+                          })}
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </div>
-                  ))}
-                  <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg!=="valid"} >{this.state.circuit_valid_msg}</Alert>
-                  <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
-                    <Alert.Heading>Successfully submitted</Alert.Heading>
-                  </Alert>
-                  <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
-                    <Alert.Heading>Successfully submitted and graded: {this.state.grade}/100</Alert.Heading>
-                  </Alert>
-                </Content>
-                <Content>
-                  <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
-                </Content>
-              </div>
-              <div class="col-4">
-                <Title>Toolbox</Title>
-                <div className="row" style={{ paddingLeft: '5%' }}>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Half Turns</SubTitle>
-                    <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
+                    </div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
+                    </div>
                   </div>
-                </div>
-                <div className="row" style={{ paddingLeft: '5%' }}>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Quarter Turns</SubTitle>
-                    <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
-                  </div>
-                </div>
-                <div className="row" style={{ paddingLeft: '5%' }}>
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Eighth Turns</SubTitle>
-                    <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
-                  </div>
-                  {/*
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Parametrized</SubTitle>
-                    <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
+                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                    <div className="col">
+                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
+                    </div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
+                    </div>
+                    <div className="col"></div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onUndo} ref={this.undoButton} disabled={this.state.is_submitted} >Undo</button>
+                    </div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} disabled={this.state.is_submitted} >Redo</button>
+                    </div>
                   </div>
                   <Content>
                     <Title>Create Your Algorithm</Title>
@@ -630,14 +585,6 @@ export default class Main extends Component {
                   <Title>Toolbox</Title>
                   <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Displays</SubTitle>
-                      <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Probes</SubTitle>
-                      <Toolbox droppableId="PROBES" list={PROBES} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
                       <SubTitle>Half Turns</SubTitle>
                       <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
                     </div>
@@ -647,39 +594,29 @@ export default class Main extends Component {
                       <SubTitle>Quarter Turns</SubTitle>
                       <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
                     </div>
+                  </div>
+                  <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
                       <SubTitle>Eighth Turns</SubTitle>
                       <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
                     </div>
+                  </div>
+                  <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Parametrized</SubTitle>
-                      <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
+                      <SubTitle>Miscellaneous</SubTitle>
+                      <Toolbox droppableId="EMPTY" list={EMPTY} />
+                      <Toolbox droppableId="PROBES" list={PROBES} />
                     </div>
                   </div>
-                  */}
-
                 </div>
-                <div className="row" style={{ paddingLeft: '5%' }}>
-                  {/*
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Displays</SubTitle>
-                    <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
-                  </div>
-                  */}
-                  <div class="col" style={{ padding: 0 }}>
-                    <SubTitle>Miscellaneous</SubTitle>
-                    <Toolbox droppableId="EMPTY" list={EMPTY} />
-                    <Toolbox droppableId="PROBES" list={PROBES} />
-                  </div>
                 </div>
-              </div>
             </DragDropContext>
           </body>
         </div>
       );
     }
     else {
-      window.location.href = '/';
+            window.location.href = '/';
     }
   }
 }
