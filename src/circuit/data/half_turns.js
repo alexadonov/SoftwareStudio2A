@@ -4,9 +4,9 @@ const HALF_TURNS = [
     {
       id: uuid(),
       group: "half_turns",
-      name: "Pauli Z Gate",
-      content: "Z",
-      explanation: "The phase flip gate. Negates phases when the qubit is ON."
+      name: "Pauli X Gate",
+      content: "X",
+      explanation: "The NOT gate. Toggles between ON and OFF."
     },
     {
       id: uuid(),
@@ -18,9 +18,9 @@ const HALF_TURNS = [
     {
       id: uuid(),
       group: "half_turns",
-      name: "Pauli X Gate",
-      content: "X",
-      explanation: "The NOT gate. Toggles between ON and OFF."
+      name: "Pauli Z Gate",
+      content: "Z",
+      explanation: "The phase flip gate. Negates phases when the qubit is ON."
     },
     {
       id: uuid(),
