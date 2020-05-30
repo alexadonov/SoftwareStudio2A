@@ -6,7 +6,7 @@ const EMPTY = [
     group: "empty",
     name: "Empty",
     content: "1",
-    explanation: "This is an empty block used to seperate columms."
+    explanation: "This is an empty block used to separate columms."
   },
 ];
 

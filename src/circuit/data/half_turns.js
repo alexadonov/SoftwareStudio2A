@@ -11,13 +11,6 @@ const HALF_TURNS = [
     {
       id: uuid(),
       group: "half_turns",
-      name: "Swap Gate (Half)",
-      content: "Swap",
-      explanation: "Swaps the values of two qubits (Place two in the same column)."
-    },
-    {
-      id: uuid(),
-      group: "half_turns",
       name: "Pauli Y Gate",
       content: "Y",
       explanation: "A combination of the X and Z gates."
@@ -36,6 +29,13 @@ const HALF_TURNS = [
       content: "H",
       explanation: "Creates simple superpositions. Maps ON to ON + OFF. Maps OFF to ON - OFF"
     },
+    {
+      id: uuid(),
+      group: "half_turns",
+      name: "Swap Gate (Half)",
+      content: "Swap",
+      explanation: "Swaps the values of two qubits (Place two in the same column)."
+    }
   ];
 
   export default HALF_TURNS;
