@@ -144,8 +144,9 @@ export const getCircuitInput = (algorithm) => {
 }
 
 // Gets student id and returns it (if it doesn't exist, returns NaN)
-export const getStudentID = () => {
-  return parseInt(localStorage.getItem('student_id'));
+export const getUserID = (is_student=true) => {
+  if (is_student) return parseInt(localStorage.getItem('student_id'));
+  else return parseInt(localStorage.getItem('admin_id'));
 }
 
 export const getAlgorithmName = () => {
@@ -170,7 +171,7 @@ export const isValidAlgorithmName = async (algorithm_name) => {
   if (algorithm_name === "null" || algorithm_name.length === 0) {
     alert("Please enter a valid name.");
   } else {
-    const student_id = getStudentID();
+    const student_id = getUserID();
     if (student_id) {
       const exists = await algorithmExists(student_id, algorithm_name);
       if (!exists) {

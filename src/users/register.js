@@ -157,27 +157,27 @@ class Register extends Component {
         <Text>Register as a Student</Text>
         </Title>
 
-          <Form.Group controlId="formBasicEmail">
+          <Form.Group controlId="formFName">
             <Form.Control type="text" name="fname" placeholder="First Name" value={this.state.fname} onChange={this.onChangeFirstName} required/>
           </Form.Group>
 
-          <Form.Group controlId="formBasicEmail">
+          <Form.Group controlId="formLName">
             <Form.Control type="text" name="lname" placeholder="Last Name" value={this.state.lname} onChange={this.onChangeLastName} required/>
           </Form.Group>
 
-          <Form.Group controlId="formBasicEmail">
-            <Form.Control type="text" name="studentID" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required/>
+          <Form.Group controlId="formStudentID">
+            <Form.Control type="number" name="studentID" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required/>
           </Form.Group>
 
-          <Form.Group controlId="formBasicEmail">
+          <Form.Group controlId="formEmail">
             <Form.Control type="email" name="email" placeholder="Student Email" value={this.state.email} onChange={this.onChangeEmail} required/>
           </Form.Group>
 
-          <Form.Group controlId="formBasicPassword">
+          <Form.Group controlId="formPassword">
             <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onChangePassword} required/>
           </Form.Group>
 
-          <Form.Group controlId="formBasicPassword">
+          <Form.Group controlId="formConfirmPassword">
             <Form.Control type="password" name="confirmPassword" placeholder="Confirm Password" value={this.state.confirmPassword} onChange={this.onChangeConfirmPassword} required/>
           </Form.Group>
           <Button variant="outline-dark" type="submit" className="button">

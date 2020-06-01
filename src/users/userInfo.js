@@ -27,10 +27,12 @@ export const login = async user => {
             email: user.email,
             password: user.password
         });
-      localStorage.setItem('student_id', res.data.student_id);
-
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('successful', 'True');
+        
+        if (res.data.is_admin) localStorage.setItem('admin_id', res.data.student_id);
+        else localStorage.setItem('student_id', res.data.student_id);
+        
         localStorage.setItem('isAdmin', res.data.is_admin);
         return res.data;
     }
