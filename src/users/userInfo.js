@@ -11,7 +11,8 @@ export const register = async newUser => {
             password: newUser.password,
             confirm_admin: newUser.confirm_admin
         });
-        localStorage.setItem('regoSuccess', 'True');
+        if (res.status === 201) localStorage.setItem('regoSuccess', 'True');
+        else localStorage.setItem('regoSuccess', 'False');
         console.log(res);
     }
     catch (error) {

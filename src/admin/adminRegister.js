@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import { register, login } from '../users/userInfo';
+import { resetTempStorage } from '../circuit/functions';
 
 const Body = styled.body`
   background-color: white;
@@ -31,27 +32,27 @@ const Body = styled.body`
 class adminRegister extends Component {
 
   constructor(props) {
-     super(props);
+    super(props);
+    this.onChangeFirstName = this.onChangeFirstName.bind(this);
+    this.onChangeLastName = this.onChangeLastName.bind(this);
+    this.onChangeStudentID = this.onChangeStudentID.bind(this);
+    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangePassword = this.onChangePassword.bind(this);
+    this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
 
-     this.onChangeFirstName = this.onChangeFirstName.bind(this);
-     this.onChangeLastName = this.onChangeLastName.bind(this);
-     this.onChangeStudentID = this.onChangeStudentID.bind(this);
-     this.onChangeEmail = this.onChangeEmail.bind(this);
-     this.onChangePassword = this.onChangePassword.bind(this);
-     this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
-     this.onSubmit = this.onSubmit.bind(this);
-
-     this.state = {
-         studentID: '',
-         isAdmin: '',
-         fname: '',
-         lname: '',
-         email: '',
-         password: '',
-         confirmPassword: '',
-         confirmAdmin: '',
-         mismatched_password: false
-     }
+    this.state = {
+        studentID: '',
+        isAdmin: '',
+        fname: '',
+        lname: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        confirmAdmin: '',
+        mismatched_password: false
+    };
+    resetTempStorage(true);
   }
 
   onChangeFirstName(e) {
@@ -102,11 +103,6 @@ class adminRegister extends Component {
       email: this.state.email,
       password: this.state.password,
       confirm_admin: "unconfirmed"
-    }
-
-    const user = {
-      email: this.state.email,
-      password: this.state.password,
     }
 
     if (this.state.password === this.state.confirmPassword) {

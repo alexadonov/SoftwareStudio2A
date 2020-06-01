@@ -87,40 +87,43 @@ export default class Admin extends Component {
 
   async componentDidMount() {
     // Gets data before the render
-    var data = await this.getCircuits();
-    this.setState({
-      table_data: data
-    });
-    // Needs to be defined at this point because only now do we have a length for table_data
-    tablePaginationOptions = {
-      paginationSize: 4,
-      pageStartIndex: 0,
-      firstPageText: 'First',
-      prePageText: 'Back',
-      nextPageText: 'Next',
-      lastPageText: 'Last',
-      nextPageTitle: 'First page',
-      prePageTitle: 'Pre page',
-      firstPageTitle: 'Next page',
-      lastPageTitle: 'Last page',
-      showTotal: true,
-      paginationTotalRenderer: customTotal,
-      disablePageTitle: true,
-      sizePerPageList: [{
-        text: '5', value: 5
-      }, {
-        text: '10', value: 10
-      }, {
-        text: 'All', value: this.state.table_data.length
-      }] 
-    };
+    const is_admin = parseInt(localStorage.getItem('isAdmin'));
+    if (!is_admin) window.location.href = '/';
+    else {
+      var data = await this.getCircuits();
+      this.setState({
+        table_data: data
+      });
+      // Needs to be defined at this point because only now do we have a length for table_data
+      tablePaginationOptions = {
+        paginationSize: 4,
+        pageStartIndex: 0,
+        firstPageText: 'First',
+        prePageText: 'Back',
+        nextPageText: 'Next',
+        lastPageText: 'Last',
+        nextPageTitle: 'First page',
+        prePageTitle: 'Pre page',
+        firstPageTitle: 'Next page',
+        lastPageTitle: 'Last page',
+        showTotal: true,
+        paginationTotalRenderer: customTotal,
+        disablePageTitle: true,
+        sizePerPageList: [{
+          text: '5', value: 5
+        }, {
+          text: '10', value: 10
+        }, {
+          text: 'All', value: this.state.table_data.length
+        }] 
+      };
+    }
   }
 
   getCircuits = async () => {
-    let student_id = "all";
     var list = [];
     const results = await retrieveCircuits({ 
-      'student_id': student_id,
+      'student_id': 'all',
       'is_submitted': "true"
    });
     for (var i = 0; i < results['circuits'].length; i++) {
