@@ -104,7 +104,7 @@ export const retrieveCircuits = async (params) => {
         
         //console.log('parsedData:', parsedData);
         //console.log('status:', status);
-        if (status == "200")
+        if (status === "200")
             return parsedData;
 
     } catch (error) {
@@ -170,7 +170,7 @@ export const gradeCircuit = async (student_id, circuit_name, grade) => {
 
         var status = await response.status;
         console.log('status:', status);
-        return status == "200";
+        return status === "200";
 
     } catch (error) {
         console.log(error);
@@ -202,7 +202,7 @@ export const submitCircuit = async (student_id, circuit_name) => {
 
         var status = await response.status;
         //console.log('status:', status);
-        return status == "200";
+        return status === "200";
 
     } catch (error) {
         console.log(error);
@@ -225,7 +225,7 @@ export const healthCheck = async () => {
         var status = await response.status;
         console.log('health response:', response);
         console.log('health status:', status);
-        return status == "200";
+        return status === "200";
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
