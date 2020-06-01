@@ -43,7 +43,7 @@ class Register extends Component {
 
      this.state = {
          studentID: '',
-         isAdmin: '',
+         is_admin: '',
          fname: '',
          lname: '',
          email: '',
@@ -94,10 +94,6 @@ class Register extends Component {
   onSubmit = (e) => {
     e.preventDefault();
 
-    this.setState({
-      mismatched_password: false
-    });
-
     const newUser = {
       // need to add admin registration 
       student_id: this.state.studentID,
@@ -109,40 +105,23 @@ class Register extends Component {
       confirm_admin: "unconfirmed"
     }
 
-    const user = {
-      email: this.state.email,
-      password: this.state.password,
-    }
+    const mismatched_password = this.state.password !== this.state.confirmPassword;
+    let invalid_details = false;
 
-    if (this.state.password === this.state.confirmPassword) {
-
-      this.setState({
-        mismatched_password: false
-      });
-
-      this.setState({
-        invalid_details: false
-      });
-
+    if (!mismatched_password) {
       // create new account
-      register(newUser).then(res => {
-        if (localStorage.regoSuccess === "True") {
-          localStorage.setItem('regoSuccess', 'False');
-          alert('Your new account was successfully created!');
+      register(newUser).then(registered => {
+        if (registered) {
+          alert('Your account was successfully created!');
           this.props.history.push('/');
-        } else {
-          this.setState({
-            invalid_details: true
-          });
-        }
-      })
-      
-    } else {
-      this.setState({
-        mismatched_password: true,
-        invalid_details: true
+        } else invalid_details = true;
       });
     }
+
+    this.setState({
+      mismatched_password: mismatched_password,
+      invalid_details: invalid_details
+    });
   }
 
 
@@ -184,7 +163,6 @@ class Register extends Component {
             Register
           </Button>
           <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
-            {console.log(this.state.mismatched_password)}
             {this.state.mismatched_password ? (
               "Password does not match." 
             ) : (

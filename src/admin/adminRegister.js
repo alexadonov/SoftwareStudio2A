@@ -35,21 +35,24 @@ class adminRegister extends Component {
 
      this.onChangeFirstName = this.onChangeFirstName.bind(this);
      this.onChangeLastName = this.onChangeLastName.bind(this);
-     this.onChangeStudentID = this.onChangeStudentID.bind(this);
+     this.onChangeStaffID = this.onChangeStaffID.bind(this);
      this.onChangeEmail = this.onChangeEmail.bind(this);
      this.onChangePassword = this.onChangePassword.bind(this);
      this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
+     this.onChangePassphrase = this.onChangePassphrase.bind(this);
      this.onSubmit = this.onSubmit.bind(this);
 
      this.state = {
-         studentID: '',
-         isAdmin: '',
+         staffID: '',
+         is_admin: '',
          fname: '',
          lname: '',
          email: '',
          password: '',
          confirmPassword: '',
          confirmAdmin: '',
+         passphrase: '',
+         invalid_passphrase: false,
          mismatched_password: false
      }
   }
@@ -66,9 +69,9 @@ class adminRegister extends Component {
     });
   }
 
-  onChangeStudentID(e) {
+  onChangeStaffID(e) {
     this.setState({
-        studentID: e.target.value
+        staffID: e.target.value
     });
   }
 
@@ -90,12 +93,18 @@ class adminRegister extends Component {
     })
   }
 
+  onChangePassphrase(e) {
+    this.setState({
+        passphrase: e.target.value
+    });
+  }
+
   onSubmit = (e) => {
     e.preventDefault();
 
     const newUser = {
       // need to add admin registration 
-      student_id: this.state.studentID,
+      student_id: this.state.staffID,
       is_admin: 1,
       first_name: this.state.fname,
       last_name: this.state.lname,
@@ -104,40 +113,25 @@ class adminRegister extends Component {
       confirm_admin: "unconfirmed"
     }
 
-    const user = {
-      email: this.state.email,
-      password: this.state.password,
-    }
+    const mismatched_password = this.state.password !== this.state.confirmPassword;
+    const invalid_passphrase = this.state.passphrase !== "quantum_528491";
+    var invalid_details = false;
 
-    if (this.state.password === this.state.confirmPassword) {
-
-      this.setState({
-        mismatched_password: false
-      });
-
-      this.setState({
-        invalid_details: false
-      });
-
+    if (!invalid_passphrase && !mismatched_password) {
       // create new account
-      register(newUser).then(res => {
-        if (localStorage.regoSuccess === "True") {
-          alert('Your new account was successfully created!');
-          localStorage.setItem('regoSuccess', 'False');
+      register(newUser).then(registered => {
+        if (registered) {
+          alert('Your account was successfully created!');
           this.props.history.push('/');
-        } else {
-          this.setState({
-            invalid_details: true
-          });
-        }
-      })
-    
-    } else {
-      this.setState({
-        mismatched_password: true,
-        invalid_details: true
-      });
+        } else invalid_details = true;
+      });    
     }
+
+    this.setState({
+      invalid_passphrase: invalid_passphrase,
+      mismatched_password: mismatched_password,
+      invalid_details: (mismatched_password || invalid_passphrase || invalid_details)
+    });    
   }
 
 
@@ -161,7 +155,7 @@ class adminRegister extends Component {
           </Form.Group>
 
           <Form.Group controlId="formStaffID">
-            <Form.Control type="number" name="studentID" placeholder="Staff ID" value={this.state.studentID} onChange={this.onChangeStudentID} required/>
+            <Form.Control type="number" name="staffID" placeholder="Staff ID" value={this.state.staffID} onChange={this.onChangeStaffID} required/>
           </Form.Group>
 
           <Form.Group controlId="formEmail">
@@ -175,15 +169,18 @@ class adminRegister extends Component {
           <Form.Group controlId="formConfirmPassword">
             <Form.Control type="password" name="confirmPassword" placeholder="Confirm Password" value={this.state.confirmPassword} onChange={this.onChangeConfirmPassword} required/>
           </Form.Group>
+
+          <Form.Group controlId="formPassphrase">
+            <Form.Control type="password" name="passphrase" placeholder="Enter Passphrase" value={this.state.passphrase} onChange={this.onChangePassphrase} required/>
+          </Form.Group>
+
           <Button variant="outline-dark" type="submit" className="button">
             Register
           </Button>
           <Form.Text style={ this.state.invalid_details ? {textAlign: 'center', color: 'red'} : { visibility: 'hidden'}}>
-            {this.state.mismatched_password ? (
-              "Password does not match." 
-            ) : (
-              "An account with this admin ID/email exists."
-            )}
+            {this.state.mismatched_password ? ("Password does not match.")
+            : this.state.invalid_passphrase ? ("Contact system admin for passphrase.")
+            : ("An account with this admin ID/email exists.")}
           </Form.Text>
           <hr/>
           <a href="/register" role="button"><h6 class="register-text">Register as Student.</h6></a>

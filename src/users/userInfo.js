@@ -11,13 +11,14 @@ export const register = async newUser => {
             password: newUser.password,
             confirm_admin: newUser.confirm_admin
         });
-        localStorage.setItem('regoSuccess', 'True');
+        
         console.log(res);
+        return res.status === 201;
     }
     catch (error) {
-        if (error.response.status !== 201) {
-            localStorage.setItem('regoSuccess', 'False');
-        }
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+        return false;
     }
 }
 
@@ -28,17 +29,16 @@ export const login = async user => {
             password: user.password
         });
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem('successful', 'True');
-        
+
         if (res.data.is_admin) localStorage.setItem('admin_id', res.data.student_id);
         else localStorage.setItem('student_id', res.data.student_id);
-        
-        localStorage.setItem('isAdmin', res.data.is_admin);
-        return res.data;
+        localStorage.setItem('is_admin', res.data.is_admin);
+
+        return res.status === 200;
     }
     catch (error) {
-        if (error.response.status === 401) {
-            localStorage.setItem('successful', 'False');
-        }
+        console.log(error);
+        alert(`An error occured: "${error}"`);
+        return false;
     }
 }
