@@ -1,5 +1,5 @@
 const proxy = "http://52.62.102.88:8000/api/"
-//const proxy = "http://127.0.0.1:8000/api/" // for use with local instance of appserver
+// const proxy = "http://127.0.0.1:8000/api/" // for use with local instance of appserver
 
 /*
 Saves circuit using the args listed, currently does not support updating a saved circuit and returns true if successful
