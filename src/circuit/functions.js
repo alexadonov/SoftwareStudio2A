@@ -239,6 +239,13 @@ export const escapeSpecialCharacters = (JSONfile) => {
   return escapedJSONstring;
 }
 
+export const isValidPassword = (password) => {
+  var min_length = 8;
+  var letter = /[a-zA-Z]/; 
+  var number = /[0-9]/;
+  return (password.length >= min_length) && number.test(password) && letter.test(password);
+}
+
 export const findCopyItems = (id) => {
   switch(id) {
     case "DISPLAYS": { return DISPLAYS; }
