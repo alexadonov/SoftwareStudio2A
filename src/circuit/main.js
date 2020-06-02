@@ -275,7 +275,7 @@ export default class Main extends Component {
       try {
         // Delete from database
         // Delete from local storage
-  
+
         if (!this.state.is_submitted && student_id) {
           const deleted = await deleteCircuit(student_id, algorithm_name);
           if (!deleted) {
@@ -291,7 +291,7 @@ export default class Main extends Component {
         alert(`An error occured: "${error}"`);
       }
     }
-   
+
   }
 
   getList = async () => {
@@ -386,7 +386,7 @@ export default class Main extends Component {
       }
       if (saved && algorithm_name) {
         //localStorage.setItem("saved", true);
-        this.setState({saved: true});
+        this.setState({ saved: true });
         alert(`Your algorithm "${algorithm_name}" has been succesfully saved!`);
       } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
@@ -403,7 +403,7 @@ export default class Main extends Component {
     sessionStorage.setItem("currentversion", vers);
     sessionStorage.setItem("finalversion", vers);
     //localStorage.setItem("saved", false);
-    this.setState({saved: false});
+    this.setState({ saved: false });
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = true;
   }
@@ -529,8 +529,7 @@ export default class Main extends Component {
                       </Dropdown>
                     </div>
                     <div className="col">
-                    <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted||this.state.is_new} >Delete</button>
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
                     </div>
                     <div className="col">
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
@@ -603,14 +602,14 @@ export default class Main extends Component {
                     </div>
                   </div>
                 </div>
-                </div>
+              </div>
             </DragDropContext>
           </body>
         </div>
       );
     }
     else {
-            window.location.href = '/';
+      window.location.href = '/';
     }
   }
 }
