@@ -297,11 +297,11 @@ export default class Main extends Component {
   getList = async () => {
     let student_id = getStudentID();
     var list = [];
-    const results = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0});
-    for(var i = 0; i < results['circuits'].length; i++) {
+    const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0 });
+    for (var i = 0; i < results['circuits'].length; i++) {
       list[i] = results['circuits'][i];
     }
-    this.setState({ all: list});
+    this.setState({ all: list });
     console.log(this.state.all);
   }
 
@@ -512,13 +512,15 @@ export default class Main extends Component {
             <DragDropContext onDragEnd={this.onDragEnd}>
               <div class="row">
                 <div class="col-8">
-
                   <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                    <div className="col">
+                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                    </div>
                     <div className="col">
                       <Dropdown>
                         <Dropdown.Toggle variant="primary" id="dropdown-basic">
                           Load
-                                   </Dropdown.Toggle>
+                               </Dropdown.Toggle>
                         <Dropdown.Menu>
                           <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
                           <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
@@ -527,25 +529,22 @@ export default class Main extends Component {
                       </Dropdown>
                     </div>
                     <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
-                    </div>
-                    <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
-                    </div>
                     <div className="col">
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted||this.state.is_new} >Delete</button>
                     </div>
                     <div className="col">
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
                     </div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
+                    </div>
                   </div>
-
                   <div class="row" style={{ margin: '8px', padding: '1%' }}>
                     <div className="col">
-                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
                     </div>
                     <div className="col">
-                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
                     </div>
                     <div className="col"></div>
                     <div className="col">
@@ -580,14 +579,6 @@ export default class Main extends Component {
                   <Title>Toolbox</Title>
                   <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Displays</SubTitle>
-                      <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Probes</SubTitle>
-                      <Toolbox droppableId="PROBES" list={PROBES} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
                       <SubTitle>Half Turns</SubTitle>
                       <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
                     </div>
@@ -597,38 +588,29 @@ export default class Main extends Component {
                       <SubTitle>Quarter Turns</SubTitle>
                       <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
                     </div>
+                  </div>
+                  <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
                       <SubTitle>Eighth Turns</SubTitle>
                       <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
                     </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Parametrized</SubTitle>
-                      <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
-                    </div>
                   </div>
                   <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Sampling</SubTitle>
-                      <Toolbox droppableId="SAMPLING" list={SAMPLING} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Parity</SubTitle>
-                      <Toolbox droppableId="PARITY" list={PARITY} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Empty </SubTitle>
+                      <SubTitle>Miscellaneous</SubTitle>
                       <Toolbox droppableId="EMPTY" list={EMPTY} />
+                      <Toolbox droppableId="PROBES" list={PROBES} />
                     </div>
                   </div>
                 </div>
-              </div>
+                </div>
             </DragDropContext>
           </body>
         </div>
       );
     }
     else {
-      window.location.href = '/';
+            window.location.href = '/';
     }
   }
 }

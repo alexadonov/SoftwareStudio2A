@@ -20,7 +20,7 @@ export default class Results extends Component {
       newProbs.push(data[key].prob)
     };
 
-    this.setState({labels: Object.getOwnPropertyNames(data)})
+    this.setState({labels: Object.getOwnPropertyNames(data).sort((a, b) => {return a - b})})
     this.setState({probs: newProbs})
   }
 
