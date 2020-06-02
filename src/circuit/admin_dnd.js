@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { getResults, retrieveCircuits } from '../circuit/apicaller';
 import Alert from 'react-bootstrap/Alert';
+import { Form, Button, Label } from 'react-bootstrap';
 
 // Main components
 import NavBar from "../components/navBar.js";
@@ -12,6 +13,7 @@ import Results from '../components/results';
 
 
 import {getCircuitInput, fixAlgorithm, verifyCircuit, getStudentID, getAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import { gradeCircuit } from './apicaller';
 
 const Content = styled.div`
   margin-right: 10%;
@@ -55,6 +57,8 @@ export default class AdminDND extends Component {
       circuit_valid_msg: verifyCircuit(algorithm),
       is_graded: false,
       grade: 0,
+      student_id: 0,
+      is_admin: true,
     };
 
     resetTempStorage();
@@ -69,6 +73,10 @@ export default class AdminDND extends Component {
     const token = localStorage.token;
     this.getCircuit();
     this.calculateResults();
+    let student_id = getStudentID();
+    this.setState({student_id: student_id});
+
+
   }
 
   onLoad = () => {
@@ -123,10 +131,56 @@ export default class AdminDND extends Component {
     this.forceUpdate();
   }
 
+  onChangeGrade = (e) => {
+   this.setState({
+       grade: e.target.value
+   });
+  }
+
+
+  Submit = (e) => {
+    e.preventDefault();
+    let student_id = getStudentID();
+    let circuit_name = getAlgorithmName();
+    if(this.state.grade > 100 || this.state.grade < 0 || this.state.grade == null) {
+      alert('Please enter a valid grade' );
+      return;
+    }
+    gradeCircuit(student_id, circuit_name, this.state.grade)
+      .then(res => {
+        this.setState({is_graded: true});
+        window.location.href = '/admin';
+      });
+  }
+
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
     const student_id = getStudentID();
+    let marked;
+    if(this.state.is_graded === true) {
+      marked =
+      <div class="row" style={{margin: '8px', paddingLeft: '2%', width: '50%'}}>
+        <div class="col-">
+          <h4>Grade: {this.state.grade}%</h4>
+        </div>
+      </div>
+    } else {
+      marked =
+      <div class="row" style={{margin: '8px', paddingLeft: '2%', width: '50%'}}>
+        <div class="col-">
+          <div class="input-group mb-3">
+            <input type="number" class="form-control" placeholder="Grade (%)" aria-label="grade" aria-describedby="basic-addon2" onChange={this.onChangeGrade}/>
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">%</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-">
+          <button class="btn btn-outline-dark" onClick={this.Submit}>Submit Grade</button>
+        </div>
+      </div>
+    }
     if (student_id) {
       return (
         <div className="App">
@@ -136,17 +190,11 @@ export default class AdminDND extends Component {
               <div class="row">
                 <div class="col">
                   <Content>
-                    <Title>Create Your Algorithm</Title>
+                    <Title>You are marking <b>{this.state.student_id}'s</b> algorithm</Title>
+                    {marked}
                     {Object.keys(this.state.canvas).map((list, i) => (
-                        <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
+                        <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={true} style={{ float: 'left' }} />
                     ))}
-                    <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
-                    <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
-                      <Alert.Heading>Successfully submitted</Alert.Heading>
-                    </Alert>
-                    <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
-                      <Alert.Heading>Successfully submitted and graded: {this.state.grade}/100</Alert.Heading>
-                    </Alert>
                   </Content>
                   <Content>
                     <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />

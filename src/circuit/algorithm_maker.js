@@ -42,6 +42,7 @@ const Item = styled.div`
 const ALGORITHM_MAKER = (props) => {
   const list = props.list;
   const state = props.state;
+  const isAdmin = props.isAdmin;
 
   return (
         <Droppable key={list} droppableId={list} direction="horizontal">
@@ -55,7 +56,8 @@ const ALGORITHM_MAKER = (props) => {
                                   <Draggable
                                       key={item.id}
                                       draggableId={item.id}
-                                      index={index}>
+                                      index={index}
+                                      isDragDisabled={isAdmin}>
                                       {(provided, snapshot) => (
                                           <Item
                                               ref={ provided.innerRef }
