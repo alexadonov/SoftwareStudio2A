@@ -556,7 +556,6 @@ export default class Main extends Component {
                     </div>
                   </div>
                   <Content>
-                    <Alert style={{ marginLeft: 20 }} variant='warning' show={!this.state.saved} > You have unsaved changes</Alert>
                     <Title>Create Your Algorithm: {this.state.algorithm_name} </Title>
                     {Object.keys(this.state.canvas).map((list, i) => (
                       <div>
@@ -564,6 +563,7 @@ export default class Main extends Component {
                         <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
                       </div>
                     ))}
+                    <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
                       <Alert.Heading>Successfully submitted</Alert.Heading>
