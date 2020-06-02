@@ -282,10 +282,10 @@ export default class Main extends Component {
           // resetTempStorage();
           window.location.href = '/dnd';
         }
-      } catch (error) {
+      }
+    } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
-      }
     }
 
   }
