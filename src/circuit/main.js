@@ -380,15 +380,14 @@ export default class Main extends Component {
         }
 
       } else {
-        var backendisupdated = false;
-        if (studentid && backendisupdated) {
+        if (studentid) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output, true);
         }
       }
       if (saved && algorithm_name) {
         //localStorage.setItem("saved", true);
         this.setState({saved: true});
-        alert(`Your algorithm "${algorithm_name}" as been succesfully saved!`);
+        alert(`Your algorithm "${algorithm_name}" has been succesfully saved!`);
       } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
       console.log(error);
