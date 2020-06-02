@@ -3,7 +3,7 @@ import uuid from 'uuid/v4';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 import download from 'downloadjs';
-import { saveCircuit, getResults, healthCheck, deleteCircuit, retrieveCircuits, submitCircuit } from '../circuit/apicaller';
+import { saveCircuit, getResults, healthCheck, deleteCircuit, retrieveCircuits, submitCircuit, circuitExists } from '../circuit/apicaller';
 import { Dropdown } from 'react-bootstrap';
 import Alert from 'react-bootstrap/Alert'
 import jwt_decode from 'jwt-decode';
@@ -81,7 +81,7 @@ export default class Main extends Component {
   constructor(props) {
     super(props);
 
-    var id = uuid();
+    var id = 'canvas1';
     this.state = {
       canvas: {
         [id]: []
@@ -229,12 +229,23 @@ export default class Main extends Component {
   }
 
   onCreate = () => {
-    //Checks the algorithm has been saved
-    // if not, prompts user to save
-    // Otherwise, clears session and begins a new one
-    if (window.confirm("Do you want to create a new algorithm?")) {
+    this.createNew();
+  }
+
+  createNew = async () => {
+     // Prompt asking user to confirm their choice
+     if (window.confirm("Do you want to create a new algorithm?")) {
+      let saved = localStorage.getItem("saved");
+      if (!saved) {
+        // if not, prompts user to save
+        if (window.confirm("This algorithm has not been saved, would you like to save it?")) {
+          this.onSave();
+        }
+      }
+      // clear the current data
       resetTempStorage();
       window.location.href = '/dnd';
+
     } else {
       return;
     }
