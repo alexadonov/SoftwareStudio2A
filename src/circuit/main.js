@@ -94,7 +94,9 @@ export default class Main extends Component {
       is_graded: false,
       algorithm_name: "",
       grade: 0,
-      loaded_algs: []
+      loaded_algs: [],
+      filter: "",
+      filtered_algs: []
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -116,6 +118,7 @@ export default class Main extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onExport = this.onExport.bind(this);
+    this.filterAlgorithms = this.filterAlgorithms.bind(this);
   }
 
   componentDidMount() {
@@ -321,8 +324,25 @@ export default class Main extends Component {
     for (var i = 0; i < results['circuits'].length; i++) {
       list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted']];
     }
-    this.setState({ loaded_algs: list });
+    this.setState({ loaded_algs: list, filtered_algs: list });
     console.log(this.state.loaded_algs);
+  }
+
+  filterAlgorithms = (e) => {
+    e.preventDefault();
+    const filter_string = (e.target.value).toLowerCase();
+    
+    console.log(this.state.filter);
+    let filtered_list = [];
+    const loaded_list = this.state.loaded_algs;
+    for (var i = 0; i < loaded_list.length; i++) {
+      if ((loaded_list[i][0].toLowerCase()).includes(filter_string)) filtered_list.push(loaded_list[i]);
+    }
+    this.setState({
+      filter: filter_string,
+      filtered_algs: filtered_list
+    });
+    //this.forceUpdate();
   }
 
   // Submits the algorithm
@@ -542,8 +562,9 @@ export default class Main extends Component {
                           Load
                         </Dropdown.Toggle>
                         <Dropdown.Menu style={{maxHeight:350, overflow:'auto', maxWidth:200}}>
-                          {this.state.loaded_algs.map((alg, index) => {
-                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue", } : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
+                          <input placeholder="Type to filter..." style={{margin:10}} type="text" value={this.state.filter} onChange={this.filterAlgorithms} />
+                          {this.state.filtered_algs.map((alg, index) => {
+                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue"} : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
                           })}
                         </Dropdown.Menu>
                       </Dropdown>
