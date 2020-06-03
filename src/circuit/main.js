@@ -319,10 +319,10 @@ export default class Main extends Component {
     var list = [];
     const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0});
     for (var i = 0; i < results['circuits'].length; i++) {
-      list[i] = results['circuits'][i]['circuit_name'];
+      list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted']];
     }
     this.setState({ loaded_algs: list });
-    //console.log(this.state.loaded_algs);
+    console.log(this.state.loaded_algs);
   }
 
   // Submits the algorithm
@@ -542,8 +542,8 @@ export default class Main extends Component {
                           Load
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                          {this.state.loaded_algs.map((alg_name, index) => {
-                            return(<Dropdown.Item key={index} onClick={() => this.onLoad(alg_name)}>{alg_name}</Dropdown.Item>)
+                          {this.state.loaded_algs.map((alg, index) => {
+                            return(<Dropdown.Item style={{color:alg[1]}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
                           })}
                         </Dropdown.Menu>
                       </Dropdown>
