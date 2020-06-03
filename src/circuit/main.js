@@ -537,13 +537,13 @@ export default class Main extends Component {
                       <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
                     </div>
                     <div className="col">
-                      <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                      <Dropdown  >
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={this.state.loaded_algs.length===0}>
                           Load
                         </Dropdown.Toggle>
-                        <Dropdown.Menu>
+                        <Dropdown.Menu style={{maxHeight:350, overflow:'auto', maxWidth:200}}>
                           {this.state.loaded_algs.map((alg, index) => {
-                            return(<Dropdown.Item style={{color:alg[1]}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
+                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue", } : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
                           })}
                         </Dropdown.Menu>
                       </Dropdown>
