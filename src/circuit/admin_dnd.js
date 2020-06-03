@@ -12,7 +12,7 @@ import Algorithm from './algorithm_maker';
 import Results from '../components/results';
 
 
-import {getCircuitInput, fixAlgorithm, verifyCircuit, getStudentID, getAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import {getCircuitInput, fixAlgorithm, verifyCircuit, getUserID, getAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
 import { gradeCircuit } from './apicaller';
 
 const Content = styled.div`
@@ -73,7 +73,7 @@ export default class AdminDND extends Component {
     const token = localStorage.token;
     this.getCircuit();
     this.calculateResults();
-    let student_id = getStudentID();
+    let student_id = getUserID();
     this.setState({student_id: student_id});
 
 
@@ -100,7 +100,7 @@ export default class AdminDND extends Component {
   }
 
   getCircuit = async () => {
-    let student_id = getStudentID();
+    let student_id = getUserID();
     setAlgorithmName('hello')
     let circuit_name = getAlgorithmName();
     var list = [];
@@ -140,7 +140,7 @@ export default class AdminDND extends Component {
 
   Submit = (e) => {
     e.preventDefault();
-    let student_id = getStudentID();
+    let student_id = getUserID();
     let circuit_name = getAlgorithmName();
     if(this.state.grade > 100 || this.state.grade < 0 || this.state.grade == null) {
       alert('Please enter a valid grade' );
@@ -156,7 +156,7 @@ export default class AdminDND extends Component {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
-    const student_id = getStudentID();
+    const student_id = getUserID();
     let marked;
     if(this.state.is_graded === true) {
       marked =
