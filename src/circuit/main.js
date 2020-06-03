@@ -246,7 +246,7 @@ export default class Main extends Component {
   
   load = async (algorithm_name) => {
     try {
-      const student_id = getStudentID();
+      const student_id = getUserID();
       const loaded_alg = await retrieveCircuits({'student_id': student_id, 'circuit_name': algorithm_name, 'is_deleted': 0});
       console.log("alg name:", algorithm_name);
       
