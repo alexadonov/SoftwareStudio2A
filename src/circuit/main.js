@@ -161,7 +161,7 @@ export default class Main extends Component {
         this.setState({ canvas: merged }, () => {
           this.addToHistory()
         });
-        console.log("Algor: " + localStorage.getItem("algorithm"));
+        //console.log("Algor: " + localStorage.getItem("algorithm"));
         this.calculateResults()
         return;
       }
@@ -212,8 +212,8 @@ export default class Main extends Component {
       }
 
       this.calculateResults()
-      console.log("Algor: " + localStorage.getItem("algorithm"));
-      console.log(this.state.canvas);
+      //console.log("Algor: " + localStorage.getItem("algorithm"));
+      //console.log(this.state.canvas);
     }
   };
 
@@ -241,15 +241,17 @@ export default class Main extends Component {
   }
 
   onLoad = (algorithm_name) => {
-    //this.load(algorithm_name);
+    this.load(algorithm_name);
   }
   
   load = async (algorithm_name) => {
     try {
       const student_id = getStudentID();
       const loaded_alg = await retrieveCircuits({'student_id': student_id, 'circuit_name': algorithm_name, 'is_deleted': 0});
+      console.log("alg name:", algorithm_name);
+      
       if (loaded_alg) {
-
+        /*
         var id = lineArray[0][1];
         this.setState({ canvas: { [id]: getItems(0) } });
         algorithm[0] = getItems(0);
@@ -267,11 +269,13 @@ export default class Main extends Component {
           }
         }
         console.log(this.state.canvas);
+        */
         alert(`"${algorithm_name}" has been loaded`)
 
       } else {
         alert("Something went wrong and the selected algorithm couldn't be loaded")
       }
+      
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
@@ -318,7 +322,7 @@ export default class Main extends Component {
       list[i] = results['circuits'][i]['circuit_name'];
     }
     this.setState({ loaded_algs: list });
-    console.log(this.state.loaded_algs);
+    //console.log(this.state.loaded_algs);
   }
 
   // Submits the algorithm
@@ -359,8 +363,8 @@ export default class Main extends Component {
     let circuit_input = getCircuitInput(algorithm);
     let valid_msg = verifyCircuit(algorithm)
     getResults(circuit_input).then(res => {
-      this.setState({ results: res })
-      console.log("results:", this.state.results)
+      this.setState({ results: res });
+      //console.log("results:", this.state.results)
     });
     this.setState({ circuit_valid_msg: valid_msg })
     this.forceUpdate();
@@ -505,11 +509,11 @@ export default class Main extends Component {
       this.setState({ canvas: newState });
       algorithm.splice(i, 1);
       lineArray.splice(i, 1);
-      console.log(algorithm);
+      //console.log(algorithm);
       for (var j = i; j < lineArray.length; j++) {
         lineArray[j][0]--;
       }
-      console.log(lineArray);
+      //console.log(lineArray);
       localStorage.setItem("algorithm", JSON.stringify(algorithm));
       this.addToHistory();
       this.calculateResults();
@@ -539,7 +543,7 @@ export default class Main extends Component {
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                           {this.state.loaded_algs.map((alg_name, index) => {
-                            return(<Dropdown.Item key={index} onClick={this.onLoad(alg_name)}>{alg_name}</Dropdown.Item>)
+                            return(<Dropdown.Item key={index} onClick={() => this.onLoad(alg_name)}>{alg_name}</Dropdown.Item>)
                           })}
                         </Dropdown.Menu>
                       </Dropdown>

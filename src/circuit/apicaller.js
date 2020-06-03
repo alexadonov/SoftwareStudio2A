@@ -126,7 +126,7 @@ export const deleteCircuit = async (student_id, circuit_name) => {
             'circuit_name': circuit_name
         });
 
-        console.log('data:', data);
+        //console.log('data:', data);
         var response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -136,7 +136,7 @@ export const deleteCircuit = async (student_id, circuit_name) => {
         });
 
         var status = await response.status;
-        console.log('response:', response);
+        //console.log('response:', response);
         return status == "200";
 
     } catch (error) {
@@ -159,7 +159,7 @@ export const gradeCircuit = async (student_id, circuit_name, grade) => {
             'grade': grade
         });
 
-        console.log('data:', data);
+        //console.log('data:', data);
         var response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -169,7 +169,7 @@ export const gradeCircuit = async (student_id, circuit_name, grade) => {
         });
 
         var status = await response.status;
-        console.log('status:', status);
+        //console.log('status:', status);
         return status == "200";
 
     } catch (error) {
@@ -191,7 +191,7 @@ export const submitCircuit = async (student_id, circuit_name) => {
             'circuit_name': circuit_name
         });
 
-        console.log('data:', data);
+        //console.log('data:', data);
         var response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -231,21 +231,4 @@ export const healthCheck = async () => {
         alert(`An error occured: "${error}"`);
     }
 
-}
-
-export const loadCircuit = async () => {
-    try {
-        const url = proxy + "load-circuit";
-
-        var response = await fetch(url, {
-            method: 'GET'
-        });
-
-        var status = await response.status;
-        console.log('health response: ', response);
-        console.log('health status: ', status);
-    } catch (error) {
-        console.log(error);
-        alert(`An error occured: "${error}"`);
-    }
 }

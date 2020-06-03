@@ -52,7 +52,7 @@ export const copy = (source, destination, droppableSource, droppableDestination,
 
 
     var destination_id = getId(droppableDestination, lineArray);
-    console.log(destination_id)
+    //console.log(destination_id)
     algorithm[destination_id].splice(droppableDestination.index, 0, item);
     localStorage.setItem("algorithm", JSON.stringify(algorithm));
 
@@ -139,7 +139,7 @@ export const getCircuitInput = (algorithm) => {
     k=0;
   }
   removeUndefined(circuit_input);
-  console.log(circuit_input);
+  //console.log(circuit_input);
   return circuit_input;
 }
 
