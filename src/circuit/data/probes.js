@@ -1,6 +1,7 @@
 import uuid from 'uuid/v4';
 
 const ITEMS = [
+  /*
     {
       id: uuid(),
       group: "probes",
@@ -22,6 +23,7 @@ const ITEMS = [
       content: "|1⟩⟨1|",
       explanation: "Keeps ON states, discards/retries OFF states."
     },
+    */
     {
       id: uuid(),
       group: "probes",

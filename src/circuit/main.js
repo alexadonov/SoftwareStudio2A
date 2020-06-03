@@ -88,9 +88,11 @@ export default class Main extends Component {
       },
       results: {},
       is_submitted: false,
+      is_saved: false,
       circuit_valid_msg: verifyCircuit(algorithm),
       is_new: true,
       is_graded: false,
+      algorithm_name: "",
       grade: 0,
       all: []
     };
@@ -229,14 +231,12 @@ export default class Main extends Component {
   }
 
   onCreate = () => {
-    //Checks the algorithm has been saved
+    // Checks the algorithm has been saved
     // if not, prompts user to save
     // Otherwise, clears session and begins a new one
-    if (window.confirm("Do you want to create a new algorithm?")) {
+    if (this.state.saved || window.confirm("You have unsaved changes - are you sure you want to create a new algorithm?")) {
       resetTempStorage();
       window.location.href = '/dnd';
-    } else {
-      return;
     }
   }
 
@@ -278,45 +278,46 @@ export default class Main extends Component {
     }
    }
   // Refreshes the page so user can restart algorithm
-  onDelete = (algorithm_name) => {
-    if (window.confirm("Are you sure you want to delete this algorithm? ")) {
-      this.delete(algorithm_name);
-    }
+  onDelete = () => {
+    this.delete();
   }
 
-  delete = async (algorithm_name) => {
-    try {
-      // Delete from database
-      // Delete from local storage
-      if (!this.state.is_submitted) {
-        const student_id = getStudentID();
-        const deleted = await deleteCircuit(student_id, algorithm_name);
-        if (!deleted) {
-          alert("Something went wrong and the current algorithm couldn't be deleted")
-        } else {
-          alert(`"${algorithm_name}" was deleted successfully!`)
-          // resetTempStorage();
-          window.location.href = '/dnd';
+  delete = async () => {
+    const algorithm_name = getAlgorithmName();
+    const student_id = getStudentID();
+    if (window.confirm(`Are you sure you want to delete the algorithm "${algorithm_name}"?`)) {
+      try {
+        // Delete from database
+        // Delete from local storage
+
+        if (!this.state.is_submitted && student_id) {
+          const deleted = await deleteCircuit(student_id, algorithm_name);
+          if (!deleted) {
+            alert(`Something went wrong and "${algorithm_name}" couldn't be deleted`);
+          } else {
+            alert(`"${algorithm_name}" was deleted successfully!`)
+            resetTempStorage();
+            window.location.href = '/dnd';
+          }
         }
+      } catch (error) {
+        console.log(error);
+        alert(`An error occured: "${error}"`);
       }
-    } catch (error) {
-      console.log(error);
-      alert(`An error occured: "${error}"`);
     }
+
   }
 
   getList = async () => {
     let student_id = getStudentID();
     var list = [];
-    const results = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0});
-    for(var i = 0; i < results['circuits'].length; i++) {
+    const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0 });
+    for (var i = 0; i < results['circuits'].length; i++) {
       list[i] = results['circuits'][i];
     }
-    this.setState({ all: list});
+    this.setState({ all: list });
     console.log(this.state.all);
   }
-
-   
 
   // Submits the algorithm
   onSubmit = () => {
@@ -388,19 +389,19 @@ export default class Main extends Component {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
           if (saved) {
             setAlgorithmName(algorithm_name);
-            this.setState({ is_new: false });
+            this.setState({ is_new: false, algorithm_name: algorithm_name });
           }
         }
 
       } else {
-        var backendisupdated = false;
-        if (studentid && backendisupdated) {
+        if (studentid) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output, true);
         }
       }
       if (saved && algorithm_name) {
-        localStorage.setItem("saved", true);
-        alert(`Your algorithm "${algorithm_name}" as been succesfully saved!`);
+        //localStorage.setItem("saved", true);
+        this.setState({ saved: true });
+        alert(`Your algorithm "${algorithm_name}" has been succesfully saved!`);
       } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
       console.log(error);
@@ -415,7 +416,8 @@ export default class Main extends Component {
     history.slice(0, vers);
     sessionStorage.setItem("currentversion", vers);
     sessionStorage.setItem("finalversion", vers);
-    localStorage.setItem("saved", false);
+    //localStorage.setItem("saved", false);
+    this.setState({ saved: false });
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = true;
   }
@@ -524,13 +526,15 @@ export default class Main extends Component {
             <DragDropContext onDragEnd={this.onDragEnd}>
               <div class="row">
                 <div class="col-8">
-
                   <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                    <div className="col">
+                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                    </div>
                     <div className="col">
                       <Dropdown>
                         <Dropdown.Toggle variant="primary" id="dropdown-basic">
                           Load
-                                   </Dropdown.Toggle>
+                               </Dropdown.Toggle>
                         <Dropdown.Menu>
                           <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
                           <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
@@ -539,34 +543,21 @@ export default class Main extends Component {
                       </Dropdown>
                     </div>
                     <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
-                    </div>
-                    <div className="col">
-                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
-                    </div>
-                    <div className="col">
-                      <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={this.state.is_submitted }>
-                          Delete
-                        </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                          {this.state.all.map((item, i) => {
-                            return (<Dropdown.Item key={i} onClick={() => {this.onDelete(item.circuit_name)}}>{item.circuit_name}</Dropdown.Item>
-                          )})}
-                        </Dropdown.Menu>
-                      </Dropdown>
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
                     </div>
                     <div className="col">
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
                     </div>
+                    <div className="col">
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
+                    </div>
                   </div>
-
                   <div class="row" style={{ margin: '8px', padding: '1%' }}>
                     <div className="col">
-                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
+                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
                     </div>
                     <div className="col">
-                      <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSave} disabled={this.state.is_submitted} >Save</button>
                     </div>
                     <div className="col"></div>
                     <div className="col">
@@ -577,13 +568,14 @@ export default class Main extends Component {
                     </div>
                   </div>
                   <Content>
-                    <Title>Create Your Algorithm</Title>
+                    <Title>Create Your Algorithm: {this.state.algorithm_name} </Title>
                     {Object.keys(this.state.canvas).map((list, i) => (
                       <div>
                         <Button onClick={() => this.deleteLine(list, i)}>X</Button>
                         <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
                       </div>
                     ))}
+                    <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
                       <Alert.Heading>Successfully submitted</Alert.Heading>
@@ -600,14 +592,6 @@ export default class Main extends Component {
                   <Title>Toolbox</Title>
                   <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Displays</SubTitle>
-                      <Toolbox droppableId="DISPLAYS" list={DISPLAYS} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Probes</SubTitle>
-                      <Toolbox droppableId="PROBES" list={PROBES} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
                       <SubTitle>Half Turns</SubTitle>
                       <Toolbox droppableId="HALF_TURNS" list={HALF_TURNS} />
                     </div>
@@ -617,27 +601,18 @@ export default class Main extends Component {
                       <SubTitle>Quarter Turns</SubTitle>
                       <Toolbox droppableId="QUARTER_TURNS" list={QUARTER_TURNS} />
                     </div>
+                  </div>
+                  <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
                       <SubTitle>Eighth Turns</SubTitle>
                       <Toolbox droppableId="EIGHTH_TURNS" list={EIGHTH_TURNS} />
                     </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Parametrized</SubTitle>
-                      <Toolbox droppableId="PARAMETRIZED" list={PARAMETRIZED} />
-                    </div>
                   </div>
                   <div className="row" style={{ paddingLeft: '5%' }}>
                     <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Sampling</SubTitle>
-                      <Toolbox droppableId="SAMPLING" list={SAMPLING} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Parity</SubTitle>
-                      <Toolbox droppableId="PARITY" list={PARITY} />
-                    </div>
-                    <div class="col" style={{ padding: 0 }}>
-                      <SubTitle>Empty </SubTitle>
+                      <SubTitle>Miscellaneous</SubTitle>
                       <Toolbox droppableId="EMPTY" list={EMPTY} />
+                      <Toolbox droppableId="PROBES" list={PROBES} />
                     </div>
                   </div>
                 </div>

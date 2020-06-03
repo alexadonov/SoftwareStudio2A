@@ -115,22 +115,14 @@ class adminRegister extends Component {
         mismatched_password: false
       });
 
-      // create new account
-      register(newUser).then(res => {})
-
       this.setState({
         invalid_details: false
       });
-    
-      // login after registration
-      login(user).then(res => {
-        if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
-          /*
-          localStorage.setItem('email', this.state.email);
-          localStorage.setItem('password', this.state.password);
-          localStorage.setItem('isAdmin', this.state.is_admin);
-          localStorage.setItem('loggedIn', true);
-          */
+
+      // create new account
+      register(newUser).then(res => {
+        if (localStorage.regoSuccess === "True") {
+          alert('Your new account was successfully created!');
           localStorage.setItem('regoSuccess', 'False');
           this.props.history.push('/');
         } else {
@@ -139,6 +131,7 @@ class adminRegister extends Component {
           });
         }
       })
+    
     } else {
       this.setState({
         mismatched_password: true,
@@ -189,7 +182,7 @@ class adminRegister extends Component {
             {this.state.mismatched_password ? (
               "Password does not match." 
             ) : (
-              "Student ID or Email already exists."
+              "An account with this admin ID/email exists."
             )}
           </Form.Text>
           <hr/>

@@ -120,24 +120,15 @@ class Register extends Component {
         mismatched_password: false
       });
 
-      // create new account
-      register(newUser).then(res => {})
-
       this.setState({
         invalid_details: false
       });
-    
-      // login after registration
-      login(user).then(res => {
-        if (localStorage.successful === "True" && localStorage.regoSuccess === "True") {
-          /*
-          localStorage.setItem('email', this.state.email);
-          localStorage.setItem('student_id', this.state.studentID);
-          localStorage.setItem('password', this.state.password);
-          localStorage.setItem('isAdmin', this.state.is_admin);
-          localStorage.setItem('loggedIn', true);
-          */
+
+      // create new account
+      register(newUser).then(res => {
+        if (localStorage.regoSuccess === "True") {
           localStorage.setItem('regoSuccess', 'False');
+          alert('Your new account was successfully created!');
           this.props.history.push('/');
         } else {
           this.setState({
@@ -145,6 +136,7 @@ class Register extends Component {
           });
         }
       })
+      
     } else {
       this.setState({
         mismatched_password: true,
@@ -196,7 +188,7 @@ class Register extends Component {
             {this.state.mismatched_password ? (
               "Password does not match." 
             ) : (
-              "Student ID or Email already exists."
+              "An account with this student ID/email exists."
             )}
           </Form.Text>
           <hr/>
