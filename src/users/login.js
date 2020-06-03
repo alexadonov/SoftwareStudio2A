@@ -43,7 +43,7 @@ class Login extends Component {
          email: '',
          password: '',
          invalid_details: false
-     }
+     };
   }
 
   onChangeEmail(e) {
@@ -64,22 +64,14 @@ class Login extends Component {
     const user = {
       email: this.state.email,
       password: this.state.password
-    }
-
-    this.setState({
-      invalid_details: false
-    });
+    };
     
-    login(user).then(res => {
-      if (localStorage.successful === "True") {
+    login(user).then(loggedin => {
+      if (loggedin) {
         localStorage.setItem('email', this.state.email);
-        localStorage.setItem('password', this.state.password);
-        localStorage.setItem('loggedIn', true);
-        if (localStorage.isAdmin === "0") { 
-          this.props.history.push('/dnd');
-        } else {
-          this.props.history.push('/admin');
-        }
+        if (localStorage.is_admin === "0") this.props.history.push('/dnd');
+        else this.props.history.push('/admin');
+
       } else {
         this.setState({
           invalid_details: true

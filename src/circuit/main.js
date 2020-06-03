@@ -25,7 +25,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getUserID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -287,35 +287,31 @@ export default class Main extends Component {
     this.delete();
   }
 
-  delete = async () => {
-    const algorithm_name = getAlgorithmName();
-    const student_id = getStudentID();
-    if (window.confirm(`Are you sure you want to delete the algorithm "${algorithm_name}"?`)) {
-      try {
-        // Delete from database
-        // Delete from local storage
-
-        if (!this.state.is_submitted && student_id) {
-          const deleted = await deleteCircuit(student_id, algorithm_name);
-          if (!deleted) {
-            alert(`Something went wrong and "${algorithm_name}" couldn't be deleted`);
-          } else {
-            alert(`"${algorithm_name}" was deleted successfully!`)
-            resetTempStorage();
-            window.location.href = '/dnd';
-          }
+  delete = async (algorithm_name) => {
+    try {
+      // Delete from database
+      // Delete from local storage
+      if (!this.state.is_submitted) {
+        const student_id = getUserID();
+        const deleted = await deleteCircuit(student_id, algorithm_name);
+        if (!deleted) {
+          alert("Something went wrong and the current algorithm couldn't be deleted")
+        } else {
+          alert(`"${algorithm_name}" was deleted successfully!`)
+          // resetTempStorage();
+          window.location.href = '/dnd';
         }
-      } catch (error) {
+      }
+    } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
-      }
     }
 
   }
 
   // Gets a list of the names of all the algorithms made by a user
   getList = async () => {
-    let student_id = getStudentID();
+    let student_id = getUserID();
     var list = [];
     const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0});
     for (var i = 0; i < results['circuits'].length; i++) {
@@ -340,7 +336,7 @@ export default class Main extends Component {
 
         if (saved) {
           let submit = window.confirm("Are you sure you want to submit?");
-          const studentid = getStudentID();
+          const studentid = getUserID();
           if (submit && studentid) {
             const algorithm_name = getAlgorithmName();
             submitted = await submitCircuit(studentid, algorithm_name);
@@ -378,7 +374,7 @@ export default class Main extends Component {
   save = async () => {
     let saved = false;
     try {
-      const studentid = getStudentID();
+      const studentid = getUserID();
       const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
       const circuit_output = escapeSpecialCharacters(this.state.results);
       var algorithm_name = getAlgorithmName()
@@ -523,7 +519,7 @@ export default class Main extends Component {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
-    const student_id = getStudentID();
+    const student_id = getUserID();
     if (student_id) {
       return (
         <div className="App">
@@ -629,7 +625,7 @@ export default class Main extends Component {
       );
     }
     else {
-      window.location.href = '/';
+        window.location.href = '/';
     }
   }
 }
