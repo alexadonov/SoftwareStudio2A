@@ -324,6 +324,9 @@ export default class Main extends Component {
     for (var i = 0; i < results['circuits'].length; i++) {
       list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted']];
     }
+    list.sort((a, b) => {
+      return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+    });
     this.setState({ loaded_algs: list, filtered_algs: list });
     console.log(this.state.loaded_algs);
   }
