@@ -325,7 +325,7 @@ export const getObject = (name) => {
  const removeOnes = (algorithm) => {
   for(var i = 0; i < algorithm.length; i++) {
     for(var j = 0; j < algorithm[i].length; j++) {
-      if(algorithm[i][j] === "1") {
+      if(algorithm[i][j] === "1" || algorithm[i][j] === undefined || algorithm[i][j] === null) {
         algorithm[i].splice(j,1);
         return;
       }
