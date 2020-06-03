@@ -267,3 +267,79 @@ export const findCopyItemsId = (id) => {
     default: return;
   }
 }
+
+export const getObject = (name) => {
+  if(name === '1') {
+    return "1";
+  }
+  for(var i = 0; i < DISPLAYS.length; i++) {
+    if(DISPLAYS[i].content === name) {
+      return DISPLAYS[i];
+    }
+  }
+
+  for(var i = 0; i < QUARTER_TURNS.length; i++) {
+    if(QUARTER_TURNS[i].content === name) {
+      return QUARTER_TURNS[i];
+    }
+  }
+
+  for(var i = 0; i < EIGHTH_TURNS.length; i++) {
+    if(EIGHTH_TURNS[i].content === name) {
+      return EIGHTH_TURNS[i];
+    }
+  }
+
+  for(var i = 0; i < HALF_TURNS.length; i++) {
+    if(HALF_TURNS[i].content === name) {
+      return HALF_TURNS[i];
+    }
+  }
+
+  for(var i = 0; i < PARAMETRIZED.length; i++) {
+    if(PARAMETRIZED[i].content === name) {
+      return PARAMETRIZED[i];
+    }
+  }
+
+  for(var i = 0; i < PARITY.length; i++) {
+    if(PARITY[i].content === name) {
+      return PARITY[i];
+    }
+  }
+
+  for(var i = 0; i < PROBES.length; i++) {
+    if(PROBES[i].content === name) {
+      return PROBES[i];
+    }
+  }
+
+  for(var i = 0; i < SAMPLING.length; i++) {
+    if(SAMPLING[i].content === name) {
+      return SAMPLING[i];
+    }
+  }
+
+}
+
+ const removeOnes = (algorithm) => {
+  for(var i = 0; i < algorithm.length; i++) {
+    for(var j = 0; j < algorithm[i].length; j++) {
+      if(algorithm[i][j] === "1") {
+        algorithm[i].splice(j,1);
+        return;
+      }
+    }
+  }
+}
+
+export const fixAlgorithm = () => {
+  let algorithm = JSON.parse(localStorage.getItem('algorithm'));
+  for(var i = 0; i < algorithm.length; i++) {
+    for(var j = 0; j < algorithm[i].length; j++) {
+      algorithm[i][j] = getObject(algorithm[i][j]);
+      removeOnes(algorithm);
+    }
+  }
+  localStorage.setItem('algorithm', JSON.stringify(algorithm));
+}

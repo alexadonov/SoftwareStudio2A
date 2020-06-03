@@ -578,7 +578,7 @@ export default class Main extends Component {
                     {Object.keys(this.state.canvas).map((list, i) => (
                       <div>
                         <Button onClick={() => this.deleteLine(list, i)}>X</Button>
-                        <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
+                        <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={false} style={{ float: 'left' }} />
                       </div>
                     ))}
                     <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
