@@ -94,7 +94,7 @@ export default class Main extends Component {
       is_graded: false,
       algorithm_name: "",
       grade: 0,
-      all: []
+      loaded_algs: []
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -240,43 +240,44 @@ export default class Main extends Component {
     }
   }
 
-  onLoad = () => {
-    //Searches database for all algorithms the user has saved
-    // Shows a drop down list of these so the user can choose
-    var id = lineArray[0][1];
-
-    this.setState({ canvas: { [id]: getItems(0) } });
-    algorithm[0] = getItems(0);
-    console.log(this.state.canvas[id]);
-
-    if (algor === null) { return; }
-    else {
-      var length = algor.length;
-
-      for (var j = 1; j < length; j++) {
-        var id = uuid();
-        this.setState({ canvas: { [id]: getItems(j) } });
-        lineArray[lineArray.length] = new Array(lineArray.length, id);
-        algorithm[algorithm.length] = getItems(j);
-      }
-    }
-    console.log(this.state.canvas);
+  onLoad = (algorithm_name) => {
+    //this.load(algorithm_name);
   }
   
   load = async (algorithm_name) => {
-    try{
-     const student_id = getStudentID();
-     const load = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0});
-      if(!load){
-       alert("Something went wrong and the selected algorithm couldn't be loaded")
+    try {
+      const student_id = getStudentID();
+      const loaded_alg = await retrieveCircuits({'student_id': student_id, 'circuit_name': algorithm_name, 'is_deleted': 0});
+      if (loaded_alg) {
+
+        var id = lineArray[0][1];
+        this.setState({ canvas: { [id]: getItems(0) } });
+        algorithm[0] = getItems(0);
+        console.log(this.state.canvas[id]);
+    
+        if (algor === null) { return; }
+        else {
+          var length = algor.length;
+    
+          for (var j = 1; j < length; j++) {
+            var id = uuid();
+            this.setState({ canvas: { [id]: getItems(j) } });
+            lineArray[lineArray.length] = new Array(lineArray.length, id);
+            algorithm[algorithm.length] = getItems(j);
+          }
+        }
+        console.log(this.state.canvas);
+        alert(`"${algorithm_name}" has been loaded`)
+
       } else {
-       alert(`"${algorithm_name}" has been loaded`)
+        alert("Something went wrong and the selected algorithm couldn't be loaded")
       }
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
     }
-   }
+  }
+
   // Refreshes the page so user can restart algorithm
   onDelete = () => {
     this.delete();
@@ -308,15 +309,16 @@ export default class Main extends Component {
 
   }
 
+  // Gets a list of the names of all the algorithms made by a user
   getList = async () => {
     let student_id = getStudentID();
     var list = [];
-    const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0 });
+    const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0});
     for (var i = 0; i < results['circuits'].length; i++) {
-      list[i] = results['circuits'][i];
+      list[i] = results['circuits'][i]['circuit_name'];
     }
-    this.setState({ all: list });
-    console.log(this.state.all);
+    this.setState({ loaded_algs: list });
+    console.log(this.state.loaded_algs);
   }
 
   // Submits the algorithm
@@ -534,11 +536,11 @@ export default class Main extends Component {
                       <Dropdown>
                         <Dropdown.Toggle variant="primary" id="dropdown-basic">
                           Load
-                               </Dropdown.Toggle>
+                        </Dropdown.Toggle>
                         <Dropdown.Menu>
-                          <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
-                          <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
-                          <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
+                          {this.state.loaded_algs.map((alg_name, index) => {
+                            return(<Dropdown.Item key={index} onClick={this.onLoad(alg_name)}>{alg_name}</Dropdown.Item>)
+                          })}
                         </Dropdown.Menu>
                       </Dropdown>
                     </div>
