@@ -144,8 +144,9 @@ export const getCircuitInput = (algorithm) => {
 }
 
 // Gets student id and returns it (if it doesn't exist, returns NaN)
-export const getStudentID = () => {
-  return parseInt(localStorage.getItem('student_id'));
+export const getUserID = (is_student=true) => {
+  if (is_student) return parseInt(localStorage.getItem('student_id'));
+  else return parseInt(localStorage.getItem('admin_id'));
 }
 
 export const getAlgorithmName = () => {
@@ -170,7 +171,7 @@ export const isValidAlgorithmName = async (algorithm_name) => {
   if (algorithm_name === "null" || algorithm_name.length === 0) {
     alert("Please enter a valid name.");
   } else {
-    const student_id = getStudentID();
+    const student_id = getUserID();
     if (student_id) {
       const exists = await algorithmExists(student_id, algorithm_name);
       if (!exists) {
@@ -238,6 +239,13 @@ export const escapeSpecialCharacters = (JSONfile) => {
   return escapedJSONstring;
 }
 
+export const isValidPassword = (password) => {
+  var min_length = 8;
+  var letter = /[a-zA-Z]/; 
+  var number = /[0-9]/;
+  return (password.length >= min_length) && number.test(password) && letter.test(password);
+}
+
 export const findCopyItems = (id) => {
   switch(id) {
     case "DISPLAYS": { return DISPLAYS; }
@@ -266,4 +274,80 @@ export const findCopyItemsId = (id) => {
     case "EMPTY": { return "EMPTY"; }
     default: return;
   }
+}
+
+export const getObject = (name) => {
+  if(name === '1') {
+    return "1";
+  }
+  for(var i = 0; i < DISPLAYS.length; i++) {
+    if(DISPLAYS[i].content === name) {
+      return DISPLAYS[i];
+    }
+  }
+
+  for(var i = 0; i < QUARTER_TURNS.length; i++) {
+    if(QUARTER_TURNS[i].content === name) {
+      return QUARTER_TURNS[i];
+    }
+  }
+
+  for(var i = 0; i < EIGHTH_TURNS.length; i++) {
+    if(EIGHTH_TURNS[i].content === name) {
+      return EIGHTH_TURNS[i];
+    }
+  }
+
+  for(var i = 0; i < HALF_TURNS.length; i++) {
+    if(HALF_TURNS[i].content === name) {
+      return HALF_TURNS[i];
+    }
+  }
+
+  for(var i = 0; i < PARAMETRIZED.length; i++) {
+    if(PARAMETRIZED[i].content === name) {
+      return PARAMETRIZED[i];
+    }
+  }
+
+  for(var i = 0; i < PARITY.length; i++) {
+    if(PARITY[i].content === name) {
+      return PARITY[i];
+    }
+  }
+
+  for(var i = 0; i < PROBES.length; i++) {
+    if(PROBES[i].content === name) {
+      return PROBES[i];
+    }
+  }
+
+  for(var i = 0; i < SAMPLING.length; i++) {
+    if(SAMPLING[i].content === name) {
+      return SAMPLING[i];
+    }
+  }
+
+}
+
+ const removeOnes = (algorithm) => {
+  for(var i = 0; i < algorithm.length; i++) {
+    for(var j = 0; j < algorithm[i].length; j++) {
+      if(algorithm[i][j] === "1") {
+        algorithm[i].splice(j,1);
+        return;
+      }
+    }
+  }
+}
+
+export const fixAlgorithm = () => {
+  let algorithm = JSON.parse(localStorage.getItem('algorithm'));
+  for(var i = 0; i < algorithm.length; i++) {
+    for(var j = 0; j < algorithm[i].length; j++) {
+      algorithm[i][j] = getObject(algorithm[i][j]);
+      removeOnes(algorithm);
+    }
+  }
+  localStorage.setItem('algorithm', JSON.stringify(algorithm));
 }
