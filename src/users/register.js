@@ -149,7 +149,7 @@ class Register extends Component {
               </Form.Group>
 
               <Form.Group controlId="formStudentID">
-                <Form.Control type="number" name="studentID" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required />
+                <Form.Control type="number" name="studentID" min="10000" max="9999999999" placeholder="Student ID" value={this.state.studentID} onChange={this.onChangeStudentID} required />
               </Form.Group>
 
               <Form.Group controlId="formEmail">

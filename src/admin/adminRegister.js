@@ -160,7 +160,7 @@ class adminRegister extends Component {
               </Form.Group>
 
               <Form.Group controlId="formStaffID">
-                <Form.Control type="number" name="staffID" placeholder="Staff ID" value={this.state.staffID} onChange={this.onChangeStaffID} required />
+                <Form.Control type="number" name="staffID" min="10000" max="9999999999" placeholder="Staff ID" value={this.state.staffID} onChange={this.onChangeStaffID} required />
               </Form.Group>
 
               <Form.Group controlId="formEmail">
