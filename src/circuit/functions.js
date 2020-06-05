@@ -335,11 +335,32 @@ export const getObject = (name) => {
 
 export const fixAlgorithm = () => {
   let algorithm = JSON.parse(localStorage.getItem('algorithm'));
+  algorithm = undoCircuitInput(algorithm);
   for(var i = 0; i < algorithm.length; i++) {
     for(var j = 0; j < algorithm[i].length; j++) {
       algorithm[i][j] = getObject(algorithm[i][j]);
       removeOnes(algorithm);
     }
   }
+  removeOnes(algorithm);
+
   localStorage.setItem('algorithm', JSON.stringify(algorithm));
+}
+
+const undoCircuitInput = (algorithm) => {
+  var circuit_input = new Array();
+  var row = new Array();
+  var k = 0;
+  var p = 0;
+  for(var a = 0; a < getLargestRow(algorithm); a++) {
+    for(var i = 0; i < algorithm.length; i++) {
+        row[k] = algorithm[i][p];
+        k++;
+    }
+    circuit_input[a] = row;
+    p++;
+    row = [];
+    k=0;
+  }
+  return circuit_input;
 }
