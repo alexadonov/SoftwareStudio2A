@@ -13,20 +13,25 @@ export default class Results extends Component {
   }
 
   extractProbs = (data) => {
-    if (data === undefined || typeof data === "string") return; 
-    let newProbs = []
+    if (data === undefined || typeof data === "string") return;
+    
+    let newProbs = [];
 
-    for (var key in data) {
-      newProbs.push(data[key].prob)
-    };
+    for (var key in data)
+      newProbs.push(data[key].prob);
 
-    this.setState({labels: Object.getOwnPropertyNames(data).sort((a, b) => {return a - b})})
-    this.setState({probs: newProbs})
+    let newLabels = Object.getOwnPropertyNames(data).sort((a, b) => {return a - b})
+
+    for (let label in newLabels)
+      newLabels[label] = '| ' + newLabels[label] + ' ⟩';
+
+    this.setState({labels: newLabels});
+    this.setState({probs: newProbs});
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps != this.props) {
-      this.extractProbs(this.props.resultChartData)
+      this.extractProbs(this.props.resultChartData);
     }
   }
 

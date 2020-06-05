@@ -25,7 +25,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getStudentID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getUserID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -88,11 +88,15 @@ export default class Main extends Component {
       },
       results: {},
       is_submitted: false,
+      is_saved: false,
       circuit_valid_msg: verifyCircuit(algorithm),
       is_new: true,
       is_graded: false,
+      algorithm_name: "",
       grade: 0,
-      all: []
+      loaded_algs: [],
+      filter: "",
+      filtered_algs: []
     };
 
     this.undoButton = React.createRef(); // quick solution, better to use states
@@ -114,6 +118,7 @@ export default class Main extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onExport = this.onExport.bind(this);
+    this.filterAlgorithms = this.filterAlgorithms.bind(this);
   }
 
   componentDidMount() {
@@ -159,7 +164,7 @@ export default class Main extends Component {
         this.setState({ canvas: merged }, () => {
           this.addToHistory()
         });
-        console.log("Algor: " + localStorage.getItem("algorithm"));
+        //console.log("Algor: " + localStorage.getItem("algorithm"));
         this.calculateResults()
         return;
       }
@@ -210,8 +215,8 @@ export default class Main extends Component {
       }
 
       this.calculateResults()
-      console.log("Algor: " + localStorage.getItem("algorithm"));
-      console.log(this.state.canvas);
+      //console.log("Algor: " + localStorage.getItem("algorithm"));
+      //console.log(this.state.canvas);
     }
   };
 
@@ -229,45 +234,60 @@ export default class Main extends Component {
   }
 
   onCreate = () => {
-    //Checks the algorithm has been saved
+    // Checks the algorithm has been saved
     // if not, prompts user to save
     // Otherwise, clears session and begins a new one
-    if (window.confirm("Do you want to create a new algorithm?")) {
+    if (this.state.saved || window.confirm("You have unsaved changes - are you sure you want to create a new algorithm?")) {
       resetTempStorage();
       window.location.href = '/dnd';
-    } else {
-      return;
     }
   }
 
-  onLoad = () => {
-    //Searches database for all algorithms the user has saved
-    // Shows a drop down list of these so the user can choose
-    var id = lineArray[0][1];
+  onLoad = (algorithm_name) => {
+    this.load(algorithm_name);
+  }
+  
+  load = async (algorithm_name) => {
+    try {
+      const student_id = getUserID();
+      const loaded_alg = await retrieveCircuits({'student_id': student_id, 'circuit_name': algorithm_name, 'is_deleted': 0});
+      console.log("alg name:", algorithm_name);
+      
+      if (loaded_alg) {
+        /*
+        var id = lineArray[0][1];
+        this.setState({ canvas: { [id]: getItems(0) } });
+        algorithm[0] = getItems(0);
+        console.log(this.state.canvas[id]);
+    
+        if (algor === null) { return; }
+        else {
+          var length = algor.length;
+    
+          for (var j = 1; j < length; j++) {
+            var id = uuid();
+            this.setState({ canvas: { [id]: getItems(j) } });
+            lineArray[lineArray.length] = new Array(lineArray.length, id);
+            algorithm[algorithm.length] = getItems(j);
+          }
+        }
+        console.log(this.state.canvas);
+        */
+        alert(`"${algorithm_name}" has been loaded`)
 
-    this.setState({ canvas: { [id]: getItems(0) } });
-    algorithm[0] = getItems(0);
-    console.log(this.state.canvas[id]);
-
-    if (algor === null) { return; }
-    else {
-      var length = algor.length;
-
-      for (var j = 1; j < length; j++) {
-        var id = uuid();
-        this.setState({ canvas: { [id]: getItems(j) } });
-        lineArray[lineArray.length] = new Array(lineArray.length, id);
-        algorithm[algorithm.length] = getItems(j);
+      } else {
+        alert("Something went wrong and the selected algorithm couldn't be loaded")
       }
+      
+    } catch (error) {
+      console.log(error);
+      alert(`An error occured: "${error}"`);
     }
-    console.log(this.state.canvas);
   }
 
   // Refreshes the page so user can restart algorithm
-  onDelete = (algorithm_name) => {
-    if (window.confirm("Are you sure you want to delete this algorithm? ")) {
-      this.delete(algorithm_name);
-    }
+  onDelete = () => {
+    this.delete();
   }
 
   delete = async (algorithm_name) => {
@@ -275,7 +295,7 @@ export default class Main extends Component {
       // Delete from database
       // Delete from local storage
       if (!this.state.is_submitted) {
-        const student_id = getStudentID();
+        const student_id = getUserID();
         const deleted = await deleteCircuit(student_id, algorithm_name);
         if (!deleted) {
           alert("Something went wrong and the current algorithm couldn't be deleted")
@@ -286,23 +306,43 @@ export default class Main extends Component {
         }
       }
     } catch (error) {
-      console.log(error);
-      alert(`An error occured: "${error}"`);
+        console.log(error);
+        alert(`An error occured: "${error}"`);
     }
+
   }
 
+  // Gets a list of the names of all the algorithms made by a user
   getList = async () => {
-    let student_id = getStudentID();
+    let student_id = getUserID();
     var list = [];
-    const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0 });
+    const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0});
     for (var i = 0; i < results['circuits'].length; i++) {
-      list[i] = results['circuits'][i];
+      list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted']];
     }
-    this.setState({ all: list });
-    console.log(this.state.all);
+    list.sort((a, b) => {
+      return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+    });
+    this.setState({ loaded_algs: list, filtered_algs: list });
+    console.log(this.state.loaded_algs);
   }
 
-
+  filterAlgorithms = (e) => {
+    e.preventDefault();
+    const filter_string = (e.target.value).toLowerCase();
+    
+    console.log(this.state.filter);
+    let filtered_list = [];
+    const loaded_list = this.state.loaded_algs;
+    for (var i = 0; i < loaded_list.length; i++) {
+      if ((loaded_list[i][0].toLowerCase()).includes(filter_string)) filtered_list.push(loaded_list[i]);
+    }
+    this.setState({
+      filter: filter_string,
+      filtered_algs: filtered_list
+    });
+    //this.forceUpdate();
+  }
 
   // Submits the algorithm
   onSubmit = () => {
@@ -319,7 +359,7 @@ export default class Main extends Component {
 
         if (saved) {
           let submit = window.confirm("Are you sure you want to submit?");
-          const studentid = getStudentID();
+          const studentid = getUserID();
           if (submit && studentid) {
             const algorithm_name = getAlgorithmName();
             submitted = await submitCircuit(studentid, algorithm_name);
@@ -342,8 +382,8 @@ export default class Main extends Component {
     let circuit_input = getCircuitInput(algorithm);
     let valid_msg = verifyCircuit(algorithm)
     getResults(circuit_input).then(res => {
-      this.setState({ results: res })
-      console.log("results:", this.state.results)
+      this.setState({ results: res });
+      //console.log("results:", this.state.results)
     });
     this.setState({ circuit_valid_msg: valid_msg })
     this.forceUpdate();
@@ -357,7 +397,7 @@ export default class Main extends Component {
   save = async () => {
     let saved = false;
     try {
-      const studentid = getStudentID();
+      const studentid = getUserID();
       const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
       const circuit_output = escapeSpecialCharacters(this.state.results);
       var algorithm_name = getAlgorithmName()
@@ -374,19 +414,19 @@ export default class Main extends Component {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output);
           if (saved) {
             setAlgorithmName(algorithm_name);
-            this.setState({ is_new: false });
+            this.setState({ is_new: false, algorithm_name: algorithm_name });
           }
         }
 
       } else {
-        var backendisupdated = false;
-        if (studentid && backendisupdated) {
+        if (studentid) {
           saved = await saveCircuit(studentid, algorithm_name, circuit_input, circuit_output, true);
         }
       }
       if (saved && algorithm_name) {
-        localStorage.setItem("saved", true);
-        alert(`Your algorithm "${algorithm_name}" as been succesfully saved!`);
+        //localStorage.setItem("saved", true);
+        this.setState({ saved: true });
+        alert(`Your algorithm "${algorithm_name}" has been succesfully saved!`);
       } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
       console.log(error);
@@ -401,7 +441,8 @@ export default class Main extends Component {
     history.slice(0, vers);
     sessionStorage.setItem("currentversion", vers);
     sessionStorage.setItem("finalversion", vers);
-    localStorage.setItem("saved", false);
+    //localStorage.setItem("saved", false);
+    this.setState({ saved: false });
     this.undoButton.current.disabled = (vers === 0);
     this.redoButton.current.disabled = true;
   }
@@ -487,11 +528,11 @@ export default class Main extends Component {
       this.setState({ canvas: newState });
       algorithm.splice(i, 1);
       lineArray.splice(i, 1);
-      console.log(algorithm);
+      //console.log(algorithm);
       for (var j = i; j < lineArray.length; j++) {
         lineArray[j][0]--;
       }
-      console.log(lineArray);
+      //console.log(lineArray);
       localStorage.setItem("algorithm", JSON.stringify(algorithm));
       this.addToHistory();
       this.calculateResults();
@@ -501,7 +542,7 @@ export default class Main extends Component {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
-    const student_id = getStudentID();
+    const student_id = getUserID();
     if (student_id) {
       return (
         <div className="App">
@@ -515,29 +556,20 @@ export default class Main extends Component {
                       <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
                     </div>
                     <div className="col">
-                      <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                      <Dropdown  >
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={this.state.loaded_algs.length===0}>
                           Load
-                               </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item href="#/action-1" onClick={this.onLoad}>Algorithm 1</Dropdown.Item>
-                          <Dropdown.Item href="#/action-2" onClick={this.onLoad}>Algorithm 2</Dropdown.Item>
-                          <Dropdown.Item href="#/action-3" onClick={this.onLoad}>Algorithm 3</Dropdown.Item>
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu style={{maxHeight:350, overflow:'auto', maxWidth:200}}>
+                          <input placeholder="Type to filter..." style={{margin:10}} type="text" value={this.state.filter} onChange={this.filterAlgorithms} />
+                          {this.state.filtered_algs.map((alg, index) => {
+                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue"} : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
+                          })}
                         </Dropdown.Menu>
                       </Dropdown>
                     </div>
                     <div className="col">
-                      <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={this.state.is_submitted}>
-                          Delete
-                      </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {this.state.all.map((item, i) => {
-                            return (<Dropdown.Item key={i} onClick={() => { this.onDelete(item.circuit_name) }}>{item.circuit_name}</Dropdown.Item>
-                            )
-                          })}
-                        </Dropdown.Menu>
-                      </Dropdown>
+                      <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onDelete} disabled={this.state.is_submitted || this.state.is_new} >Delete</button>
                     </div>
                     <div className="col">
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onExport}>Export</button>
@@ -562,13 +594,14 @@ export default class Main extends Component {
                     </div>
                   </div>
                   <Content>
-                    <Title>Create Your Algorithm</Title>
+                    <Title>Create Your Algorithm: {this.state.algorithm_name} </Title>
                     {Object.keys(this.state.canvas).map((list, i) => (
                       <div>
                         <Button onClick={() => this.deleteLine(list, i)}>X</Button>
-                        <Algorithm key={i} list={list} state={this.state.canvas} style={{ float: 'left' }} />
+                        <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={false} style={{ float: 'left' }} />
                       </div>
                     ))}
+                    <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
                       <Alert.Heading>Successfully submitted</Alert.Heading>
@@ -609,14 +642,14 @@ export default class Main extends Component {
                     </div>
                   </div>
                 </div>
-                </div>
+              </div>
             </DragDropContext>
           </body>
         </div>
       );
     }
     else {
-            window.location.href = '/';
+        window.location.href = '/';
     }
   }
 }

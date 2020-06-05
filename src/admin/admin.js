@@ -2,7 +2,7 @@ import '../App.css';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-import { getStudentID } from '../circuit/functions.js';
+import { getUserID } from '../circuit/functions.js';
 // Main Components
 import NavBar from "../components/navBar.js";
 import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
@@ -116,8 +116,8 @@ export default class Admin extends Component {
 
 
   render() {
-    const admin_id = getStudentID();
-    const is_admin = parseInt(localStorage.getItem('isAdmin'));
+    const admin_id = getUserID(false);
+    const is_admin = parseInt(localStorage.getItem('is_admin'));
     if (admin_id && is_admin) {
       return (
         <BrowserRouter>
