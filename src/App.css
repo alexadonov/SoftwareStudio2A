@@ -114,3 +114,133 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   background-color: rgba(0,0,0,0);
   border-color: rgba(0,0,0,0);
 }
+
+.bottom-connector-1 {
+  position: relative;
+}
+
+.bottom-connector-1::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 55px gray;
+}
+
+.bottom-connector-2 {
+  position: relative;
+}
+
+.bottom-connector-2::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 158px gray;
+}
+
+.bottom-connector-3 {
+  position: relative;
+}
+
+.bottom-connector-3::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 261px gray;
+}
+
+.bottom-connector-4 {
+  position: relative;
+}
+
+.bottom-connector-4::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 364px gray;
+}
+
+.bottom-connector-5 {
+  position: relative;
+}
+
+.bottom-connector-5::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 467px gray;
+}
+
+.bottom-connector-6 {
+  position: relative;
+}
+
+.bottom-connector-6::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 570px gray;
+}
+
+.bottom-connector-7 {
+  position: relative;
+}
+
+.bottom-connector-7::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 673px gray;
+}
+
+.bottom-connector-8 {
+  position: relative;
+}
+
+.bottom-connector-8::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 776px gray;
+}
+
+.bottom-connector-9 {
+  position: relative;
+}
+
+.bottom-connector-9::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 879px gray;
+}
+
+.bottom-connector-10 {
+  position: relative;
+}
+
+.bottom-connector-10::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 2px;
+  bottom:45px;
+  border-top: solid 982px gray;
+}
