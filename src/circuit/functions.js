@@ -205,7 +205,8 @@ export const verifyCircuit = (algorithm) => {
   //"SWAP" needs 2 in the same column
   let msg = "valid"
   var circuit_input = getCircuitInput(algorithm);
-  if(circuit_input.length === 0) {
+  console.log("circ:", circuit_input);
+  if (circuit_input.length === 0 || circuit_input.every( (col_arr) => col_arr.every( (val) => val === "1" )) ) {
     msg = "The circuit is empty!";
   } else {
     var count = 0;
