@@ -11,7 +11,7 @@ export const saveCircuit = async (student_id, circuit_name, circuit_input, circu
         if (is_update) url += "update-circuit";
         else url += "save-circuit";
 
-        var data = JSON.stringify({
+        const data = JSON.stringify({
             'student_id': student_id,
             'circuit_name': circuit_name,
             'circuit_input': circuit_input,
@@ -19,7 +19,7 @@ export const saveCircuit = async (student_id, circuit_name, circuit_input, circu
             'grade': 0
         });
         
-        var response = await fetch(url, {
+        const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -27,12 +27,13 @@ export const saveCircuit = async (student_id, circuit_name, circuit_input, circu
             body: data
         });
         
-        var status = await response.status;
-        return status == "201" || status == "200";
+        const status = await response.status;
+        return status === 201 || status == 200;
 
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
+        return false;
     }
 }
 
@@ -43,11 +44,11 @@ Status codes: 200 OK, 400 Bad Request
 export const getResults = async (circuit_input) => {
     try {
         const url = proxy + "calculate";
-        var data = JSON.stringify({
+        const data = JSON.stringify({
             'circuit_input': (circuit_input)
         });
         console.log('data:', data);
-        var response = await fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -56,16 +57,16 @@ export const getResults = async (circuit_input) => {
         });
     
         let parsedData = await response.json();
-        var status = await response.status;
+        const status = await response.status;
         
         //console.log('parsedData:', parsedData);
         //console.log('status:', status);
-        if (status == "200")
-            return parsedData;
+        if (status === 200) return parsedData;
 
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
+        return [[]];
     }
 
 }
@@ -87,29 +88,27 @@ Status codes: 200 OK, 400 Bad Request, 500 Internal Server Error
 export const retrieveCircuits = async (params) => {
     try {
         const url = proxy + "retrieve-circuits";
-        var data = JSON.stringify(params);
+        const data = JSON.stringify(params);
         console.log('data:', data);
-        var response = await fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: data
         });
-
-        console.log(params)
     
-        let parsedData = await response.json();
-        var status = await response.status;
+        const parsedData = await response.json();
+        const status = await response.status;
         
         //console.log('parsedData:', parsedData);
         //console.log('status:', status);
-        if (status === "200")
-            return parsedData;
+        if (status === 200) return parsedData;
 
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
+        return {circuits: []};
     }
 };
 
@@ -121,13 +120,13 @@ export const deleteCircuit = async (student_id, circuit_name) => {
     try {
         const url = proxy + "delete-circuit";
 
-        var data = JSON.stringify({
+        const data = JSON.stringify({
             'student_id': student_id,
             'circuit_name': circuit_name
         });
 
-        console.log('data:', data);
-        var response = await fetch(url, {
+        //console.log('data:', data);
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -135,13 +134,14 @@ export const deleteCircuit = async (student_id, circuit_name) => {
             body: data
         });
 
-        var status = await response.status;
-        console.log('status:', status);
-        return status == "200";
+        const status = await response.status;
+        //console.log('status:', status);
+        return status === 200;
 
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
+        return false;
     }
 }
 
@@ -153,14 +153,14 @@ export const gradeCircuit = async (student_id, circuit_name, grade) => {
     try {
         const url = proxy + "grade-circuit";
 
-        var data = JSON.stringify({
+        const data = JSON.stringify({
             'student_id': student_id,
             'circuit_name': circuit_name,
             'grade': grade
         });
 
-        console.log('data:', data);
-        var response = await fetch(url, {
+        //console.log('data:', data);
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -168,13 +168,14 @@ export const gradeCircuit = async (student_id, circuit_name, grade) => {
             body: data
         });
 
-        var status = await response.status;
-        console.log('status:', status);
-        return status === "200";
+        const status = await response.status;
+        //console.log('status:', status);
+        return status === 200;
 
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
+        return false;
     }
 }
 
@@ -186,13 +187,13 @@ export const submitCircuit = async (student_id, circuit_name) => {
     try {
         const url = proxy + "submit-circuit";
 
-        var data = JSON.stringify({
+        const data = JSON.stringify({
             'student_id': student_id,
             'circuit_name': circuit_name
         });
 
         console.log('data:', data);
-        var response = await fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -200,13 +201,14 @@ export const submitCircuit = async (student_id, circuit_name) => {
             body: data
         });
 
-        var status = await response.status;
+        const status = await response.status;
         //console.log('status:', status);
-        return status === "200";
+        return status === 200;
 
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
+        return false;
     }
 }
 
@@ -218,34 +220,18 @@ export const healthCheck = async () => {
     try {
         const url = proxy;
 
-        var response = await fetch(url, {
+        const response = await fetch(url, {
             method: 'GET'
         });
     
-        var status = await response.status;
+        const status = await response.status;
         console.log('health response:', response);
         console.log('health status:', status);
-        return status === "200";
+        return status === 200;
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
+        return false;
     }
 
-}
-
-export const loadCircuit = async () => {
-    try {
-        const url = proxy + "load-circuit";
-
-        var response = await fetch(url, {
-            method: 'GET'
-        });
-
-        var status = await response.status;
-        console.log('health response: ', response);
-        console.log('health status: ', status);
-    } catch (error) {
-        console.log(error);
-        alert(`An error occured: "${error}"`);
-    }
 }
