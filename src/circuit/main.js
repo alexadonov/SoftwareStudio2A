@@ -611,7 +611,7 @@ export default class Main extends Component {
                     </Alert>
                   </Content>
                   <Content>
-                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
+                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={110} />
                   </Content>
                 </div>
                 <div class="col-4">

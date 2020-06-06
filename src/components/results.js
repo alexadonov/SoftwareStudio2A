@@ -8,7 +8,8 @@ export default class Results extends Component {
     this.state = {
       probs: [],
       labels: [],
-      chartData: {}
+      chartData: {},
+      allData: []
     };    
   }
 
@@ -29,15 +30,21 @@ export default class Results extends Component {
     this.setState({probs: newProbs});
   }
 
+  componentDidMount() {
+    this.setState({allData: this.props.resultChartData});
+  }
+
   componentDidUpdate(prevProps) {
     if (prevProps != this.props) {
       this.extractProbs(this.props.resultChartData);
+      this.setState({allData: this.props.resultChartData});
     }
   }
 
   render() {
+    var self = this;
     return (
-      <div class="row" style={{ margin: '8px', padding: '1%' }}>
+      <div class="row" style={{ margin: '8px', paddingBottom: '5%' }}>
         <Bar
           data={{
             labels: this.state.labels,
@@ -60,24 +67,21 @@ export default class Results extends Component {
                   return tooltipItems[0]['xLabel'];
                 },
 
-                beforeLabel: function(tooltipItems, data) { 
-                  let decimalVal = tooltipItems.xLabel.replace('| ', '');
-                  decimalVal = decimalVal.replace(' ⟩', '');
-                  decimalVal = parseInt(decimalVal, 2);
-                  return `Decimal: | ${decimalVal} ⟩`;
-                },
-
                 label: function(tooltipItems, data) {  
                   var a = tooltipItems.yLabel;
-                  var aRnd = a.toFixed(3);
+                  var aRnd = a.toFixed(5);
                   return `Probability: ${aRnd}`;   
                 },
 
                 afterLabel: function(tooltipItems, data){
-                  let phaseAngleVal = 0;
-                  var mag = Math.sqrt(tooltipItems.yLabel);
-                  var magRounded = mag.toFixed(3);
-                  return `Magnitude: ${magRounded}\nPhase Angle: ${phaseAngleVal}`;
+                  let key = tooltipItems.xLabel.replace('| ', '');
+                  key = key.replace(' ⟩', '');
+                  let probVal = self.state.allData[key]['prob'];                  
+                  let intVal = self.state.allData[key]['int'];
+                  let phaseVal = self.state.allData[key]['phase'];
+                  let magVal = self.state.allData[key]['mag'];
+                  let complexVal = self.state.allData[key]['val'];
+                  return `Binary: ${key}\nDecimal: ${intVal}\nValue: ${complexVal}\nMagnitude: ${magVal}\nPhase Angle: ${phaseVal}`;
                 },     
                                          
              labelTextColor: function(tooltipItem, chart) {
