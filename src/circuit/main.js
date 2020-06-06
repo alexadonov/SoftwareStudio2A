@@ -25,7 +25,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getUserID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import { remove, reorder, copy, move, findCopyItemsId, fixAlgorithm, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getUserID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -70,7 +70,7 @@ const getItems = (i) => {
   var ciruit = algor[i];
   var array = [];
   ciruit.map(function (item) {
-    array.push(item);
+    array.push({...item, id: uuid()});
   });
   return array;
 }
@@ -246,42 +246,51 @@ export default class Main extends Component {
   onLoad = (algorithm_name) => {
     this.load(algorithm_name);
   }
-  
   load = async (algorithm_name) => {
     try {
       const student_id = getUserID();
       const loaded_alg = await retrieveCircuits({'student_id': student_id, 'circuit_name': algorithm_name, 'is_deleted': 0});
       console.log("alg name:", algorithm_name);
-      
-      if (loaded_alg) {
-        /*
-        var id = lineArray[0][1];
-        this.setState({ canvas: { [id]: getItems(0) } });
-        algorithm[0] = getItems(0);
-        console.log(this.state.canvas[id]);
-    
-        if (algor === null) { return; }
-        else {
-          var length = algor.length;
-    
-          for (var j = 1; j < length; j++) {
-            var id = uuid();
-            this.setState({ canvas: { [id]: getItems(j) } });
-            lineArray[lineArray.length] = new Array(lineArray.length, id);
-            algorithm[algorithm.length] = getItems(j);
-          }
-        }
-        console.log(this.state.canvas);
-        */
-        alert(`"${algorithm_name}" has been loaded`)
 
+      if (loaded_alg) {
+        var new_algorithm = [];
+        let list2 = JSON.parse(loaded_alg['circuits'][0].circuit_input);
+          for(var i = 0; i < list2.length; i++) {
+            new_algorithm[i] = list2[i];
+          }
+        localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
+        fixAlgorithm();
+        algor = JSON.parse(localStorage.getItem('algorithm'));
+        this.getCircuit();
+        console.log(algor)
+        alert(`"${algorithm_name}" has been loaded`);
       } else {
         alert("Something went wrong and the selected algorithm couldn't be loaded")
       }
-      
+
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
+    }
+  }
+
+  getCircuit = async () => {
+    var id = lineArray[0][1];
+    this.setState({ canvas: { [id]: getItems(0) } });
+    algorithm[0] = getItems(0);
+
+    if (algor === null) { return; }
+    else {
+      var length = algor.length;
+
+      for (var j = 1; j < length; j++) {
+        var id = uuid();
+        let newCanvas = this.state.canvas;
+        newCanvas[id] = getItems(j);
+        this.setState({ canvas: newCanvas });
+        lineArray[lineArray.length] = [lineArray.length, id];
+        algorithm[algorithm.length] = getItems(j);
+      }
     }
   }
 
