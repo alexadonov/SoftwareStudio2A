@@ -378,14 +378,18 @@ export default class Main extends Component {
     return submitted;
   }
 
-  calculateResults = () => {
+  calculateResults = async () => {
     let circuit_input = getCircuitInput(algorithm);
-    let valid_msg = verifyCircuit(algorithm)
+    const valid_msg = verifyCircuit(algorithm)
+    if (circuit_input.length === 0) {
+      circuit_input = [[]];
+      for (var i = 0; i < algorithm.length; i++) circuit_input[0].push("1");
+    }
+    
     getResults(circuit_input).then(res => {
-      this.setState({ results: res });
-      //console.log("results:", this.state.results)
+      this.setState({ results: res, circuit_valid_msg: valid_msg });
+      console.log("results:", this.state.results)
     });
-    this.setState({ circuit_valid_msg: valid_msg })
     this.forceUpdate();
   }
 
