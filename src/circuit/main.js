@@ -237,7 +237,7 @@ export default class Main extends Component {
     // Checks the algorithm has been saved
     // if not, prompts user to save
     // Otherwise, clears session and begins a new one
-    if (this.state.saved || window.confirm("You have unsaved changes - are you sure you want to create a new algorithm?")) {
+    if (this.state.is_saved || window.confirm("You have unsaved changes - are you sure you want to create a new algorithm?")) {
       resetTempStorage();
       window.location.href = '/dnd';
     }
@@ -246,26 +246,33 @@ export default class Main extends Component {
   onLoad = (algorithm_name) => {
     this.load(algorithm_name);
   }
+
   load = async (algorithm_name) => {
     try {
       const student_id = getUserID();
       const loaded_alg = await retrieveCircuits({'student_id': student_id, 'circuit_name': algorithm_name, 'is_deleted': 0});
-      console.log("alg name:", algorithm_name);
 
       if (loaded_alg) {
-        var new_algorithm = [];
-        let list2 = JSON.parse(loaded_alg['circuits'][0].circuit_input);
-          for(var i = 0; i < list2.length; i++) {
-            new_algorithm[i] = list2[i];
-          }
+        const current_algorithm = loaded_alg['circuits'][0];
+        var new_algorithm = JSON.parse(current_algorithm['circuit_input']);
         localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
         fixAlgorithm();
         algor = JSON.parse(localStorage.getItem('algorithm'));
         this.getCircuit();
-        console.log(algor)
-        alert(`"${algorithm_name}" has been loaded`);
+        this.setState({
+          is_submitted: current_algorithm['is_submitted'],
+          is_saved: true,
+          circuit_valid_msg: verifyCircuit(algor),
+          is_new: false,
+          is_graded: current_algorithm['is_graded'],
+          algorithm_name: algorithm_name,
+          grade: current_algorithm['algorithm_grade']
+        });
+        await this.calculateResults();
+        setAlgorithmName(algorithm_name);
+        this.forceUpdate();
       } else {
-        alert("Something went wrong and the selected algorithm couldn't be loaded")
+        alert(`Something went wrong and "${algorithm_name}" couldn't be loaded`)
       }
 
     } catch (error) {
@@ -339,8 +346,6 @@ export default class Main extends Component {
   filterAlgorithms = (e) => {
     e.preventDefault();
     const filter_string = (e.target.value).toLowerCase();
-    
-    console.log(this.state.filter);
     let filtered_list = [];
     const loaded_list = this.state.loaded_algs;
     for (var i = 0; i < loaded_list.length; i++) {
@@ -614,7 +619,7 @@ export default class Main extends Component {
                         <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={false} style={{ float: 'left' }} />
                       </div>
                     ))}
-                    <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
+                    <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.is_saved} > You have unsaved changes</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
                       <Alert.Heading>Successfully submitted</Alert.Heading>
