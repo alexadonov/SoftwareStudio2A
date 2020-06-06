@@ -88,7 +88,7 @@ export const retrieveCircuits = async (params) => {
     try {
         const url = proxy + "retrieve-circuits";
         var data = JSON.stringify(params);
-        console.log('data:', data);
+        //console.log('data:', data);
         var response = await fetch(url, {
             method: 'POST',
             headers: {

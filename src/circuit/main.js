@@ -251,30 +251,31 @@ export default class Main extends Component {
     try {
       const student_id = getUserID();
       const loaded_alg = await retrieveCircuits({'student_id': student_id, 'circuit_name': algorithm_name, 'is_deleted': 0});
-
-      if (loaded_alg) {
-        const current_algorithm = loaded_alg['circuits'][0];
-        var new_algorithm = JSON.parse(current_algorithm['circuit_input']);
-        localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
-        fixAlgorithm();
-        algor = JSON.parse(localStorage.getItem('algorithm'));
-        this.getCircuit();
-        this.setState({
-          is_submitted: current_algorithm['is_submitted'],
-          is_saved: true,
-          circuit_valid_msg: verifyCircuit(algor),
-          is_new: false,
-          is_graded: current_algorithm['is_graded'],
-          algorithm_name: algorithm_name,
-          grade: current_algorithm['algorithm_grade']
-        });
-        await this.calculateResults();
-        setAlgorithmName(algorithm_name);
-        this.forceUpdate();
-      } else {
-        alert(`Something went wrong and "${algorithm_name}" couldn't be loaded`)
+      if (algorithm_name !== this.state.algorithm_name) {
+        if (loaded_alg) {
+          const current_algorithm = loaded_alg['circuits'][0];
+          var new_algorithm = JSON.parse(current_algorithm['circuit_input']);
+          localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
+          fixAlgorithm();
+          algor = JSON.parse(localStorage.getItem('algorithm'));
+          this.getCircuit();
+          this.setState({
+            is_submitted: current_algorithm['is_submitted'],
+            is_saved: true,
+            circuit_valid_msg: verifyCircuit(algor),
+            is_new: false,
+            is_graded: current_algorithm['is_graded'],
+            algorithm_name: algorithm_name,
+            grade: current_algorithm['algorithm_grade']
+          });
+          await this.calculateResults();
+          setAlgorithmName(algorithm_name);
+          this.forceUpdate();
+        } else {
+          alert(`Something went wrong and "${algorithm_name}" couldn't be loaded`)
+        }
       }
-
+      
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
@@ -379,7 +380,8 @@ export default class Main extends Component {
             submitted = await submitCircuit(studentid, algorithm_name);
             if (submitted) {
               alert(`Your algorithm "${algorithm_name}" has been succesfully submitted!`);
-              this.setState({ is_submitted: true });
+              this.setState({ is_submitted: true, is_saved: true });
+              await this.getList();
             }
             else alert("Something went wrong and your algorithm couldn't be submitted");
           }
@@ -399,10 +401,11 @@ export default class Main extends Component {
       circuit_input = [[]];
       for (var i = 0; i < algorithm.length; i++) circuit_input[0].push("1");
     }
+    console.log("circ:",circuit_input);
     
     getResults(circuit_input).then(res => {
       this.setState({ results: res, circuit_valid_msg: valid_msg });
-      console.log("results:", this.state.results)
+      //console.log("results:", this.state.results)
     });
     this.forceUpdate();
   }
@@ -445,6 +448,7 @@ export default class Main extends Component {
         //localStorage.setItem("saved", true);
         this.setState({ saved: true });
         alert(`Your algorithm "${algorithm_name}" has been succesfully saved!`);
+        await this.getList();
       } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
       console.log(error);
