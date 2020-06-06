@@ -94,7 +94,7 @@ const ALGORITHM_MAKER = (props) => {
                                               {...provided.dragHandleProps}
                                               isDragging={ snapshot.isDragging }
                                               style={ provided.draggableProps.style}
-                                              className={ (item.addStyle ? 'bottom-connector-'+item.dist : '')}>
+                                              className={ (item.addStyle ? 'bottom-connector bottom-connector-'+item.dist : '')}>
                                               {item.content}
                                           </Item>
                                       )}
