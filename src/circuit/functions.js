@@ -205,18 +205,22 @@ export const verifyCircuit = (algorithm) => {
   //"SWAP" needs 2 in the same column
   let msg = "valid"
   var circuit_input = getCircuitInput(algorithm);
+  console.log("ci:",circuit_input);
   if (circuit_input.length === 0 || circuit_input.every( (col_arr) => col_arr.every( (val) => val === "1" )) ) {
     msg = "The circuit is empty!";
   } else {
     var count = 0;
     for(var i = 0; i < circuit_input.length; i++) {
       for(var j = 0; j < circuit_input[i].length; j++) {
-        if(String(circuit_input[i][j]).toLowerCase() === "swap") count++;
+        if (String(circuit_input[i][j]).toLowerCase() === "swap") count++;
+        else if (String(circuit_input[i][j]).toLowerCase() !== "1" && count === 1) {
+          return "Swaps are obstructed by gates inbetween"
+        }
       }
-      if(count === 1) {
-        msg = "You need 2 Swaps in a column";
+      if (count === 1) {
+        return "You need a pair of Swaps in a column";
       } else if (count > 2) {
-        msg = "Only a single pair of Swaps is allowed in column";
+        return "Only a single pair of Swaps is allowed in column";
       }
       count = 0;
     }
