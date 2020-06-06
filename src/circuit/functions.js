@@ -278,7 +278,7 @@ export const findCopyItemsId = (id) => {
 
 export const getObject = (name) => {
   if(name === '1') {
-    return "1";
+    return EMPTY[0];
   }
   for(var i = 0; i < DISPLAYS.length; i++) {
     if(DISPLAYS[i].content === name) {
@@ -331,14 +331,25 @@ export const getObject = (name) => {
 }
 
  const removeOnes = (algorithm) => {
+  var found = false;
+  console.log("initial:", algorithm[1][0]);
   for(var i = 0; i < algorithm.length; i++) {
-    for(var j = 0; j < algorithm[i].length; j++) {
-      if(algorithm[i][j] === "1" || algorithm[i][j] === undefined || algorithm[i][j] === null) {
-        algorithm[i].splice(j,1);
-        return;
+    found = false;
+    for (var j = algorithm[i].length - 1; j >= 0 && !found; j--) {
+      console.log("i:", i);
+      console.log("j:", j);
+      if (algorithm[i][j]["content"] === "1" || algorithm[i][j]["content"]  === undefined || algorithm[i][j]["content"]  === null) {
+
+      } else {
+        found = true;
+        algorithm[i].splice(j+1,algorithm[i].length-j-1);
       }
+      
     }
   }
+  
+
+  console.log("final:", algorithm);
 }
 
 export const fixAlgorithm = () => {
@@ -347,7 +358,6 @@ export const fixAlgorithm = () => {
   for(var i = 0; i < algorithm.length; i++) {
     for(var j = 0; j < algorithm[i].length; j++) {
       algorithm[i][j] = getObject(algorithm[i][j]);
-      removeOnes(algorithm);
     }
   }
   removeOnes(algorithm);

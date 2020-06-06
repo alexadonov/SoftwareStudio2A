@@ -66,10 +66,10 @@ var history = [];
 var algor //= JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
-  if (algor === null) { return []; }
-  var ciruit = algor[i];
+  if (algor === null || algor.length === 0 || !algor) { return []; }
+  var circuit = algor[i];
   var array = [];
-  ciruit.map(function (item) {
+  circuit.map(function (item) {
     array.push({...item, id: uuid()});
   });
   return array;
