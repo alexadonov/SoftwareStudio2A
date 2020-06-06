@@ -63,6 +63,8 @@ const Button = styled.button`
 var algorithm = [];
 var lineArray = [];
 var history = [];
+var historyLine = [];
+var historyAlgo = [];
 var algor //= JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
@@ -107,6 +109,8 @@ export default class Main extends Component {
     lineArray[0] = new Array(0, id);
     algorithm[0] = new Array(0, new Array());
     history[0] = { ... this.state.canvas };
+    historyLine[0] = lineArray;
+    historyAlgo[0] = algorithm;
 
     lineArray[0] = [0, id];
     algorithm[0] = [];
@@ -230,6 +234,7 @@ export default class Main extends Component {
       lineArray[lineArray.length] = [lineArray.length, id];
       algorithm[algorithm.length] = [];
       this.calculateResults();
+      this.addToHistory()
     }
   }
 
@@ -438,7 +443,13 @@ export default class Main extends Component {
   addToHistory = () => {
     var vers = parseInt(sessionStorage.getItem("currentversion")) + 1;
     history[vers] = { ... this.state.canvas };
+    historyLine[vers] = lineArray;
+    historyAlgo[vers] = algorithm;
+
     history.slice(0, vers);
+    historyLine.slice(0, vers);
+    historyAlgo.slice(0, vers);
+
     sessionStorage.setItem("currentversion", vers);
     sessionStorage.setItem("finalversion", vers);
     //localStorage.setItem("saved", false);
@@ -458,14 +469,9 @@ export default class Main extends Component {
           canvas:
             history[vers]
         }, () => {
-          for (var i = 0; i < lineArray.length; i++) {
-            algorithm[i] = [];
-            [this.state.canvas[lineArray[i][1]]].map(function (item) {
-              algorithm[i].push(item[0]);
-            });
-          }
+          lineArray = historyLine[vers];
+          algorithm = historyAlgo[vers];
           localStorage.setItem('algorithm', JSON.stringify(algorithm));
-          this.calculateResults();
         });
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
@@ -480,24 +486,37 @@ export default class Main extends Component {
       var finalvers = parseInt(sessionStorage.getItem("finalversion"));
       if (vers < finalvers) {
         vers = vers + 1;
+
         this.setState({
           canvas:
             history[vers]
         }, () => {
-          for (var i = 0; i < lineArray.length; i++) {
-            algorithm[i] = [];
-            [this.state.canvas[lineArray[i][1]]].map(function (item) {
-              algorithm[i].push(item[0]);
-            });
-          }
+          lineArray = historyLine[vers];
+          algorithm = historyAlgo[vers];
           localStorage.setItem('algorithm', JSON.stringify(algorithm));
-          this.calculateResults();
         });
         sessionStorage.setItem("currentversion", vers);
         this.undoButton.current.disabled = (vers === 0);
         this.redoButton.current.disabled = (vers === finalvers);
       }
     }
+  }
+
+  remapAlgorithm = () => {
+    // console.log(algorithm)
+    // for (var i = 0; i < lineArray.length - 1; i++) {
+    //   algorithm[i] = [];
+    //   [this.state.canvas[lineArray[i][1]]].map(function (item) {
+    //     console.log(item)
+    //     algorithm[i].push(item[0]);
+    //   });
+    // }
+    localStorage.setItem('algorithm', JSON.stringify(algorithm));
+
+    
+    
+    this.calculateResults();
+    // console.log(algorithm)
   }
 
   onExport = () => {
