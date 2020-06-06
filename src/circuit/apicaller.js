@@ -66,8 +66,8 @@ export const getResults = async (circuit_input) => {
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
-        return [[]];
     }
+    return [[]];
 
 }
 
@@ -108,8 +108,8 @@ export const retrieveCircuits = async (params) => {
     } catch (error) {
         console.log(error);
         alert(`An error occured: "${error}"`);
-        return {circuits: []};
     }
+    return {circuits: []};
 };
 
 /*
