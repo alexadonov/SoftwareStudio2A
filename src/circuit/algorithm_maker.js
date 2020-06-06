@@ -26,6 +26,7 @@ const Container = styled.div`
 `;
 
 const Item = styled.div`
+  z-index: 999;
   border: 3px solid darkgrey;
   box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.2);
   border-radius: 2px;
@@ -43,6 +44,34 @@ const ALGORITHM_MAKER = (props) => {
   const list = props.list;
   const state = props.state;
   const isAdmin = props.isAdmin;
+  
+  
+  // ideally this shouldn't exist
+  let prevBlocks = {};
+  let index = 0;
+
+  for (const item in state) {
+      for (var i = 0; i < state[item].length; i++) {
+          
+          let block = state[item][i];
+          
+          if (prevBlocks[i] >= 0 && block.content === 'Swap') {
+            state[item][i]['addStyle'] = true;
+            state[item][i]['dist'] = index - prevBlocks[i];
+            prevBlocks[i] = -1
+        }
+        else {
+            if (block.content === 'Swap') {
+                prevBlocks[i] = index; 
+            }
+            else {
+                prevBlocks[i] = -1;
+            }
+            state[item][i]['addStyle'] = false;
+        }
+    }
+    index++;
+  }
 
   return (
         <Droppable key={list} droppableId={list} direction="horizontal">
@@ -64,7 +93,8 @@ const ALGORITHM_MAKER = (props) => {
                                               {...provided.draggableProps}
                                               {...provided.dragHandleProps}
                                               isDragging={ snapshot.isDragging }
-                                              style={ provided.draggableProps.style}>
+                                              style={ provided.draggableProps.style}
+                                              className={ (item.addStyle ? 'bottom-connector bottom-connector-'+item.dist : '')}>
                                               {item.content}
                                           </Item>
                                       )}
