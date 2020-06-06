@@ -268,6 +268,8 @@ export default class Main extends Component {
             algorithm_name: algorithm_name,
             grade: current_algorithm['algorithm_grade']
           });
+          sessionStorage.setItem("currentversion", 0);
+          sessionStorage.setItem("finalversion", 0);
           await this.calculateResults();
           setAlgorithmName(algorithm_name);
           this.forceUpdate();
@@ -286,20 +288,21 @@ export default class Main extends Component {
     var id = lineArray[0][1];
     this.setState({ canvas: { [id]: getItems(0) } });
     algorithm[0] = getItems(0);
-
+    
     if (algor === null) { return; }
     else {
       var length = algor.length;
-
+      let newCanvas = this.state.canvas;
       for (var j = 1; j < length; j++) {
         var id = uuid();
-        let newCanvas = this.state.canvas;
         newCanvas[id] = getItems(j);
-        this.setState({ canvas: newCanvas });
+        
         lineArray[lineArray.length] = [lineArray.length, id];
         algorithm[algorithm.length] = getItems(j);
       }
+      this.setState({ canvas: newCanvas });
     }
+    
   }
 
   // Refreshes the page so user can restart algorithm
@@ -335,10 +338,17 @@ export default class Main extends Component {
     var list = [];
     const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0});
     for (var i = 0; i < results['circuits'].length; i++) {
-      list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted']];
+      list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted'], results['circuits'][i]['is_graded']];
     }
     list.sort((a, b) => {
-      return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+      if (a[2] > b[2]) return true;
+      else if (a[2] < b[2]) return false;
+      else {
+        if (a[1] > b[1]) return true;
+        else if (a[1] < b[1]) return false;
+        else return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+      }
+      
     });
     this.setState({ loaded_algs: list, filtered_algs: list });
     console.log(this.state.loaded_algs);
@@ -585,7 +595,7 @@ export default class Main extends Component {
                         <Dropdown.Menu style={{maxHeight:350, overflow:'auto', maxWidth:200}}>
                           <input placeholder="Type to filter..." style={{margin:10}} type="text" value={this.state.filter} onChange={this.filterAlgorithms} />
                           {this.state.filtered_algs.map((alg, index) => {
-                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue"} : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
+                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue"} : alg[2] === 1 ? {backgroundColor:"limegreen"} : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
                           })}
                         </Dropdown.Menu>
                       </Dropdown>
