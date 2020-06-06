@@ -101,7 +101,7 @@ class adminRegister extends Component {
     });
   }
 
-  onSubmit = (e) => {
+  onSubmit = async (e) => {
     e.preventDefault();
 
     const newUser = {
@@ -118,12 +118,11 @@ class adminRegister extends Component {
     const mismatched_password = this.state.password !== this.state.confirmPassword;
     const invalid_passphrase = this.state.passphrase !== "quantum_528491";
     const invalid_password = !isValidPassword(this.state.password);
-    console.log("validp:", invalid_password);
     var invalid_details = invalid_passphrase || mismatched_password || invalid_password;
 
     if (!invalid_details) {
       // create new account
-      register(newUser).then(registered => {
+      await register(newUser).then(registered => {
         if (registered) {
           alert('Your account was successfully created!');
           this.props.history.push('/');

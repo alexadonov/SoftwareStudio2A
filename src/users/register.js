@@ -93,7 +93,7 @@ class Register extends Component {
     })
   }
 
-  onSubmit = (e) => {
+  onSubmit = async (e) => {
     e.preventDefault();
 
     const newUser = {
@@ -113,7 +113,7 @@ class Register extends Component {
 
     if (!invalid_details) {
       // create new account
-      register(newUser).then(registered => {
+      await register(newUser).then(registered => {
         if (registered) {
           alert('Your account was successfully created!');
           this.props.history.push('/');
