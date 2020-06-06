@@ -98,9 +98,18 @@ export default class Results extends Component {
            },
             title: {
               display: true,
-              fontSize: 24,
+              fontSize: 20,
               text: this.props.title
-            }
+            }, 
+            scales: {
+              yAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                    min: 0,
+                    max: 1    
+                }
+              }]
+             }
           }}
         />
       </div>
