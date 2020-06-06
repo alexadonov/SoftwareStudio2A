@@ -17,12 +17,14 @@ export default class Results extends Component {
     if (data === undefined || typeof data === "string") return;
     
     let newProbs = [];
+    let newLabels = Object.keys(data);
 
-    for (var key in data)
-      newProbs.push(data[key].prob);
+    newLabels.sort();
 
-    let newLabels = Object.getOwnPropertyNames(data).sort((a, b) => {return a - b})
-
+    for (let i = 0; i < newLabels.length; i++) {
+      newProbs.push(data[newLabels[i]]['prob']);
+    }
+    
     for (let label in newLabels)
       newLabels[label] = '| ' + newLabels[label] + ' ⟩';
 
@@ -36,8 +38,8 @@ export default class Results extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps != this.props) {
-      this.extractProbs(this.props.resultChartData);
       this.setState({allData: this.props.resultChartData});
+      this.extractProbs(this.props.resultChartData);
     }
   }
 
