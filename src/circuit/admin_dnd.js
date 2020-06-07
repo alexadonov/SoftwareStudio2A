@@ -12,7 +12,7 @@ import Algorithm from './algorithm_maker';
 import Results from '../components/results';
 
 
-import {getCircuitInput, fixAlgorithm, verifyCircuit, getStudentIDView, getUserID, getAlgorithmName } from './functions';
+import {getCircuitInput, fixAlgorithm, verifyCircuit, getStudentIDView, getUserID, getAlgorithmName, getIsGraded, getGrade } from './functions';
 import { gradeCircuit } from './apicaller';
 
 const Content = styled.div`
@@ -55,8 +55,8 @@ export default class AdminDND extends Component {
       results: {},
       is_submitted: false,
       circuit_valid_msg: verifyCircuit(algorithm),
-      is_graded: false,
-      grade: 0,
+      is_graded: getIsGraded(),
+      grade: getGrade(),
       student_id: 0,
       is_admin: true,
     };
@@ -137,7 +137,7 @@ export default class AdminDND extends Component {
 
   Submit = (e) => {
     e.preventDefault();
-    let student_id = getUserID();
+    let student_id = getStudentIDView();
     let circuit_name = getAlgorithmName();
     if(this.state.grade > 100 || this.state.grade < 0 || this.state.grade == null) {
       alert('Please enter a valid grade' );
@@ -155,11 +155,11 @@ export default class AdminDND extends Component {
   render() {
     const student_id = getUserID();
     let marked;
-    if(this.state.is_graded === true) {
+    if(this.state.is_graded === 1) {
       marked =
       <div class="row" style={{margin: '8px', paddingLeft: '2%', width: '50%'}}>
         <div class="col-">
-          <h4>Grade: {this.state.grade}%</h4>
+          <h4>Grade: <b>{this.state.grade}%</b></h4>
         </div>
       </div>
     } else {

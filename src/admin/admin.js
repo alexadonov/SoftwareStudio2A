@@ -2,7 +2,7 @@ import styles from '../App.css';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-import { getUserID, setAlgorithmName, setStudentIDView } from '../circuit/functions.js';
+import { getUserID, setAlgorithmName, setStudentIDView, setIsGraded, setGrade } from '../circuit/functions.js';
 // Main Components
 import NavBar from "../components/navBar.js";
 import filterFactory, { textFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
@@ -50,6 +50,8 @@ var table_columns = [{
     onClick: (e, column, columnIndex, row) => {
       setStudentIDView(row.student_id);
       setAlgorithmName(row.circuit_name);
+      setGrade(row.algorithm_grade);
+      setIsGraded(row.is_graded);
       window.location.href = '/admin/dnd';
     }
   },

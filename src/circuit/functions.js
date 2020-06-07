@@ -169,6 +169,23 @@ export const setAlgorithmName = (algorithm_name) => {
   localStorage.setItem('algorithm_name', algorithm_name);
 }
 
+export const setIsGraded = (is_graded) => {
+  localStorage.setItem('is_graded', is_graded);
+}
+
+export const getIsGraded = () => {
+  return  parseInt(localStorage.getItem('is_graded'));
+}
+
+export const setGrade = (grade) => {
+  localStorage.setItem('grade', grade);
+}
+
+export const getGrade = () => {
+  return  parseInt(localStorage.getItem('grade'));
+}
+
+
 const algorithmExists = async (student_id, algorithm_name) => {
   const results = await retrieveCircuits({
     'student_id': student_id,
@@ -253,7 +270,7 @@ export const escapeSpecialCharacters = (JSONfile) => {
 
 export const isValidPassword = (password) => {
   var min_length = 8;
-  var letter = /[a-zA-Z]/; 
+  var letter = /[a-zA-Z]/;
   var number = /[0-9]/;
   return (password.length >= min_length) && number.test(password) && letter.test(password);
 }
