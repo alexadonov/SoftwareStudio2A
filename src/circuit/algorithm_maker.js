@@ -84,21 +84,19 @@ const ALGORITHM_MAKER = (props) => {
       for (var i = 0; i < state[item].length; i++) {
           
         let block = state[item][i];
-        if (block.name !== 'Empty') {
-            if (prevBlocks[i] >= 0 && ['Pauli X Gate', 'Hadamard Gate', 'Control', 'Anti-Control'].includes(block.name) ) {
-                state[item][i]['addStyle'] = true;
-                state[item][i]['dist'] = index - prevBlocks[i];
-                prevBlocks[i] = index;
+        if (prevBlocks[i] >= 0 && ['Pauli X Gate', 'Hadamard Gate', 'Control', 'Anti-Control'].includes(block.name) ) {
+            state[item][i]['addStyle'] = true;
+            state[item][i]['dist'] = index - prevBlocks[i];
+            prevBlocks[i] = index;
+        }
+        else {
+            if (['X', 'H', 'Control', 'Anti-Control'].includes(block.content)) {
+                prevBlocks[i] = index; 
             }
             else {
-                if (['X', 'H', 'Control', 'Anti-Control'].includes(block.content)) {
-                    prevBlocks[i] = index; 
-                }
-                else {
-                    prevBlocks[i] = -1;
-                }
-                if (state[item][i].content != 'Swap') state[item][i]['addStyle'] = false;
+                prevBlocks[i] = -1;
             }
+            if (state[item][i].content != 'Swap') state[item][i]['addStyle'] = false;
         }
           
     }
