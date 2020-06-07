@@ -25,7 +25,7 @@ import SAMPLING from './data/sampling.js';
 import PARITY from './data/parity.js';
 import EMPTY from './data/empty.js';
 
-import { remove, reorder, copy, move, findCopyItemsId, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getUserID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import { remove, reorder, copy, move, findCopyItemsId, fixAlgorithm, getCircuitInput, verifyCircuit, findCopyItems, escapeSpecialCharacters, getUserID, getAlgorithmName, isValidAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
 
 // All CSS for this file
 // Each div as been created with a name (see below)
@@ -66,11 +66,11 @@ var history = [];
 var algor //= JSON.parse(localStorage.getItem('algorithm'));
 
 const getItems = (i) => {
-  if (algor === null) { return []; }
-  var ciruit = algor[i];
+  if (algor === null || algor.length === 0 || !algor) { return []; }
+  var circuit = algor[i];
   var array = [];
-  ciruit.map(function (item) {
-    array.push(item);
+  circuit.map(function (item) {
+    array.push({...item, id: uuid()});
   });
   return array;
 }
@@ -237,7 +237,7 @@ export default class Main extends Component {
     // Checks the algorithm has been saved
     // if not, prompts user to save
     // Otherwise, clears session and begins a new one
-    if (this.state.saved || window.confirm("You have unsaved changes - are you sure you want to create a new algorithm?")) {
+    if (this.state.is_saved || window.confirm("You have unsaved changes - are you sure you want to create a new algorithm?")) {
       resetTempStorage();
       window.location.href = '/dnd';
     }
@@ -246,43 +246,63 @@ export default class Main extends Component {
   onLoad = (algorithm_name) => {
     this.load(algorithm_name);
   }
-  
+
   load = async (algorithm_name) => {
     try {
       const student_id = getUserID();
       const loaded_alg = await retrieveCircuits({'student_id': student_id, 'circuit_name': algorithm_name, 'is_deleted': 0});
-      console.log("alg name:", algorithm_name);
-      
-      if (loaded_alg) {
-        /*
-        var id = lineArray[0][1];
-        this.setState({ canvas: { [id]: getItems(0) } });
-        algorithm[0] = getItems(0);
-        console.log(this.state.canvas[id]);
-    
-        if (algor === null) { return; }
-        else {
-          var length = algor.length;
-    
-          for (var j = 1; j < length; j++) {
-            var id = uuid();
-            this.setState({ canvas: { [id]: getItems(j) } });
-            lineArray[lineArray.length] = new Array(lineArray.length, id);
-            algorithm[algorithm.length] = getItems(j);
-          }
+      if (algorithm_name !== this.state.algorithm_name) {
+        if (loaded_alg) {
+          const current_algorithm = loaded_alg['circuits'][0];
+          var new_algorithm = JSON.parse(current_algorithm['circuit_input']);
+          localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
+          fixAlgorithm();
+          algor = JSON.parse(localStorage.getItem('algorithm'));
+          this.getCircuit();
+          this.setState({
+            is_submitted: current_algorithm['is_submitted'],
+            is_saved: true,
+            circuit_valid_msg: verifyCircuit(algor),
+            is_new: false,
+            is_graded: current_algorithm['is_graded'],
+            algorithm_name: algorithm_name,
+            grade: current_algorithm['algorithm_grade']
+          });
+          sessionStorage.setItem("currentversion", 0);
+          sessionStorage.setItem("finalversion", 0);
+          await this.calculateResults();
+          setAlgorithmName(algorithm_name);
+          this.forceUpdate();
+        } else {
+          alert(`Something went wrong and "${algorithm_name}" couldn't be loaded`)
         }
-        console.log(this.state.canvas);
-        */
-        alert(`"${algorithm_name}" has been loaded`)
-
-      } else {
-        alert("Something went wrong and the selected algorithm couldn't be loaded")
       }
       
     } catch (error) {
       console.log(error);
       alert(`An error occured: "${error}"`);
     }
+  }
+
+  getCircuit = async () => {
+    var id = lineArray[0][1];
+    this.setState({ canvas: { [id]: getItems(0) } });
+    algorithm[0] = getItems(0);
+    
+    if (algor === null) { return; }
+    else {
+      var length = algor.length;
+      let newCanvas = this.state.canvas;
+      for (var j = 1; j < length; j++) {
+        var id = uuid();
+        newCanvas[id] = getItems(j);
+        
+        lineArray[lineArray.length] = [lineArray.length, id];
+        algorithm[algorithm.length] = getItems(j);
+      }
+      this.setState({ canvas: newCanvas });
+    }
+    
   }
 
   // Refreshes the page so user can restart algorithm
@@ -318,10 +338,17 @@ export default class Main extends Component {
     var list = [];
     const results = await retrieveCircuits({ 'student_id': student_id, 'is_deleted': 0});
     for (var i = 0; i < results['circuits'].length; i++) {
-      list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted']];
+      list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted'], results['circuits'][i]['is_graded']];
     }
     list.sort((a, b) => {
-      return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+      if (a[2] > b[2]) return true;
+      else if (a[2] < b[2]) return false;
+      else {
+        if (a[1] > b[1]) return true;
+        else if (a[1] < b[1]) return false;
+        else return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+      }
+      
     });
     this.setState({ loaded_algs: list, filtered_algs: list });
     console.log(this.state.loaded_algs);
@@ -330,8 +357,6 @@ export default class Main extends Component {
   filterAlgorithms = (e) => {
     e.preventDefault();
     const filter_string = (e.target.value).toLowerCase();
-    
-    console.log(this.state.filter);
     let filtered_list = [];
     const loaded_list = this.state.loaded_algs;
     for (var i = 0; i < loaded_list.length; i++) {
@@ -365,7 +390,8 @@ export default class Main extends Component {
             submitted = await submitCircuit(studentid, algorithm_name);
             if (submitted) {
               alert(`Your algorithm "${algorithm_name}" has been succesfully submitted!`);
-              this.setState({ is_submitted: true });
+              this.setState({ is_submitted: true, is_saved: true });
+              await this.getList();
             }
             else alert("Something went wrong and your algorithm couldn't be submitted");
           }
@@ -378,14 +404,19 @@ export default class Main extends Component {
     return submitted;
   }
 
-  calculateResults = () => {
+  calculateResults = async () => {
     let circuit_input = getCircuitInput(algorithm);
-    let valid_msg = verifyCircuit(algorithm)
+    const valid_msg = verifyCircuit(algorithm)
+    if (circuit_input.length === 0) {
+      circuit_input = [[]];
+      for (var i = 0; i < algorithm.length; i++) circuit_input[0].push("1");
+    }
+    console.log("circ:",circuit_input);
+    
     getResults(circuit_input).then(res => {
-      this.setState({ results: res });
+      this.setState({ results: res, circuit_valid_msg: valid_msg });
       //console.log("results:", this.state.results)
     });
-    this.setState({ circuit_valid_msg: valid_msg })
     this.forceUpdate();
   }
 
@@ -427,6 +458,7 @@ export default class Main extends Component {
         //localStorage.setItem("saved", true);
         this.setState({ saved: true });
         alert(`Your algorithm "${algorithm_name}" has been succesfully saved!`);
+        await this.getList();
       } else if (algorithm_name) alert("Something went wrong and your algorithm couldn't be saved");
     } catch (error) {
       console.log(error);
@@ -563,7 +595,7 @@ export default class Main extends Component {
                         <Dropdown.Menu style={{maxHeight:350, overflow:'auto', maxWidth:200}}>
                           <input placeholder="Type to filter..." style={{margin:10}} type="text" value={this.state.filter} onChange={this.filterAlgorithms} />
                           {this.state.filtered_algs.map((alg, index) => {
-                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue"} : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
+                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue"} : alg[2] === 1 ? {backgroundColor:"limegreen"} : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
                           })}
                         </Dropdown.Menu>
                       </Dropdown>
@@ -601,7 +633,7 @@ export default class Main extends Component {
                         <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={false} style={{ float: 'left' }} />
                       </div>
                     ))}
-                    <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
+                    <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.is_saved} > You have unsaved changes</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
                       <Alert.Heading>Successfully submitted</Alert.Heading>

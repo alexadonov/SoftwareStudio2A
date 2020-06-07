@@ -58,7 +58,7 @@ class Login extends Component {
    });
   }
 
-  onSubmit = (e) => {
+  onSubmit = async (e) => {
     e.preventDefault();
 
     const user = {
@@ -66,7 +66,7 @@ class Login extends Component {
       password: this.state.password
     };
     
-    login(user).then(loggedin => {
+    await login(user).then(loggedin => {
       if (loggedin) {
         localStorage.setItem('email', this.state.email);
         if (localStorage.is_admin === "0") this.props.history.push('/dnd');

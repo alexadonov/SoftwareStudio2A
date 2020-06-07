@@ -13,11 +13,12 @@ export const register = async newUser => {
         });
       
         console.log(res);
-        return res.status === 201;
+        const status = await res.status;
+        return status === 201;
     }
     catch (error) {
         console.log(error);
-        alert(`An error occured: "${error}"`);
+        //alert(`An error occured: "${error}"`);
         return false;
     }
 }
@@ -28,17 +29,19 @@ export const login = async user => {
             email: user.email,
             password: user.password
         });
-        localStorage.setItem('token', res.data.token);
-
-        if (res.data.is_admin) localStorage.setItem('admin_id', res.data.student_id);
-        else localStorage.setItem('student_id', res.data.student_id);
-        localStorage.setItem('is_admin', res.data.is_admin);
-
-        return res.status === 200;
+        
+        const status = await res.status;
+        if (status === 200) {
+            localStorage.setItem('token', res.data.token);
+            if (res.data.is_admin) localStorage.setItem('admin_id', res.data.student_id);
+            else localStorage.setItem('student_id', res.data.student_id);
+            localStorage.setItem('is_admin', res.data.is_admin);
+        }
+        return status === 200;
     }
     catch (error) {
         console.log(error);
-        alert(`An error occured: "${error}"`);
+        //alert(`An error occured: "${error}"`);
         return false;
     }
 }
