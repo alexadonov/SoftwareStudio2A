@@ -80,7 +80,7 @@ export default class Admin extends Component {
 
   async componentDidMount() {
     // Gets data before the render
-    const is_admin = parseInt(localStorage.getItem('isAdmin'));
+    const is_admin = parseInt(localStorage.getItem('is_admin'));
     if (!is_admin) window.location.href = '/';
     else {
       var data = await this.getCircuits();

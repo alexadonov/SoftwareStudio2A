@@ -44,7 +44,6 @@ class Register extends Component {
 
     this.state = {
       studentID: '',
-      isAdmin: '',
       is_admin: '',
       fname: '',
       lname: '',
