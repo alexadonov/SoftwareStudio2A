@@ -5,6 +5,12 @@ import { Droppable, Draggable } from 'react-beautiful-dnd';
 // This file makes the droppable region for the algorithm maker
 // It is called in the main.js file
 
+// Data files
+import PROBES from './data/probes.js';
+import HALF_TURNS from './data/half_turns.js';
+import QUARTER_TURNS from './data/quarter_turns.js';
+import EIGHTH_TURNS from './data/eighth_turns.js';
+
 const Notice = styled.h5`
   width: auto;
   height: auto;
@@ -39,6 +45,22 @@ const Item = styled.div`
   align-items: center;
   background-color: ${props => (props.isDragging ? 'darkgrey' : 'white')};
 `;
+
+const gateSets = [PROBES, HALF_TURNS, QUARTER_TURNS, EIGHTH_TURNS];
+var gateData = {'name': new Set(), 'content': new Set()};
+var probeData = {'name': new Set(), 'content': new Set()};
+
+for (var i = 0; i < gateSets.length; i++) {
+    for (var j = 0; j < gateSets[i].length; j++) {
+        gateData['name'].add(gateSets[i][j].name);
+        gateData['content'].add(gateSets[i][j].content);
+    }
+}
+
+for (var j = 0; j < PROBES.length; j++) {
+    probeData['name'].add(PROBES[j].name);
+    probeData['content'].add(PROBES[j].content);
+}
 
 const ALGORITHM_MAKER = (props) => {
   const list = props.list;
@@ -79,24 +101,35 @@ const ALGORITHM_MAKER = (props) => {
   prevBlocks = {};
   index = 0;
 
-  // for swap gates
+  var included_indices = new Set();
   for (const item in state) {
+    for (var j = 0; j < state[item].length; j++) {
+        if (probeData['name'].has(state[item][j].name) || probeData['content'].has(state[item][j].content)) {
+            if (!included_indices.has(j)) included_indices.add(j);
+        }
+    }
+  }
+
+  for (const item in state) {
+
       for (var i = 0; i < state[item].length; i++) {
-          
+        
         let block = state[item][i];
-        if (prevBlocks[i] >= 0 && ['Pauli X Gate', 'Hadamard Gate', 'Control', 'Anti-Control'].includes(block.name) ) {
+        let included = included_indices.has(i);
+        let notempty = block.name !== 'Empty';
+        if (included && notempty && prevBlocks[i] >= 0 && gateData['name'].has(block.name) ) {
             state[item][i]['addStyle'] = true;
             state[item][i]['dist'] = index - prevBlocks[i];
             prevBlocks[i] = index;
         }
-        else {
-            if (['X', 'H', 'Control', 'Anti-Control'].includes(block.content)) {
+        else if (included && notempty) {
+            if (gateData['content'].has(block.content)) {
                 prevBlocks[i] = index; 
             }
             else {
                 prevBlocks[i] = -1;
             }
-            if (state[item][i].content != 'Swap') state[item][i]['addStyle'] = false;
+            if (state[item][i].content !== 'Swap') state[item][i]['addStyle'] = false;
         }
           
     }
