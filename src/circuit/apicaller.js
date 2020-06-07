@@ -47,8 +47,10 @@ export const getResults = async (circuit_input) => {
         const data = JSON.stringify({
             'circuit_input': (circuit_input)
         });
-        console.log('data:', data);
+
+        //console.log('data:', data);
         const response = await fetch(url, {
+
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -97,6 +99,9 @@ export const retrieveCircuits = async (params) => {
             },
             body: data
         });
+
+        //console.log(params)
+
     
         const parsedData = await response.json();
         const status = await response.status;
@@ -137,6 +142,7 @@ export const deleteCircuit = async (student_id, circuit_name) => {
         const status = await response.status;
         //console.log('status:', status);
         return status === 200;
+
 
     } catch (error) {
         console.log(error);
@@ -192,7 +198,7 @@ export const submitCircuit = async (student_id, circuit_name) => {
             'circuit_name': circuit_name
         });
 
-        console.log('data:', data);
+        //console.log('data:', data);
         const response = await fetch(url, {
             method: 'POST',
             headers: {
