@@ -117,20 +117,36 @@ const ALGORITHM_MAKER = (props) => {
         let block = state[item][i];
         let included = included_indices.has(i);
         let notempty = block.name !== 'Empty';
+        if (included && notempty) {
+            if (gateData['name'].has(block.name)) {
+                if (prevBlocks[i] >= 0) {
+                    state[item][i]['addStyle'] = true;
+                    state[item][i]['dist'] = index - prevBlocks[i];
+                    prevBlocks[i] = index;
+                } else {
+                    prevBlocks[i] = index; 
+                }
+            } else {
+                prevBlocks[i] = -1;
+                if (state[item][i].content !== 'Swap') state[item][i]['addStyle'] = false;
+            }
+            
+        }
+        /*
         if (included && notempty && prevBlocks[i] >= 0 && gateData['name'].has(block.name) ) {
             state[item][i]['addStyle'] = true;
             state[item][i]['dist'] = index - prevBlocks[i];
             prevBlocks[i] = index;
         }
         else if (included && notempty) {
-            if (gateData['content'].has(block.content)) {
+            if (gateData['name'].has(block.name)) {
                 prevBlocks[i] = index; 
             }
             else {
                 prevBlocks[i] = -1;
             }
             if (state[item][i].content !== 'Swap') state[item][i]['addStyle'] = false;
-        }
+        }*/
           
     }
     index++;
