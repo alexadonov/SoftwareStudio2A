@@ -12,7 +12,7 @@ import Algorithm from './algorithm_maker';
 import Results from '../components/results';
 
 
-import {getCircuitInput, fixAlgorithm, verifyCircuit, getUserID, getAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import {getCircuitInput, fixAlgorithm, verifyCircuit, getStudentIDView, getUserID, getAlgorithmName } from './functions';
 import { gradeCircuit } from './apicaller';
 
 const Content = styled.div`
@@ -61,8 +61,6 @@ export default class AdminDND extends Component {
       is_admin: true,
     };
 
-    resetTempStorage();
-
     lineArray[0] = [0, id];
     algorithm[0] = [];
     this.onLoad = this.onLoad.bind(this);
@@ -73,10 +71,8 @@ export default class AdminDND extends Component {
     const token = localStorage.token;
     this.getCircuit();
     this.calculateResults();
-    let student_id = getUserID();
+    let student_id = getStudentIDView();
     this.setState({student_id: student_id});
-
-
   }
 
   onLoad = () => {
@@ -100,25 +96,23 @@ export default class AdminDND extends Component {
   }
 
   getCircuit = async () => {
-    let student_id = getUserID();
-    setAlgorithmName('hello')
+    let student_id = getStudentIDView();
     let circuit_name = getAlgorithmName();
-    var list = [];
-    const results = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0, 'circuit_name': circuit_name});
-    for(var i = 0; i < results['circuits'].length; i++) {
-      list[i] = results['circuits'][0];
-    }
+    retrieveCircuits({'student_id': student_id, 'is_submitted': true, 'circuit_name': circuit_name}).then(results => {
+      console.log(results)
+      let resultsJSON = JSON.parse(results['circuits'][0].circuit_input);
+      var new_algorithm = [];
+      for(var i = 0; i < resultsJSON.length; i++) {
+        new_algorithm[i] = resultsJSON[i];
+      }
+      localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
+      this.calculateResults();
+      fixAlgorithm();
+      algor = JSON.parse(localStorage.getItem('algorithm'));
+      this.onLoad();
+      console.log(algor)
+    });
 
-    let list2 = JSON.parse(results['circuits'][0].circuit_input);
-    var new_algorithm = [];
-    for(var i = 0; i < list2.length; i++) {
-      new_algorithm[i] = list2[i];
-    }
-    localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
-    this.calculateResults();
-    fixAlgorithm();
-    algor = JSON.parse(localStorage.getItem('algorithm'));
-    this.onLoad();
   }
 
   calculateResults = () => {

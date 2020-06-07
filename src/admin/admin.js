@@ -2,7 +2,7 @@ import styles from '../App.css';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-import { getUserID, setAlgorithmName, setStudentIDView, getStudentIDView } from '../circuit/functions.js';
+import { getUserID, setAlgorithmName, setStudentIDView } from '../circuit/functions.js';
 // Main Components
 import NavBar from "../components/navBar.js";
 import filterFactory, { textFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
@@ -50,7 +50,7 @@ var table_columns = [{
     onClick: (e, column, columnIndex, row) => {
       setStudentIDView(row.student_id);
       setAlgorithmName(row.circuit_name);
-      // window.location.href = '/admin/dnd';
+      window.location.href = '/admin/dnd';
     }
   },
   formatter: (cellContent, row) => (
@@ -108,14 +108,14 @@ export default class Admin extends Component {
           text: '10', value: 10
         }, {
           text: 'All', value: this.state.table_data.length
-        }] 
+        }]
       };
     }
   }
 
   getCircuits = async () => {
     var list = [];
-    const results = await retrieveCircuits({ 
+    const results = await retrieveCircuits({
       'student_id': 'all',
       'is_submitted': "true"
    });
@@ -142,12 +142,12 @@ export default class Admin extends Component {
               <NavBar />
               <div><br></br></div>
               <div class="containerAdmin admin-table">
-                  <BootstrapTable 
+                  <BootstrapTable
                   bodyClasses="tbodyContainer"
-                  keyField='student_id' 
-                  data={ this.state.table_data } 
-                  columns={ table_columns } 
-                  pagination={ paginationFactory(tablePaginationOptions) } 
+                  keyField='student_id'
+                  data={ this.state.table_data }
+                  columns={ table_columns }
+                  pagination={ paginationFactory(tablePaginationOptions) }
                   filter={ filterFactory() }  />
               </div>
           </div>
@@ -155,6 +155,6 @@ export default class Admin extends Component {
       );
     } else {
       window.location.href = '/';
-    } 
-  } 
+    }
+  }
 }
