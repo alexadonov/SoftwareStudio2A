@@ -149,8 +149,20 @@ export const getUserID = (is_student=true) => {
   else return parseInt(localStorage.getItem('admin_id'));
 }
 
+export const getStudentIDView = () => {
+  return parseInt(localStorage.getItem('student_id_view'));
+}
+
+export const setStudentIDView = (student_id) => {
+  localStorage.setItem('student_id_view', student_id);
+}
+
 export const getAlgorithmName = () => {
   return localStorage.getItem('algorithm_name');
+}
+
+export const setStudentID = (student_id) => {
+  localStorage.setItem('student_id', student_id);
 }
 
 export const setAlgorithmName = (algorithm_name) => {

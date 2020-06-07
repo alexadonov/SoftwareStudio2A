@@ -11,7 +11,7 @@ export const register = async newUser => {
             password: newUser.password,
             confirm_admin: newUser.confirm_admin
         });
-        
+      
         console.log(res);
         return res.status === 201;
     }
