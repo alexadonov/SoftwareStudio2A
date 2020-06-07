@@ -197,7 +197,7 @@ export default class AdminDND extends Component {
                     ))}
                   </Content>
                   <Content>
-                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
+                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={120} />
                   </Content>
                 </div>
 
