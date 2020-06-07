@@ -68,6 +68,7 @@ export default class AdminDND extends Component {
   }
 
   componentDidMount() {
+    let circuit_name = getAlgorithmName();
     const is_admin = parseInt(localStorage.getItem('is_admin'));
     if (!is_admin) window.location.href = '/';
     else {
@@ -75,7 +76,7 @@ export default class AdminDND extends Component {
       this.getCircuit();
       this.calculateResults();
       let student_id = getStudentIDView();
-      this.setState({student_id: student_id});
+      this.setState({student_id: student_id, algorithm_name: circuit_name});
     }
   }
 
@@ -150,37 +151,18 @@ export default class AdminDND extends Component {
     gradeCircuit(student_id, circuit_name, this.state.grade)
       .then(res => {
         this.setState({is_graded: true});
-        window.location.href = '/admin';
       });
+  }
+
+  resetMark = (e) => {
+    e.preventDefault();
+    this.setState({is_graded: false});
   }
 
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
-    let marked;
-    if(this.state.is_graded === 1) {
-      marked =
-      <div class="row" style={{margin: '8px', paddingLeft: '2%', width: '50%'}}>
-        <div class="col-">
-          <h4>Grade: <b>{this.state.grade}%</b></h4>
-        </div>
-      </div>
-    } else {
-      marked =
-      <div class="row" style={{margin: '8px', paddingLeft: '2%', width: '50%'}}>
-        <div class="col-">
-          <div class="input-group mb-3">
-            <input type="number" class="form-control" placeholder="Grade (%)" aria-label="grade" aria-describedby="basic-addon2" onChange={this.onChangeGrade}/>
-            <div class="input-group-append">
-              <span class="input-group-text" id="basic-addon2">%</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-">
-          <button class="btn btn-outline-dark" onClick={this.Submit}>Submit Grade</button>
-        </div>
-      </div>
-    }
+
     if (this.state.student_id) {
       return (
         <div className="App">
@@ -190,14 +172,35 @@ export default class AdminDND extends Component {
               <div class="row">
                 <div class="col">
                   <Content>
-                    <Title>You are marking <b>{this.state.student_id}'s</b> algorithm</Title>
-                    {marked}
+                    <Title>You are marking <b>{this.state.student_id}</b>'s algorithm: <b>{this.state.algorithm_name}</b></Title>
+                    <div hidden={this.state.is_graded} class="row" style={{ margin: '8px', paddingLeft: '2%', width: '50%' }}>
+                      <div class="col-">
+                        <div class="input-group mb-3">
+                          <input type="number" class="form-control" placeholder="Grade (%)" aria-label="grade" aria-describedby="basic-addon2" onChange={this.onChangeGrade} />
+                          <div class="input-group-append">
+                            <span  class="input-group-text" id="basic-addon2">%</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-">
+                        <button class="btn btn-outline-dark" onClick={this.Submit}>Submit Grade</button>
+                      </div>
+                    </div>
+                    <div hidden={!this.state.is_graded} class="row" style={{ margin: '8px', paddingLeft: '2%', width: '50%' , alignItems:'center'}}>
+                      <div class="col-" style={{textAlign:'center', paddingRight: '5%', alignItems:'center'}}>
+                        <h4>Grade: <b>{this.state.grade}%</b></h4>
+                      </div>
+                      
+                      <div class="col-">
+                        <button class="btn btn-outline-dark" onClick={this.resetMark}>Grade Again</button>
+                      </div>
+                    </div>
                     {Object.keys(this.state.canvas).map((list, i) => (
                         <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={true} style={{ float: 'left' }} />
                     ))}
                   </Content>
                   <Content>
-                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={120} />
+                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={110} />
                   </Content>
                 </div>
 
