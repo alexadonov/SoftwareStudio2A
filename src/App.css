@@ -123,7 +123,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 55px gray;
 }
@@ -132,7 +132,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 158px gray;
 }
@@ -141,7 +141,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 260px gray;
 }
@@ -150,7 +150,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 365px gray;
 }
@@ -159,7 +159,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 466px gray;
 }
@@ -168,7 +168,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 568px gray;
 }
@@ -177,7 +177,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 672px gray;
 }
@@ -186,7 +186,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 775px gray;
 }
@@ -195,7 +195,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 876px gray;
 }
@@ -204,7 +204,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   content: '';
   position: absolute;
   z-index: 1;
-  width: 3px;
+  width: 5px;
   bottom:45px;
   border-top: solid 980px gray;
 }

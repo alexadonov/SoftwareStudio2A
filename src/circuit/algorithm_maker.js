@@ -109,7 +109,6 @@ const ALGORITHM_MAKER = (props) => {
         <Droppable key={list} droppableId={list} direction="horizontal">
             {(provided, snapshot) => (
                 <Container
-                    className="TEST"
                     ref={provided.innerRef}
                     isDraggingOver={snapshot.isDraggingOver}>
                     {state[list].length
