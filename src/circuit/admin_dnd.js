@@ -21,8 +21,8 @@ const Content = styled.div`
 
 const Title = styled.h3`
   margin: 8px;
-  padding-top: 1%;
-  padding-left: 2%;
+  padding-top: 10px;
+  padding-left: 10px;
 `;
 
 

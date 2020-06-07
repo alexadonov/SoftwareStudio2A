@@ -37,7 +37,7 @@ export default class Results extends Component {
 
   render() {
     return (
-      <div class="row" style={{ margin: '8px', padding: '1%' }}>
+      <div class="row" style={{ margin: '8px', padding: '10px' }}>
         <Bar
           data={{
             labels: this.state.labels,

@@ -125,7 +125,7 @@ export default class Admin extends Component {
               <NavBar />
               <div><br></br></div>
               <div class="container admin-table">
-                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                  <div class="row" style={{ margin: '8px', padding: '10px' }}>
                   </div>    
                   <BootstrapTable keyField='student_id' data={ table_data } columns={ table_columns } pagination={ paginationFactory(tablePaginationOptions) } filter={ filterFactory() }  />
               </div>
