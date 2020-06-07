@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import { getUserID, setAlgorithmName, setStudentIDView, setIsGraded, setGrade } from '../circuit/functions.js';
 // Main Components
 import NavBar from "../components/navBar.js";
-import filterFactory, { textFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
+import filterFactory, { textFilter, numberFilter, Comparator, selectFilter, dateFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
@@ -16,6 +16,11 @@ import { Button } from 'react-bootstrap';
 
 
 // dummy data to use in the meantime.
+const graded_select = {
+  0: 'Not Graded',
+  1: 'Graded'
+};
+
 var table_columns = [{
   dataField: 'student_id',
   text: 'Student ID',
@@ -30,19 +35,23 @@ var table_columns = [{
   dataField: 'circuit_input',
   text: 'Circuit Input',
   headerStyle: () => {return{width:"15%"}},
-},{
-  dataField: 'circuit_output_json',
-  text: 'Circuit Output',
-  headerStyle: () => {return{width:"30%"}},
+  filter: textFilter()
 },{
   dataField: 'created_date',
   text: 'Submitted at',
-}, {
-  dataField: 'algorithm_grade',
-  text: 'Grade',
+  filter: dateFilter(),
+  headerStyle: () => {return{width:"20%"}},
 }, {
   dataField: 'is_graded',
   text: 'Graded',
+  formatter: cell => graded_select[cell],
+  filter: selectFilter({
+    options: graded_select
+  })
+}, {
+  dataField: 'algorithm_grade',
+  text: 'Grade',
+  headerStyle: () => {return{width:"10%"}},
 }, {
   dataField: 'view',
   text: 'View',
@@ -58,7 +67,7 @@ var table_columns = [{
   formatter: (cellContent, row) => (
     <button class="btn btn-primary">View</button>
   ),
-  headerStyle: () => {return{width:"8%"}},
+  headerStyle: () => {return{width:"12%"}},
 }]
 
 // Gets the length of the payload data to determine roof of pagination.
@@ -118,8 +127,7 @@ export default class Admin extends Component {
   getCircuits = async () => {
     var list = [];
     const results = await retrieveCircuits({
-      'student_id': 'all',
-      'is_submitted': "true"
+      'is_submitted': 1
    });
     for (var i = 0; i < results['circuits'].length; i++) {
         list[i] = results['circuits'][i];

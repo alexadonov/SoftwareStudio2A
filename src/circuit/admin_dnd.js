@@ -117,8 +117,8 @@ export default class AdminDND extends Component {
       this.onLoad();
       console.log(algor)
     }).catch(error => {
-      window.location.href = '/admin';
       alert("This algorithm was not saved properly. Please contact the student.");
+      window.location.href = '/admin';
     });
 
   }
