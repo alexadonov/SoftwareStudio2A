@@ -68,11 +68,15 @@ export default class AdminDND extends Component {
   }
 
   componentDidMount() {
-    const token = localStorage.token;
-    this.getCircuit();
-    this.calculateResults();
-    let student_id = getStudentIDView();
-    this.setState({student_id: student_id});
+    const is_admin = parseInt(localStorage.getItem('is_admin'));
+    if (!is_admin) window.location.href = '/';
+    else {
+      const token = localStorage.token;
+      this.getCircuit();
+      this.calculateResults();
+      let student_id = getStudentIDView();
+      this.setState({student_id: student_id});
+    }
   }
 
   onLoad = () => {
@@ -154,7 +158,6 @@ export default class AdminDND extends Component {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
-    const student_id = getUserID();
     let marked;
     if(this.state.is_graded === 1) {
       marked =
@@ -179,7 +182,7 @@ export default class AdminDND extends Component {
         </div>
       </div>
     }
-    if (student_id) {
+    if (this.state.student_id) {
       return (
         <div className="App">
           <NavBar />
@@ -206,7 +209,11 @@ export default class AdminDND extends Component {
       );
     }
     else {
-      window.location.href = '/';
+      return(
+        <div>
+          
+        </div>
+      );
     }
   }
 }
