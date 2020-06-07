@@ -149,7 +149,7 @@ tr td {
 .bottom-connector-1::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 55px gray;
@@ -158,7 +158,7 @@ tr td {
 .bottom-connector-2::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 158px gray;
@@ -167,7 +167,7 @@ tr td {
 .bottom-connector-3::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 260px gray;
@@ -176,7 +176,7 @@ tr td {
 .bottom-connector-4::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 365px gray;
@@ -185,7 +185,7 @@ tr td {
 .bottom-connector-5::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 466px gray;
@@ -194,7 +194,7 @@ tr td {
 .bottom-connector-6::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 568px gray;
@@ -203,7 +203,7 @@ tr td {
 .bottom-connector-7::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 672px gray;
@@ -212,7 +212,7 @@ tr td {
 .bottom-connector-8::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 775px gray;
@@ -221,7 +221,7 @@ tr td {
 .bottom-connector-9::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 876px gray;
@@ -230,7 +230,7 @@ tr td {
 .bottom-connector-10::before {
   content: '';
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 5px;
   bottom:45px;
   border-top: solid 980px gray;
