@@ -125,7 +125,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 55px gray;
+  border-top: solid 50px gray;
 }
 
 .bottom-connector-2::before {
@@ -134,7 +134,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 158px gray;
+  border-top: solid 150px gray;
 }
 
 .bottom-connector-3::before {
@@ -143,7 +143,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 261px gray;
+  border-top: solid 248px gray;
 }
 
 .bottom-connector-4::before {
@@ -152,7 +152,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 364px gray;
+  border-top: solid 346px gray;
 }
 
 .bottom-connector-5::before {
@@ -161,7 +161,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 467px gray;
+  border-top: solid 442px gray;
 }
 
 .bottom-connector-6::before {
@@ -170,7 +170,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 570px gray;
+  border-top: solid 540px gray;
 }
 
 .bottom-connector-7::before {
@@ -179,7 +179,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 673px gray;
+  border-top: solid 637px gray;
 }
 
 .bottom-connector-8::before {
@@ -188,7 +188,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 776px gray;
+  border-top: solid 735px gray;
 }
 
 .bottom-connector-9::before {
@@ -197,7 +197,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 879px gray;
+  border-top: solid 835px gray;
 }
 
 .bottom-connector-10::before {
@@ -206,5 +206,5 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tex
   z-index: 1;
   width: 2px;
   bottom:45px;
-  border-top: solid 982px gray;
+  border-top: solid 931px gray;
 }

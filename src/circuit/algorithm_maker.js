@@ -53,22 +53,24 @@ const ALGORITHM_MAKER = (props) => {
   for (const item in state) {
       for (var i = 0; i < state[item].length; i++) {
           
-          let block = state[item][i];
-          
-          if (prevBlocks[i] >= 0 && block.content === 'Swap') {
-            state[item][i]['addStyle'] = true;
-            state[item][i]['dist'] = index - prevBlocks[i];
-            prevBlocks[i] = -1
-        }
-        else {
-            if (block.content === 'Swap') {
-                prevBlocks[i] = index; 
+        let block = state[item][i];
+        if (block.name !== 'Empty') {
+            if (prevBlocks[i] >= 0 && block.content === 'Swap') {
+                state[item][i]['addStyle'] = true;
+                state[item][i]['dist'] = index - prevBlocks[i];
+                prevBlocks[i] = -1
             }
             else {
-                prevBlocks[i] = -1;
+                if (block.content === 'Swap') {
+                    prevBlocks[i] = index; 
+                }
+                else {
+                    prevBlocks[i] = -1;
+                }
+                state[item][i]['addStyle'] = false;
             }
-            state[item][i]['addStyle'] = false;
         }
+          
     }
     index++;
   }
