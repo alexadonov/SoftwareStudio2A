@@ -21,12 +21,12 @@ const Container = styled.div`
     background-size: 93.75rem 5rem;
     background-repeat: no-repeat;
     margin: 8px;
-    padding: 1%;
+    padding: 10px;
     display: flex;
 `;
 
 const Item = styled.div`
-  z-index: 999;
+  z-index: 100;
   border: 3px solid darkgrey;
   box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.2);
   border-radius: 2px;
@@ -50,25 +50,57 @@ const ALGORITHM_MAKER = (props) => {
   let prevBlocks = {};
   let index = 0;
 
+  // for swap gates
   for (const item in state) {
       for (var i = 0; i < state[item].length; i++) {
           
-          let block = state[item][i];
-          
-          if (prevBlocks[i] >= 0 && block.content === 'Swap') {
-            state[item][i]['addStyle'] = true;
-            state[item][i]['dist'] = index - prevBlocks[i];
-            prevBlocks[i] = -1
-        }
-        else {
-            if (block.content === 'Swap') {
-                prevBlocks[i] = index; 
+        let block = state[item][i];
+        if (block.name !== 'Empty') {
+            if (prevBlocks[i] >= 0 && block.content === 'Swap') {
+                state[item][i]['addStyle'] = true;
+                state[item][i]['dist'] = index - prevBlocks[i];
+                prevBlocks[i] = -1
             }
             else {
-                prevBlocks[i] = -1;
+                if (block.content === 'Swap') {
+                    prevBlocks[i] = index; 
+                }
+                else {
+                    prevBlocks[i] = -1;
+                }
+                state[item][i]['addStyle'] = false;
             }
-            state[item][i]['addStyle'] = false;
         }
+          
+    }
+    index++;
+  }
+
+  prevBlocks = {};
+  index = 0;
+
+  // for swap gates
+  for (const item in state) {
+      for (var i = 0; i < state[item].length; i++) {
+          
+        let block = state[item][i];
+        if (block.name !== 'Empty') {
+            if (prevBlocks[i] >= 0 && ['Pauli X Gate', 'Hadamard Gate', 'Control', 'Anti-Control'].includes(block.name) ) {
+                state[item][i]['addStyle'] = true;
+                state[item][i]['dist'] = index - prevBlocks[i];
+                prevBlocks[i] = index;
+            }
+            else {
+                if (['X', 'H', 'Control', 'Anti-Control'].includes(block.content)) {
+                    prevBlocks[i] = index; 
+                }
+                else {
+                    prevBlocks[i] = -1;
+                }
+                if (state[item][i].content != 'Swap') state[item][i]['addStyle'] = false;
+            }
+        }
+          
     }
     index++;
   }

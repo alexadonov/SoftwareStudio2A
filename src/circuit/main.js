@@ -35,13 +35,13 @@ const Content = styled.div``;
 
 const Title = styled.h3`
   margin: 8px;
-  padding-top: 1%;
+  padding-top: 10px;
   padding-left: 2%;
 `;
 
 const SubTitle = styled.h5`
   margin: 8px;
-  padding-top: 1%;
+  padding-top: 10px;
 `;
 
 const Button = styled.button`
@@ -583,7 +583,7 @@ export default class Main extends Component {
             <DragDropContext onDragEnd={this.onDragEnd}>
               <div class="row">
                 <div class="col-8">
-                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                  <div class="row" style={{ margin: '8px', padding: '10px' }}>
                     <div className="col">
                       <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onCreate}>Create New</button>
                     </div>
@@ -610,7 +610,7 @@ export default class Main extends Component {
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onSubmit} disabled={this.state.is_submitted} >Submit</button>
                     </div>
                   </div>
-                  <div class="row" style={{ margin: '8px', padding: '1%' }}>
+                  <div class="row" style={{ margin: '8px', padding: '10px' }}>
                     <div className="col">
                       <button style={{ float: 'left' }} class="btn btn-primary" onClick={this.onNewLine} disabled={this.state.is_submitted} >Add Wire</button>
                     </div>
@@ -643,7 +643,7 @@ export default class Main extends Component {
                     </Alert>
                   </Content>
                   <Content>
-                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={100} />
+                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={120} />
                   </Content>
                 </div>
                 <div class="col-4">
