@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import { register } from '../users/userInfo';
-import { isValidPassword } from '../circuit/functions';
+import { resetTempStorage, isValidPassword } from '../circuit/functions';
 
 const Body = styled.body`
   background-color: white;
@@ -33,6 +33,7 @@ class adminRegister extends Component {
 
   constructor(props) {
     super(props);
+    resetTempStorage(true);
 
     this.onChangeFirstName = this.onChangeFirstName.bind(this);
     this.onChangeLastName = this.onChangeLastName.bind(this);
@@ -57,6 +58,7 @@ class adminRegister extends Component {
       invalid_passphrase: false,
       mismatched_password: false
     }
+
   }
 
   onChangeFirstName(e) {

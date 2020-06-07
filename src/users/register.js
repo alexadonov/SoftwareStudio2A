@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
 import logo from '../images/logo.png';
 import { register, login } from './userInfo';
-import { isValidPassword } from '../circuit/functions';
+import { resetTempStorage, isValidPassword } from '../circuit/functions';
 
 const Body = styled.body`
   background-color: white;
@@ -33,7 +33,7 @@ class Register extends Component {
 
   constructor(props) {
     super(props);
-
+    
     this.onChangeFirstName = this.onChangeFirstName.bind(this);
     this.onChangeLastName = this.onChangeLastName.bind(this);
     this.onChangeStudentID = this.onChangeStudentID.bind(this);
@@ -55,6 +55,7 @@ class Register extends Component {
       invalid_details: false,
       mismatched_password: false
     }
+    resetTempStorage(true);
   }
 
   onChangeFirstName(e) {
@@ -139,7 +140,6 @@ class Register extends Component {
                 <img src={logo} class="Uts-logo" />
                 <Text>Register as a Student</Text>
               </Title>
-
               <Form.Group controlId="formFName">
                 <Form.Control type="text" name="fname" placeholder="First Name" value={this.state.fname} onChange={this.onChangeFirstName} required />
               </Form.Group>
