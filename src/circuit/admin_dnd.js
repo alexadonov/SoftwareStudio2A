@@ -92,6 +92,7 @@ export default class AdminDND extends Component {
         lineArray[lineArray.length] = [lineArray.length, id];
         algorithm[algorithm.length] = getItems(j);
       }
+      this.calculateResults();
     }
   }
 
