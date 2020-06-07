@@ -111,6 +111,9 @@ export default class AdminDND extends Component {
       algor = JSON.parse(localStorage.getItem('algorithm'));
       this.onLoad();
       console.log(algor)
+    }).catch(error => {
+      window.location.href = '/admin';
+      alert("This algorithm was not saved properly. Please contact the student.");
     });
 
   }
