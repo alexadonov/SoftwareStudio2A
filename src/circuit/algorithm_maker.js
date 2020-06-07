@@ -22,7 +22,7 @@ const Notice = styled.h5`
 
 const Container = styled.div`
     min-height: 10vh;
-    background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'transparant')};
+    background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'transparent')};
     background-image: url('https://pngriver.com/wp-content/uploads/2018/04/Download-Horizontal-Line-PNG-Transparent-Image-300x155.png');
     background-size: 93.75rem 5rem;
     background-repeat: no-repeat;
@@ -38,7 +38,7 @@ const Item = styled.div`
   border-radius: 2px;
   padding: 8px;
   margin: 8px;
-  width: 80px;
+  min-width: 80px;
   height: 50px;
   display: flex;
   justify-content: center;
@@ -47,19 +47,17 @@ const Item = styled.div`
 `;
 
 const gateSets = [PROBES, HALF_TURNS, QUARTER_TURNS, EIGHTH_TURNS];
-var gateData = {'name': new Set(), 'content': new Set()};
-var probeData = {'name': new Set(), 'content': new Set()};
+var gateContent= new Set();
+var probeContent = new Set();
 
 for (var i = 0; i < gateSets.length; i++) {
     for (var j = 0; j < gateSets[i].length; j++) {
-        gateData['name'].add(gateSets[i][j].name);
-        gateData['content'].add(gateSets[i][j].content);
+        gateContent.add(gateSets[i][j].content);
     }
 }
 
 for (var j = 0; j < PROBES.length; j++) {
-    probeData['name'].add(PROBES[j].name);
-    probeData['content'].add(PROBES[j].content);
+    probeContent.add(PROBES[j].content);
 }
 
 const ALGORITHM_MAKER = (props) => {
@@ -104,7 +102,7 @@ const ALGORITHM_MAKER = (props) => {
   var included_indices = new Set();
   for (const item in state) {
     for (var j = 0; j < state[item].length; j++) {
-        if (probeData['name'].has(state[item][j].name) || probeData['content'].has(state[item][j].content)) {
+        if (probeContent.has(state[item][j].content)) {
             if (!included_indices.has(j)) included_indices.add(j);
         }
     }
@@ -118,7 +116,7 @@ const ALGORITHM_MAKER = (props) => {
         let included = included_indices.has(i);
         let notempty = block.name !== 'Empty';
         if (included && notempty) {
-            if (gateData['name'].has(block.name)) {
+            if (gateContent.has(block.content)) {
                 if (prevBlocks[i] >= 0) {
                     state[item][i]['addStyle'] = true;
                     state[item][i]['dist'] = index - prevBlocks[i];
@@ -131,23 +129,7 @@ const ALGORITHM_MAKER = (props) => {
                 if (state[item][i].content !== 'Swap') state[item][i]['addStyle'] = false;
             }
             
-        }
-        /*
-        if (included && notempty && prevBlocks[i] >= 0 && gateData['name'].has(block.name) ) {
-            state[item][i]['addStyle'] = true;
-            state[item][i]['dist'] = index - prevBlocks[i];
-            prevBlocks[i] = index;
-        }
-        else if (included && notempty) {
-            if (gateData['name'].has(block.name)) {
-                prevBlocks[i] = index; 
-            }
-            else {
-                prevBlocks[i] = -1;
-            }
-            if (state[item][i].content !== 'Swap') state[item][i]['addStyle'] = false;
-        }*/
-          
+        }          
     }
     index++;
   }
