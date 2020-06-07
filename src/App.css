@@ -152,7 +152,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 55px gray;
+  border-top: solid 40px gray;
 }
 
 .bottom-connector-2::before {
@@ -161,7 +161,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 158px gray;
+  border-top: solid 120px gray;
 }
 
 .bottom-connector-3::before {
@@ -170,7 +170,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 260px gray;
+  border-top: solid 200px gray;
 }
 
 .bottom-connector-4::before {
@@ -179,7 +179,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 365px gray;
+  border-top: solid 280px gray;
 }
 
 .bottom-connector-5::before {
@@ -188,7 +188,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 466px gray;
+  border-top: solid 360px gray;
 }
 
 .bottom-connector-6::before {
@@ -197,7 +197,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 568px gray;
+  border-top: solid 440px gray;
 }
 
 .bottom-connector-7::before {
@@ -206,7 +206,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 672px gray;
+  border-top: solid 520px gray;
 }
 
 .bottom-connector-8::before {
@@ -215,7 +215,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 775px gray;
+  border-top: solid 600px gray;
 }
 
 .bottom-connector-9::before {
@@ -224,7 +224,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 876px gray;
+  border-top: solid 680px gray;
 }
 
 .bottom-connector-10::before {
@@ -233,5 +233,9 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 980px gray;
+  border-top: solid 760px gray;
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
