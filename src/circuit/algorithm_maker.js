@@ -15,11 +15,11 @@ const Notice = styled.h5`
 `;
 
 const Container = styled.div`
-    min-height: 10vh;
+    min-height: 100px;
+    max-height: 100px;
     background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'transparant')};
     background-image: url('https://pngriver.com/wp-content/uploads/2018/04/Download-Horizontal-Line-PNG-Transparent-Image-300x155.png');
     background-size: 93.75rem 5rem;
-    background-repeat: no-repeat;
     margin: 8px;
     padding: 10px;
     display: flex;
