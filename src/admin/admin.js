@@ -2,7 +2,7 @@ import styles from '../App.css';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-import { getStudentID } from '../circuit/functions.js';
+import { getStudentID, setAlgorithmName, setStudentIDView, getStudentIDView } from '../circuit/functions.js';
 // Main Components
 import NavBar from "../components/navBar.js";
 import filterFactory, { textFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
@@ -43,6 +43,20 @@ var table_columns = [{
 }, {
   dataField: 'is_graded',
   text: 'Graded',
+}, {
+  dataField: 'view',
+  text: 'View',
+  events: {
+    onClick: (e, column, columnIndex, row) => {
+      setStudentIDView(row.student_id);
+      setAlgorithmName(row.circuit_name);
+      // window.location.href = '/admin/dnd';
+    }
+  },
+  formatter: (cellContent, row) => (
+    <button class="btn btn-primary">View</button>
+  ),
+  headerStyle: () => {return{width:"8%"}},
 }]
 
 // Gets the length of the payload data to determine roof of pagination.
@@ -53,27 +67,6 @@ const customTotal = (from, to, size) => (
 );
 
 var tablePaginationOptions;
-
-const Body = styled.body`
-  background-color: white;
-  background-blend-mode: multiply;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: black;
-`;
-
-  const Title = styled.div`
-    padding:14px 5px 14px 0px;
-    font-size: calc(32px + 2vmin);
-  `;
-
-  const Text = styled.span`
-  vertical-align: text-top;
-  `;
 
 export default class Admin extends Component {
 
