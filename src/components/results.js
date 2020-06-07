@@ -46,7 +46,7 @@ export default class Results extends Component {
   render() {
     var self = this;
     return (
-      <div class="row" style={{ margin: '8px', paddingBottom: '5%' }}>
+      <div class="row" style={{ margin: '8px', paddingBottom: '2%' }}>
         <Bar
           data={{
             labels: this.state.labels,
@@ -59,8 +59,14 @@ export default class Results extends Component {
           width={this.props.width}
           height={this.props.height}
           options={{
+            layout: {
+              padding: {
+                bottom: '10%'
+              }
+            },
+            maintainAspectRatio: true,
             legend: {
-              display: true,
+              display: false,
               position: 'bottom'
             },
             tooltips: {
@@ -77,8 +83,7 @@ export default class Results extends Component {
 
                 afterLabel: function(tooltipItems, data){
                   let key = tooltipItems.xLabel.replace('| ', '');
-                  key = key.replace(' ⟩', '');
-                  let probVal = self.state.allData[key]['prob'];                  
+                  key = key.replace(' ⟩', '');             
                   let intVal = self.state.allData[key]['int'];
                   let phaseVal = self.state.allData[key]['phase'];
                   let magVal = self.state.allData[key]['mag'];
@@ -96,19 +101,43 @@ export default class Results extends Component {
             titleFontSize: 16,
             titleFontColor: 'rgb(0,0,0)',
             bodyFontSize: 14,
-            bodyFontFamily: "'Helvetica', 'Arial', sans-serif"
+            bodyFontFamily: "'Helvetica', 'Arial', sans-serif",
+            borderColor: 'rgb(0, 0, 0)',
+            borderWidth: 1
            },
             title: {
-              display: true,
+              display: false,
               fontSize: 20,
               text: this.props.title
             }, 
             scales: {
               yAxes: [{
                 ticks: {
+                    callback:function(label, index, labels) {
+                      return label.toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                    },
                     beginAtZero:true,
+                    maxTicksLimit: 10,
                     min: 0,
-                    max: 1    
+                    max: 1,
+                    fontColor: 'rgb(0, 0, 0)'
+                },
+                scaleLabel: {
+                  fontSize: 15,
+                  fontColor: 'rgb(0, 0, 0)',
+                  display: true,
+                  labelString: 'Measurement Probability'
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  fontSize: 15,
+                  fontColor: 'rgb(0, 0, 0)',
+                  display: true,
+                  labelString: 'Qubit State'
+                }, 
+                ticks: {
+                  fontColor: 'rgb(0, 0, 0)'
                 }
               }]
              }
