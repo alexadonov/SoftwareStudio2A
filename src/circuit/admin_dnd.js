@@ -103,8 +103,8 @@ export default class AdminDND extends Component {
   getCircuit = async () => {
     let student_id = getStudentIDView();
     let circuit_name = getAlgorithmName();
-    retrieveCircuits({'student_id': student_id, 'is_submitted': true, 'circuit_name': circuit_name}).then(results => {
-      console.log(results)
+    retrieveCircuits({'student_id': student_id, 'circuit_name': circuit_name}).then(results => {
+      //console.log("re:",results);
       let resultsJSON = JSON.parse(results['circuits'][0].circuit_input);
       var new_algorithm = [];
       for(var i = 0; i < resultsJSON.length; i++) {
@@ -115,7 +115,7 @@ export default class AdminDND extends Component {
       fixAlgorithm();
       algor = JSON.parse(localStorage.getItem('algorithm'));
       this.onLoad();
-      console.log(algor)
+      //console.log(algor)
     }).catch(error => {
       alert("This algorithm was not saved properly. Please contact the student.");
       window.location.href = '/admin';
@@ -127,9 +127,8 @@ export default class AdminDND extends Component {
     let circuit_input = getCircuitInput(algorithm);
     let valid_msg = verifyCircuit(algorithm)
     getResults(circuit_input).then(res => {
-      this.setState({ results: res });
+      this.setState({ results: res, circuit_valid_msg: valid_msg });
     });
-    this.setState({ circuit_valid_msg: valid_msg })
     this.forceUpdate();
   }
 
