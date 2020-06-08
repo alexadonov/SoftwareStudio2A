@@ -316,11 +316,13 @@ export default class Main extends Component {
     this.delete();
   }
 
-  delete = async (algorithm_name) => {
+  delete = async () => {
     try {
       // Delete from database
       // Delete from local storage
+      
       if (!this.state.is_submitted) {
+        const algorithm_name = getAlgorithmName();
         const student_id = getUserID();
         const deleted = await deleteCircuit(student_id, algorithm_name);
         if (!deleted) {
@@ -438,7 +440,7 @@ export default class Main extends Component {
       const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
       const circuit_output = escapeSpecialCharacters(this.state.results);
       var algorithm_name = getAlgorithmName()
-      const new_save = algorithm_name === "null" || algorithm_name.length === 0;
+      const new_save = algorithm_name === "null" || algorithm_name.length === 0 || this.state.is_new;
 
       if (new_save) {
         var valid = false;
