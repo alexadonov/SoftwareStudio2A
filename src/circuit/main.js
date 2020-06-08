@@ -347,11 +347,11 @@ export default class Main extends Component {
       list[i] = [results['circuits'][i]['circuit_name'], results['circuits'][i]['is_submitted'], results['circuits'][i]['is_graded']];
     }
     list.sort((a, b) => {
-      if (a[2] > b[2]) return true;
-      else if (a[2] < b[2]) return false;
+      if (a[2] > b[2]) return 1;
+      else if (a[2] < b[2]) return -1;
       else {
-        if (a[1] > b[1]) return true;
-        else if (a[1] < b[1]) return false;
+        if (a[1] > b[1]) return 1;
+        else if (a[1] < b[1]) return -1;
         else return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
       }
       
@@ -593,7 +593,7 @@ export default class Main extends Component {
                         <Dropdown.Menu style={{maxHeight:350, overflow:'auto', maxWidth:200}}>
                           <input placeholder="Type to filter..." style={{margin:10}} type="text" value={this.state.filter} onChange={this.filterAlgorithms} />
                           {this.state.filtered_algs.map((alg, index) => {
-                            return(<Dropdown.Item style={alg[1]===1 ? {backgroundColor:"powderblue"} : alg[2] === 1 ? {backgroundColor:"limegreen"} : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
+                            return(<Dropdown.Item style={alg[2] === 1 ? {backgroundColor:"lightgreen"} : alg[1]===1 ? {backgroundColor:"powderblue"} : {}} key={index} onClick={() => this.onLoad(alg[0])}>{alg[0]}</Dropdown.Item>)
                           })}
                         </Dropdown.Menu>
                       </Dropdown>
@@ -634,7 +634,7 @@ export default class Main extends Component {
                   </Content>
                   <Content>
                   <div style={{paddingTop:'1%'}}>
-                      <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
+                      <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.is_saved} > You have unsaved changes</Alert>
                       <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
                       <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
                         <Alert.Heading>Successfully submitted</Alert.Heading>
