@@ -359,7 +359,7 @@ export default class Main extends Component {
       
     });
     this.setState({ loaded_algs: list, filtered_algs: list });
-    console.log(this.state.loaded_algs);
+    //console.log(this.state.loaded_algs);
   }
 
   filterAlgorithms = (e) => {
@@ -419,7 +419,7 @@ export default class Main extends Component {
       circuit_input = [[]];
       for (var i = 0; i < algorithm.length; i++) circuit_input[0].push("1");
     }
-    console.log("circ:",circuit_input);
+    //console.log("circ:",circuit_input);
     
     getResults(circuit_input).then(res => {
       this.setState({ results: res, circuit_valid_msg: valid_msg });
