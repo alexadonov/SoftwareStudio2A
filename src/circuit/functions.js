@@ -209,7 +209,7 @@ export const isValidAlgorithmName = async (algorithm_name) => {
       if (!exists) {
         return true;
       } else {
-        alert("An algorithm with this name already exists!")
+        alert("You have previously used this algorithm name, please try another.");
       }
     }
   }
