@@ -377,8 +377,9 @@ export const getObject = (name) => {
       if (algorithm[i][j]["content"] !== "1" && algorithm[i][j]["content"]  !== undefined && algorithm[i][j]["content"] !== null) {
         found = true;
         algorithm[i].splice(j+1,algorithm[i].length-j-1);
-      }      
+      }
     }
+    if (!found) algorithm[i] = [];  
   }
 }
 
