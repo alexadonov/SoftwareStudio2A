@@ -28,12 +28,12 @@ var table_columns = [{
   headerStyle: () => {return{width:"15%"}},
 }, {
   dataField: 'circuit_name',
-  text: 'Circuit Name',
+  text: 'Algorithm Name',
   filter: textFilter(),
   headerStyle: () => {return{width:"15%"}},
 }, {
   dataField: 'circuit_input',
-  text: 'Circuit Input',
+  text: 'Algorithm Input',
   headerStyle: () => {return{width:"15%"}},
   filter: textFilter()
 },{
@@ -41,6 +41,7 @@ var table_columns = [{
   text: 'Submitted at',
   filter: dateFilter(),
   headerStyle: () => {return{width:"20%"}},
+  sort: true
 }, {
   dataField: 'is_graded',
   text: 'Graded',

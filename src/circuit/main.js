@@ -448,12 +448,16 @@ export default class Main extends Component {
   save = async () => {
     let saved = false;
     try {
+      if (this.state.circuit_valid_msg !== "valid") {
+        alert("Make sure your algorithm is valid before saving");
+        return;
+      }
       const studentid = getUserID();
       const circuit_input = escapeSpecialCharacters(getCircuitInput(algorithm));
       const circuit_output = escapeSpecialCharacters(this.state.results);
       var algorithm_name = getAlgorithmName()
       const new_save = algorithm_name === "null" || algorithm_name.length === 0 || this.state.is_new;
-
+      
       if (new_save) {
         var valid = false;
         do {
