@@ -537,16 +537,11 @@ export default class Main extends Component {
     //Check it has been saved first
 
     //submit to database
-    if (localStorage.getItem("algorithm") !== "null") {
-      if (localStorage.getItem("saved") !== "false") {
-        download(localStorage.getItem('algorithm'), "algorithm.json", "text/json");
-        return;
-      }
-
-      alert("You must first save your algorithm.");
+    if (algorithm) {
+      download(escapeSpecialCharacters(getCircuitInput(algorithm)), "algorithm.json", "text/json");
       return;
     }
-
+      
     alert("You have not created an algorithm yet.");
   }
 
