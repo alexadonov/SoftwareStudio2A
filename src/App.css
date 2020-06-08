@@ -142,6 +142,15 @@ tr td {
   border-color: rgba(0,0,0,0);
 }
 
+.algorithm-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.wire-container {
+  display: table;
+}
+
 .bottom-connector {
   position: relative;
 }
@@ -152,7 +161,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 55px gray;
+  border-top: solid 70px gray;
 }
 
 .bottom-connector-2::before {
@@ -161,7 +170,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 158px gray;
+  border-top: solid 185px gray;
 }
 
 .bottom-connector-3::before {
@@ -170,7 +179,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 260px gray;
+  border-top: solid 301px gray;
 }
 
 .bottom-connector-4::before {
@@ -179,7 +188,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 365px gray;
+  border-top: solid 418px gray;
 }
 
 .bottom-connector-5::before {
@@ -188,7 +197,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 466px gray;
+  border-top: solid 533px gray;
 }
 
 .bottom-connector-6::before {
@@ -197,7 +206,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 568px gray;
+  border-top: solid 650px gray;
 }
 
 .bottom-connector-7::before {
@@ -206,7 +215,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 672px gray;
+  border-top: solid 765px gray;
 }
 
 .bottom-connector-8::before {
@@ -215,7 +224,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 775px gray;
+  border-top: solid 880px gray;
 }
 
 .bottom-connector-9::before {
@@ -224,7 +233,7 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 876px gray;
+  border-top: solid 998px gray;
 }
 
 .bottom-connector-10::before {
@@ -233,5 +242,5 @@ tr td {
   z-index: 1;
   width: 5px;
   bottom:45px;
-  border-top: solid 980px gray;
+  border-top: solid 1114px gray;
 }

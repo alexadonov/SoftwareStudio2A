@@ -47,7 +47,8 @@ const SubTitle = styled.h5`
 const Button = styled.button`
   float: left;
   vertical-align: middle;
-  min-height: 10vh;
+  min-height: 100px;
+  max-height: 100px;
   background: ${props => props.primary ? "red" : "white"};
   color: ${props => props.primary ? "white" : "red"};
   border: 0px  rgba(0,0,0,0);
@@ -593,10 +594,10 @@ export default class Main extends Component {
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} disabled={this.state.is_submitted} >Redo</button>
                     </div>
                   </div>
-                  <Content style={{ overflowX:'scroll' }}>
+                  <Content className="algorithm-container" style={{ overflowX:'scroll' }}>
                     <Title>Create Your Algorithm: {this.state.algorithm_name} </Title>
                     {Object.keys(this.state.canvas).map((list, i) => (
-                      <div>
+                      <div className="wire-container">
                         <Button onClick={() => this.deleteLine(list, i)}>X</Button>
                         <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={false} style={{ float: 'left' }} />
                       </div>
