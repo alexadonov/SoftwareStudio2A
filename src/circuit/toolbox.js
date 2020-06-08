@@ -19,7 +19,7 @@ const Hover = styled.div`
   visibility: hidden;
   background-color: white;
   position: absolute;
-  z-index: 2;
+  z-index: 103;
 `;
 
 const Item = styled.div`
@@ -29,7 +29,7 @@ const Item = styled.div`
   padding: 8px;
   margin: 8px;
   font-size: 11px;
-  z-index: 1;
+  z-index: 101;
   float: left;
   display: flex;
   justify-content: center;
