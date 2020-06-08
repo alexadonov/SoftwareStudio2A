@@ -29,7 +29,7 @@ export const saveCircuit = async (student_id, circuit_name, circuit_input, circu
         //console.log("datasave:",data);
         //console.log("resp_s",response);
         const status = await response.status;
-        if (url.includes("save") && status === 500) throw(`An algorithm with the name ${circuit_name} already exists.`);
+        if (url.includes("save") && status === 500) throw("You have previously used this algorithm name, please try another.");
         return status === 201 || status == 200;
 
     } catch (error) {
