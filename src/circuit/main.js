@@ -638,7 +638,7 @@ export default class Main extends Component {
                     </div>
                   </div>
                   <Content className="algorithm-container" style={{ overflowX:'scroll' }}>
-                    <Title>Create Your Algorithm: {this.state.algorithm_name} </Title>
+                    <Title>Create Your Algorithm: <b>{this.state.algorithm_name}</b> </Title>
                     {Object.keys(this.state.canvas).map((list, i) => (
                       <div className="wire-container">
                         <Button onClick={() => this.deleteLine(list, i)}>X</Button>
