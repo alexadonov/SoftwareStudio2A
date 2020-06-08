@@ -195,9 +195,11 @@ export default class AdminDND extends Component {
                         <button class="btn btn-outline-dark" onClick={this.resetMark}>Grade Again</button>
                       </div>
                     </div>
+                    <div style={{ overflowX:'scroll' }}>
                     {Object.keys(this.state.canvas).map((list, i) => (
                         <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={true} style={{ float: 'left' }} />
                     ))}
+                    </div>
                   </Content>
                   <Content>
                     <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={110} />
