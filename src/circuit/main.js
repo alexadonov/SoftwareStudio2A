@@ -291,7 +291,18 @@ export default class Main extends Component {
   }
 
   getCircuit = async () => {
-    var id = lineArray[0][1];
+    var id = uuid();
+    algorithm = [];
+    lineArray = [];
+    lineArray[0] = new Array(0, id);
+    algorithm[0] = new Array(0, new Array());
+    history[0] = { ... this.state.canvas };
+    historyLine[0] = lineArray;
+    historyAlgo[0] = algorithm;
+
+    lineArray[0] = [0, id];
+    algorithm[0] = [];
+    
     this.setState({ canvas: { [id]: getItems(0) } });
     algorithm[0] = getItems(0);
     
@@ -307,6 +318,7 @@ export default class Main extends Component {
         algorithm[algorithm.length] = getItems(j);
       }
       this.setState({ canvas: newCanvas });
+      //console.log("algie:", algorithm);
     }
     
   }
@@ -359,7 +371,7 @@ export default class Main extends Component {
       
     });
     this.setState({ loaded_algs: list, filtered_algs: list });
-    console.log(this.state.loaded_algs);
+    //console.log(this.state.loaded_algs);
   }
 
   filterAlgorithms = (e) => {
@@ -419,7 +431,7 @@ export default class Main extends Component {
       circuit_input = [[]];
       for (var i = 0; i < algorithm.length; i++) circuit_input[0].push("1");
     }
-    console.log("circ:",circuit_input);
+    //console.log("circ:",circuit_input);
     
     getResults(circuit_input).then(res => {
       this.setState({ results: res, circuit_valid_msg: valid_msg });
@@ -626,7 +638,7 @@ export default class Main extends Component {
                     </div>
                   </div>
                   <Content className="algorithm-container" style={{ overflowX:'scroll' }}>
-                    <Title>Create Your Algorithm: {this.state.algorithm_name} </Title>
+                    <Title>Create Your Algorithm: <b>{this.state.algorithm_name}</b> </Title>
                     {Object.keys(this.state.canvas).map((list, i) => (
                       <div className="wire-container">
                         <Button onClick={() => this.deleteLine(list, i)}>X</Button>
