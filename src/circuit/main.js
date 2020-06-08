@@ -291,7 +291,18 @@ export default class Main extends Component {
   }
 
   getCircuit = async () => {
-    var id = lineArray[0][1];
+    var id = uuid();
+    algorithm = [];
+    lineArray = [];
+    lineArray[0] = new Array(0, id);
+    algorithm[0] = new Array(0, new Array());
+    history[0] = { ... this.state.canvas };
+    historyLine[0] = lineArray;
+    historyAlgo[0] = algorithm;
+
+    lineArray[0] = [0, id];
+    algorithm[0] = [];
+    
     this.setState({ canvas: { [id]: getItems(0) } });
     algorithm[0] = getItems(0);
     
@@ -307,6 +318,7 @@ export default class Main extends Component {
         algorithm[algorithm.length] = getItems(j);
       }
       this.setState({ canvas: newCanvas });
+      console.log("algie:", algorithm);
     }
     
   }
