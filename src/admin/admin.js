@@ -132,7 +132,7 @@ export default class Admin extends Component {
     for (var i = 0; i < results['circuits'].length; i++) {
         list[i] = results['circuits'][i];
     }
-    console.log(list);
+    //console.log(list);
     return list;
   }
 

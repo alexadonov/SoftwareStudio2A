@@ -318,7 +318,7 @@ export default class Main extends Component {
         algorithm[algorithm.length] = getItems(j);
       }
       this.setState({ canvas: newCanvas });
-      console.log("algie:", algorithm);
+      //console.log("algie:", algorithm);
     }
     
   }

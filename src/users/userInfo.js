@@ -12,7 +12,7 @@ export const register = async newUser => {
             confirm_admin: newUser.confirm_admin
         });
       
-        console.log(res);
+        //console.log(res);
         const status = await res.status;
         return status === 201;
     }
