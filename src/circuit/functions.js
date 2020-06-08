@@ -13,6 +13,9 @@ import EMPTY from './data/empty.js';
 
 import {retrieveCircuits} from '../circuit/apicaller.js';
 
+const ignoredGates = new Set([EMPTY[0].content, PROBES[0].content, PROBES[1].content]);
+
+
 export const getId =(droppableDestination, lineArray) => {
   var id;
   for(var i=0; i < lineArray.length; i++) {
@@ -239,17 +242,20 @@ export const verifyCircuit = (algorithm) => {
     msg = "The circuit is empty!";
   } else {
     var count = 0;
+    var obstructed = false;
     for(var i = 0; i < circuit_input.length; i++) {
       for(var j = 0; j < circuit_input[i].length; j++) {
         if (String(circuit_input[i][j]).toLowerCase() === "swap") count++;
-        else if (String(circuit_input[i][j]).toLowerCase() !== "1" && count === 1) {
-          return "Swaps are obstructed by gates inbetween"
+        else if (!ignoredGates.has(circuit_input[i][j]) && count === 1) {
+          obstructed = true;
         }
       }
       if (count === 1) {
         return "You need a pair of Swaps in a column";
       } else if (count > 2) {
         return "Only a single pair of Swaps is allowed in column";
+      } else if (obstructed) {
+        return "Swaps are obstructed by gates inbetween"
       }
       count = 0;
     }
