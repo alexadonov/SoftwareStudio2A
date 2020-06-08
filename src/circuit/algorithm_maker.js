@@ -5,6 +5,12 @@ import { Droppable, Draggable } from 'react-beautiful-dnd';
 // This file makes the droppable region for the algorithm maker
 // It is called in the main.js file
 
+// Data files
+import PROBES from './data/probes.js';
+import HALF_TURNS from './data/half_turns.js';
+import QUARTER_TURNS from './data/quarter_turns.js';
+import EIGHTH_TURNS from './data/eighth_turns.js';
+
 const Notice = styled.h5`
   width: auto;
   height: auto;
@@ -15,11 +21,10 @@ const Notice = styled.h5`
 `;
 
 const Container = styled.div`
-    min-height: 10vh;
-    background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'transparant')};
+    min-height: 100px;
+    background-color: ${props => (props.isDraggingOver ? 'lightblue' : 'transparent')};
     background-image: url('https://pngriver.com/wp-content/uploads/2018/04/Download-Horizontal-Line-PNG-Transparent-Image-300x155.png');
     background-size: 93.75rem 5rem;
-    background-repeat: no-repeat;
     margin: 8px;
     padding: 10px;
     display: flex;
@@ -32,13 +37,27 @@ const Item = styled.div`
   border-radius: 2px;
   padding: 8px;
   margin: 8px;
-  width: 80px;
+  min-width: 80px;
   height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: ${props => (props.isDragging ? 'darkgrey' : 'white')};
 `;
+
+const gateSets = [PROBES, HALF_TURNS, QUARTER_TURNS, EIGHTH_TURNS];
+var gateContent= new Set();
+var probeContent = new Set();
+
+for (var i = 0; i < gateSets.length; i++) {
+    for (var j = 0; j < gateSets[i].length; j++) {
+        gateContent.add(gateSets[i][j].content);
+    }
+}
+
+for (var j = 0; j < PROBES.length; j++) {
+    probeContent.add(PROBES[j].content);
+}
 
 const ALGORITHM_MAKER = (props) => {
   const list = props.list;
@@ -79,26 +98,37 @@ const ALGORITHM_MAKER = (props) => {
   prevBlocks = {};
   index = 0;
 
-  // for swap gates
+  var included_indices = new Set();
   for (const item in state) {
+    for (var j = 0; j < state[item].length; j++) {
+        if (probeContent.has(state[item][j].content)) {
+            if (!included_indices.has(j)) included_indices.add(j);
+        }
+    }
+  }
+
+  for (const item in state) {
+
       for (var i = 0; i < state[item].length; i++) {
-          
+        
         let block = state[item][i];
-        if (prevBlocks[i] >= 0 && ['Pauli X Gate', 'Hadamard Gate', 'Control', 'Anti-Control'].includes(block.name) ) {
-            state[item][i]['addStyle'] = true;
-            state[item][i]['dist'] = index - prevBlocks[i];
-            prevBlocks[i] = index;
-        }
-        else {
-            if (['X', 'H', 'Control', 'Anti-Control'].includes(block.content)) {
-                prevBlocks[i] = index; 
-            }
-            else {
+        let included = included_indices.has(i);
+        let notempty = block.name !== 'Empty';
+        if (included && notempty) {
+            if (gateContent.has(block.content)) {
+                if (prevBlocks[i] >= 0) {
+                    state[item][i]['addStyle'] = true;
+                    state[item][i]['dist'] = index - prevBlocks[i];
+                    prevBlocks[i] = index;
+                } else {
+                    prevBlocks[i] = index; 
+                }
+            } else {
                 prevBlocks[i] = -1;
+                if (state[item][i].content !== 'Swap') state[item][i]['addStyle'] = false;
             }
-            if (state[item][i].content != 'Swap') state[item][i]['addStyle'] = false;
-        }
-          
+            
+        }          
     }
     index++;
   }

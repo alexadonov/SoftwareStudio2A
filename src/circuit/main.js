@@ -47,7 +47,8 @@ const SubTitle = styled.h5`
 const Button = styled.button`
   float: left;
   vertical-align: middle;
-  min-height: 10vh;
+  min-height: 100px;
+  max-height: 100px;
   background: ${props => props.primary ? "red" : "white"};
   color: ${props => props.primary ? "white" : "red"};
   border: 0px  rgba(0,0,0,0);
@@ -625,15 +626,17 @@ export default class Main extends Component {
                       <button style={{ float: 'right' }} class="btn btn-primary" onClick={this.onRedo} ref={this.redoButton} disabled={this.state.is_submitted} >Redo</button>
                     </div>
                   </div>
-                  <Content>
+                  <Content className="algorithm-container" style={{ overflowX:'scroll' }}>
                     <Title>Create Your Algorithm: {this.state.algorithm_name} </Title>
                     {Object.keys(this.state.canvas).map((list, i) => (
-                      <div>
+                      <div className="wire-container">
                         <Button onClick={() => this.deleteLine(list, i)}>X</Button>
                         <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={false} style={{ float: 'left' }} />
                       </div>
                     ))}
-                    <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.is_saved} > You have unsaved changes</Alert>
+                  </Content>
+                  <Content>
+                  <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
                     <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
                       <Alert.Heading>Successfully submitted</Alert.Heading>
@@ -641,8 +644,6 @@ export default class Main extends Component {
                     <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
                       <Alert.Heading>Successfully submitted and graded: {this.state.grade}/100</Alert.Heading>
                     </Alert>
-                  </Content>
-                  <Content>
                     <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={120} />
                   </Content>
                 </div>
