@@ -502,23 +502,6 @@ export default class Main extends Component {
     }
   }
 
-  remapAlgorithm = () => {
-    // console.log(algorithm)
-    // for (var i = 0; i < lineArray.length - 1; i++) {
-    //   algorithm[i] = [];
-    //   [this.state.canvas[lineArray[i][1]]].map(function (item) {
-    //     console.log(item)
-    //     algorithm[i].push(item[0]);
-    //   });
-    // }
-    localStorage.setItem('algorithm', JSON.stringify(algorithm));
-
-    
-    
-    this.calculateResults();
-    // console.log(algorithm)
-  }
-
   onExport = () => {
     //Check it has been saved first
 
