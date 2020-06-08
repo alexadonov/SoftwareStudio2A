@@ -2,10 +2,10 @@ import styles from '../App.css';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter } from "react-router-dom";
-import { getUserID, setAlgorithmName, setStudentIDView, getStudentIDView } from '../circuit/functions.js';
+import { getUserID, setAlgorithmName, setStudentIDView, setIsGraded, setGrade } from '../circuit/functions.js';
 // Main Components
 import NavBar from "../components/navBar.js";
-import filterFactory, { textFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
+import filterFactory, { textFilter, numberFilter, Comparator, selectFilter, dateFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
@@ -16,6 +16,11 @@ import { Button } from 'react-bootstrap';
 
 
 // dummy data to use in the meantime.
+const graded_select = {
+  0: 'Not Graded',
+  1: 'Graded'
+};
+
 var table_columns = [{
   dataField: 'student_id',
   text: 'Student ID',
@@ -30,19 +35,23 @@ var table_columns = [{
   dataField: 'circuit_input',
   text: 'Circuit Input',
   headerStyle: () => {return{width:"15%"}},
-},{
-  dataField: 'circuit_output_json',
-  text: 'Circuit Output',
-  headerStyle: () => {return{width:"30%"}},
+  filter: textFilter()
 },{
   dataField: 'created_date',
   text: 'Submitted at',
-}, {
-  dataField: 'algorithm_grade',
-  text: 'Grade',
+  filter: dateFilter(),
+  headerStyle: () => {return{width:"20%"}},
 }, {
   dataField: 'is_graded',
   text: 'Graded',
+  formatter: cell => graded_select[cell],
+  filter: selectFilter({
+    options: graded_select
+  })
+}, {
+  dataField: 'algorithm_grade',
+  text: 'Grade',
+  headerStyle: () => {return{width:"10%"}},
 }, {
   dataField: 'view',
   text: 'View',
@@ -50,13 +59,15 @@ var table_columns = [{
     onClick: (e, column, columnIndex, row) => {
       setStudentIDView(row.student_id);
       setAlgorithmName(row.circuit_name);
-      // window.location.href = '/admin/dnd';
+      setGrade(row.algorithm_grade);
+      setIsGraded(row.is_graded);
+      window.location.href = '/admin/dnd';
     }
   },
   formatter: (cellContent, row) => (
     <button class="btn btn-primary">View</button>
   ),
-  headerStyle: () => {return{width:"8%"}},
+  headerStyle: () => {return{width:"12%"}},
 }]
 
 // Gets the length of the payload data to determine roof of pagination.
@@ -108,16 +119,15 @@ export default class Admin extends Component {
           text: '10', value: 10
         }, {
           text: 'All', value: this.state.table_data.length
-        }] 
+        }]
       };
     }
   }
 
   getCircuits = async () => {
     var list = [];
-    const results = await retrieveCircuits({ 
-      'student_id': 'all',
-      'is_submitted': "true"
+    const results = await retrieveCircuits({
+      'is_submitted': 1
    });
     for (var i = 0; i < results['circuits'].length; i++) {
         list[i] = results['circuits'][i];
@@ -142,12 +152,12 @@ export default class Admin extends Component {
               <NavBar />
               <div><br></br></div>
               <div class="containerAdmin admin-table">
-                  <BootstrapTable 
+                  <BootstrapTable
                   bodyClasses="tbodyContainer"
-                  keyField='student_id' 
-                  data={ this.state.table_data } 
-                  columns={ table_columns } 
-                  pagination={ paginationFactory(tablePaginationOptions) } 
+                  keyField='student_id'
+                  data={ this.state.table_data }
+                  columns={ table_columns }
+                  pagination={ paginationFactory(tablePaginationOptions) }
                   filter={ filterFactory() }  />
               </div>
           </div>
@@ -155,6 +165,6 @@ export default class Admin extends Component {
       );
     } else {
       window.location.href = '/';
-    } 
-  } 
+    }
+  }
 }

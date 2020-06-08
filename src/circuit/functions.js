@@ -169,6 +169,23 @@ export const setAlgorithmName = (algorithm_name) => {
   localStorage.setItem('algorithm_name', algorithm_name);
 }
 
+export const setIsGraded = (is_graded) => {
+  localStorage.setItem('is_graded', is_graded);
+}
+
+export const getIsGraded = () => {
+  return  parseInt(localStorage.getItem('is_graded'));
+}
+
+export const setGrade = (grade) => {
+  localStorage.setItem('grade', grade);
+}
+
+export const getGrade = () => {
+  return  parseInt(localStorage.getItem('grade'));
+}
+
+
 const algorithmExists = async (student_id, algorithm_name) => {
   const results = await retrieveCircuits({
     'student_id': student_id,
@@ -217,18 +234,22 @@ export const verifyCircuit = (algorithm) => {
   //"SWAP" needs 2 in the same column
   let msg = "valid"
   var circuit_input = getCircuitInput(algorithm);
-  if(circuit_input.length === 0) {
+  console.log("ci:",circuit_input);
+  if (circuit_input.length === 0 || circuit_input.every( (col_arr) => col_arr.every( (val) => val === "1" )) ) {
     msg = "The circuit is empty!";
   } else {
     var count = 0;
     for(var i = 0; i < circuit_input.length; i++) {
       for(var j = 0; j < circuit_input[i].length; j++) {
-        if(String(circuit_input[i][j]).toLowerCase() === "swap") count++;
+        if (String(circuit_input[i][j]).toLowerCase() === "swap") count++;
+        else if (String(circuit_input[i][j]).toLowerCase() !== "1" && count === 1) {
+          return "Swaps are obstructed by gates inbetween"
+        }
       }
-      if(count === 1) {
-        msg = "You need 2 Swaps in a column";
+      if (count === 1) {
+        return "You need a pair of Swaps in a column";
       } else if (count > 2) {
-        msg = "Only a single pair of Swaps is allowed in column";
+        return "Only a single pair of Swaps is allowed in column";
       }
       count = 0;
     }
@@ -253,7 +274,7 @@ export const escapeSpecialCharacters = (JSONfile) => {
 
 export const isValidPassword = (password) => {
   var min_length = 8;
-  var letter = /[a-zA-Z]/; 
+  var letter = /[a-zA-Z]/;
   var number = /[0-9]/;
   return (password.length >= min_length) && number.test(password) && letter.test(password);
 }
@@ -290,7 +311,7 @@ export const findCopyItemsId = (id) => {
 
 export const getObject = (name) => {
   if(name === '1') {
-    return "1";
+    return EMPTY[0];
   }
   for(var i = 0; i < DISPLAYS.length; i++) {
     if(DISPLAYS[i].content === name) {
@@ -343,23 +364,45 @@ export const getObject = (name) => {
 }
 
  const removeOnes = (algorithm) => {
+  var found = false;
   for(var i = 0; i < algorithm.length; i++) {
-    for(var j = 0; j < algorithm[i].length; j++) {
-      if(algorithm[i][j] === "1") {
-        algorithm[i].splice(j,1);
-        return;
-      }
+    found = false;
+    for (var j = algorithm[i].length - 1; j >= 0 && !found; j--) {
+      if (algorithm[i][j]["content"] !== "1" && algorithm[i][j]["content"]  !== undefined && algorithm[i][j]["content"] !== null) {
+        found = true;
+        algorithm[i].splice(j+1,algorithm[i].length-j-1);
+      }      
     }
   }
 }
 
 export const fixAlgorithm = () => {
   let algorithm = JSON.parse(localStorage.getItem('algorithm'));
+  algorithm = undoCircuitInput(algorithm);
   for(var i = 0; i < algorithm.length; i++) {
     for(var j = 0; j < algorithm[i].length; j++) {
       algorithm[i][j] = getObject(algorithm[i][j]);
-      removeOnes(algorithm);
     }
   }
+  removeOnes(algorithm);
+
   localStorage.setItem('algorithm', JSON.stringify(algorithm));
+}
+
+const undoCircuitInput = (algorithm) => {
+  var circuit_input = new Array();
+  var row = new Array();
+  var k = 0;
+  var p = 0;
+  for(var a = 0; a < getLargestRow(algorithm); a++) {
+    for(var i = 0; i < algorithm.length; i++) {
+        row[k] = algorithm[i][p];
+        k++;
+    }
+    circuit_input[a] = row;
+    p++;
+    row = [];
+    k=0;
+  }
+  return circuit_input;
 }

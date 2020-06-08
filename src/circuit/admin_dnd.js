@@ -12,7 +12,7 @@ import Algorithm from './algorithm_maker';
 import Results from '../components/results';
 
 
-import {getCircuitInput, fixAlgorithm, verifyCircuit, getUserID, getAlgorithmName, resetTempStorage, setAlgorithmName } from './functions';
+import {getCircuitInput, fixAlgorithm, verifyCircuit, getStudentIDView, getUserID, getAlgorithmName, getIsGraded, getGrade } from './functions';
 import { gradeCircuit } from './apicaller';
 
 const Content = styled.div`
@@ -55,13 +55,11 @@ export default class AdminDND extends Component {
       results: {},
       is_submitted: false,
       circuit_valid_msg: verifyCircuit(algorithm),
-      is_graded: false,
-      grade: 0,
+      is_graded: getIsGraded(),
+      grade: getGrade(),
       student_id: 0,
       is_admin: true,
     };
-
-    resetTempStorage();
 
     lineArray[0] = [0, id];
     algorithm[0] = [];
@@ -70,13 +68,16 @@ export default class AdminDND extends Component {
   }
 
   componentDidMount() {
-    const token = localStorage.token;
-    this.getCircuit();
-    this.calculateResults();
-    let student_id = getUserID();
-    this.setState({student_id: student_id});
-
-
+    let circuit_name = getAlgorithmName();
+    const is_admin = parseInt(localStorage.getItem('is_admin'));
+    if (!is_admin) window.location.href = '/';
+    else {
+      const token = localStorage.token;
+      this.getCircuit();
+      this.calculateResults();
+      let student_id = getStudentIDView();
+      this.setState({student_id: student_id, algorithm_name: circuit_name});
+    }
   }
 
   onLoad = () => {
@@ -96,38 +97,39 @@ export default class AdminDND extends Component {
         lineArray[lineArray.length] = [lineArray.length, id];
         algorithm[algorithm.length] = getItems(j);
       }
+      this.calculateResults();
     }
   }
 
   getCircuit = async () => {
-    let student_id = getUserID();
-    setAlgorithmName('hello')
+    let student_id = getStudentIDView();
     let circuit_name = getAlgorithmName();
-    var list = [];
-    const results = await retrieveCircuits({'student_id': student_id, 'is_deleted': 0, 'is_submitted': 0, 'circuit_name': circuit_name});
-    for(var i = 0; i < results['circuits'].length; i++) {
-      list[i] = results['circuits'][0];
-    }
+    retrieveCircuits({'student_id': student_id, 'circuit_name': circuit_name}).then(results => {
+      //console.log("re:",results);
+      let resultsJSON = JSON.parse(results['circuits'][0].circuit_input);
+      var new_algorithm = [];
+      for(var i = 0; i < resultsJSON.length; i++) {
+        new_algorithm[i] = resultsJSON[i];
+      }
+      localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
+      this.calculateResults();
+      fixAlgorithm();
+      algor = JSON.parse(localStorage.getItem('algorithm'));
+      this.onLoad();
+      //console.log(algor)
+    }).catch(error => {
+      alert("This algorithm was not saved properly. Please contact the student.");
+      window.location.href = '/admin';
+    });
 
-    let list2 = JSON.parse(results['circuits'][0].circuit_input);
-    var new_algorithm = [];
-    for(var i = 0; i < list2.length; i++) {
-      new_algorithm[i] = list2[i];
-    }
-    localStorage.setItem('algorithm', JSON.stringify(new_algorithm));
-    this.calculateResults();
-    fixAlgorithm();
-    algor = JSON.parse(localStorage.getItem('algorithm'));
-    this.onLoad();
   }
 
   calculateResults = () => {
     let circuit_input = getCircuitInput(algorithm);
     let valid_msg = verifyCircuit(algorithm)
     getResults(circuit_input).then(res => {
-      this.setState({ results: res });
+      this.setState({ results: res, circuit_valid_msg: valid_msg });
     });
-    this.setState({ circuit_valid_msg: valid_msg })
     this.forceUpdate();
   }
 
@@ -140,7 +142,7 @@ export default class AdminDND extends Component {
 
   Submit = (e) => {
     e.preventDefault();
-    let student_id = getUserID();
+    let student_id = getStudentIDView();
     let circuit_name = getAlgorithmName();
     if(this.state.grade > 100 || this.state.grade < 0 || this.state.grade == null) {
       alert('Please enter a valid grade' );
@@ -149,39 +151,19 @@ export default class AdminDND extends Component {
     gradeCircuit(student_id, circuit_name, this.state.grade)
       .then(res => {
         this.setState({is_graded: true});
-        window.location.href = '/admin';
       });
+  }
+
+  resetMark = (e) => {
+    e.preventDefault();
+    this.setState({is_graded: false});
   }
 
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
-    const student_id = getUserID();
-    let marked;
-    if(this.state.is_graded === true) {
-      marked =
-      <div class="row" style={{margin: '8px', paddingLeft: '2%', width: '50%'}}>
-        <div class="col-">
-          <h4>Grade: {this.state.grade}%</h4>
-        </div>
-      </div>
-    } else {
-      marked =
-      <div class="row" style={{margin: '8px', paddingLeft: '2%', width: '50%'}}>
-        <div class="col-">
-          <div class="input-group mb-3">
-            <input type="number" class="form-control" placeholder="Grade (%)" aria-label="grade" aria-describedby="basic-addon2" onChange={this.onChangeGrade}/>
-            <div class="input-group-append">
-              <span class="input-group-text" id="basic-addon2">%</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-">
-          <button class="btn btn-outline-dark" onClick={this.Submit}>Submit Grade</button>
-        </div>
-      </div>
-    }
-    if (student_id) {
+
+    if (this.state.student_id) {
       return (
         <div className="App">
           <NavBar />
@@ -190,14 +172,35 @@ export default class AdminDND extends Component {
               <div class="row">
                 <div class="col">
                   <Content>
-                    <Title>You are marking <b>{this.state.student_id}'s</b> algorithm</Title>
-                    {marked}
+                    <Title>You are marking <b>{this.state.student_id}</b>'s algorithm: <b>{this.state.algorithm_name}</b></Title>
+                    <div hidden={this.state.is_graded} class="row" style={{ margin: '8px', paddingLeft: '2%', width: '50%' }}>
+                      <div class="col-">
+                        <div class="input-group mb-3">
+                          <input type="number" class="form-control" placeholder="Grade (%)" aria-label="grade" aria-describedby="basic-addon2" onChange={this.onChangeGrade} />
+                          <div class="input-group-append">
+                            <span  class="input-group-text" id="basic-addon2">%</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-">
+                        <button class="btn btn-outline-dark" onClick={this.Submit}>Submit Grade</button>
+                      </div>
+                    </div>
+                    <div hidden={!this.state.is_graded} class="row" style={{ margin: '8px', paddingLeft: '2%', width: '50%' , alignItems:'center'}}>
+                      <div class="col-" style={{textAlign:'center', paddingRight: '5%', alignItems:'center'}}>
+                        <h4>Grade: <b>{this.state.grade}%</b></h4>
+                      </div>
+                      
+                      <div class="col-">
+                        <button class="btn btn-outline-dark" onClick={this.resetMark}>Grade Again</button>
+                      </div>
+                    </div>
                     {Object.keys(this.state.canvas).map((list, i) => (
                         <Algorithm key={i} list={list} state={this.state.canvas} isAdmin={true} style={{ float: 'left' }} />
                     ))}
                   </Content>
                   <Content>
-                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={120} />
+                    <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={110} />
                   </Content>
                 </div>
 
@@ -208,7 +211,11 @@ export default class AdminDND extends Component {
       );
     }
     else {
-      window.location.href = '/';
+      return(
+        <div>
+          
+        </div>
+      );
     }
   }
 }
