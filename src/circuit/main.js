@@ -636,14 +636,16 @@ export default class Main extends Component {
                     ))}
                   </Content>
                   <Content>
-                  <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
-                    <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
-                    <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
-                      <Alert.Heading>Successfully submitted</Alert.Heading>
-                    </Alert>
-                    <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
-                      <Alert.Heading>Successfully submitted and graded: {this.state.grade}/100</Alert.Heading>
-                    </Alert>
+                  <div style={{paddingTop:'1%'}}>
+                      <Alert style={{ marginLeft: 20 }} variant='info' show={!this.state.saved} > You have unsaved changes</Alert>
+                      <Alert style={{ marginLeft: 20 }} variant='warning' show={this.state.circuit_valid_msg !== "valid"} >{this.state.circuit_valid_msg}</Alert>
+                      <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && !this.state.is_graded} >
+                        <Alert.Heading>Successfully submitted</Alert.Heading>
+                      </Alert>
+                      <Alert style={{ marginLeft: 20 }} variant='success' show={this.state.is_submitted && this.state.is_graded} >
+                        <Alert.Heading>Successfully submitted and graded: {this.state.grade}%</Alert.Heading>
+                      </Alert>
+                    </div>
                     <Results resultChartData={this.state.results} title={"Measurement Probability Graph"} width={400} height={120} />
                   </Content>
                 </div>
